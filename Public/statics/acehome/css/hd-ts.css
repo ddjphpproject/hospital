@@ -1,0 +1,31 @@
+@charset "utf-8";
+
+body,.container{background-color:#efefef !important;}
+.item{padding:0 0.24rem;}
+
+.hd-ts .hdCon{padding-top:0.3rem;}
+.hd-ts .hdCon .time{text-align:center;margin-bottom:0.25rem;}
+.hd-ts .hdCon .time span{display:inline-block; font-size:0.24rem;color:#fff;line-height:0.46rem; background-color:#d8d8d8;border-radius:0.23rem;padding:0 0.2rem}
+.hd-ts .hdCon dl{border:1px solid #dfdfdf;border-radius:0.1rem;overflow:hidden;}
+.hd-ts .hdCon dl dt{background-color:#fafafa;padding:0.2rem 0.2rem 0.3rem;position:relative;}
+.hd-ts .hdCon dl dt h3{font-size:0.28rem;color:#1f1f1f;line-height:0.44rem;height:0.44rem;overflow:hidden; font-weight:normal;position:relative;padding-right:1.5rem;}
+.hd-ts .hdCon dl dt h3 small{font-size:0.26rem;color:#a5a4a4;line-height:0.44rem;position:absolute;right:0;top:0;}
+.hd-ts .hdCon dl dt p{font-size:0.28rem;line-height:0.44rem;color:#989898;height:auto;overflow:hidden;}
+.hd-ts .hdCon dl dt p b{font-size:0.3rem;color:#1f1f1f;display:block;line-height:0.6rem;}
+.hd-ts .hdCon dl dt .open{font-size:0.24rem;color:#e76b6b;position:absolute;right:0.2rem;bottom:0.3rem;}
+.hd-ts .hdCon dl dt .open em:nth-of-type(2){display:none;}
+.hd-ts .hdCon dl dt .open i{display:inline-block;width:0.22rem;height:0.14rem;background:url(../img/hd-ts_arrow.png) no-repeat;background-size:0.22rem 0.28rem;vertical-align:middle;transition:all 0.3s;}
+.hd-ts .hdCon dl dd{display:none;}
+.hd-ts .hdCon dl dd li{padding:0.2rem 0;}
+.hd-ts .hdCon dl dd li:nth-child(2n){background-color:#fafafa;}
+.hd-ts .hdCon dl dd li span{font-size:0.28rem;color:#5e5e5e;line-height:0.38rem;display:inline-block;padding:0 0.25rem;}
+.hd-ts .hdCon dl dd li span b{font-weight:bold;}
+.hd-ts .hdCon dl dd li span:nth-child(1){border-right:1px solid #dfdfdf;}
+.hd-ts .hdCon dl dd li span i{display:inline-block;width:0.32rem;height:0.3rem;background:url(../img/hd-ts_bg.png) no-repeat;background-size:0.96rem 0.3rem;vertical-align:middle;margin-right:0.1rem;}
+.hd-ts .hdCon dl dd li:nth-child(2) span i{background-position:-0.32rem 0;}
+.hd-ts .hdCon dl dd li:nth-child(3) span i{background-position:-0.64rem 0;}
+
+.hd-ts .hdCon dl.active dd{display:block;}
+.hd-ts .hdCon dl.active .open i{background-position:0 -0.14rem;}
+.hd-ts .hdCon dl.active .open em:nth-of-type(1){display:none;}
+.hd-ts .hdCon dl.active .open em:nth-of-type(2){display:inline-block;}

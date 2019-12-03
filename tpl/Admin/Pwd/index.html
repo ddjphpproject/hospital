@@ -1,0 +1,24 @@
+<!DOCTYPE html><html lang="en">
+<head><meta charset="UTF-8"/>
+	<title>个人信息 </title>
+	<bootstrapcss/><icheckcss/>
+</head>
+	<body>
+		<div class="bjy-admin-nav">
+			<i class="fa fa-home"></i> 首页 &gt; 个人信息</div><ul id="myTab" class="nav nav-tabs">
+		</ul>
+		<form class="form-inline" method="post"> 
+			<input type="hidden" name="id" value="{$user_data['id']}">
+			<table class="table table-striped table-bordered table-hover table-condensed">
+			<tr><th>姓名</th><td> <input class="form-control" type="text" name="username" value="{$user_data['username']}"></td></tr>
+			<tr><th>手机号</th><td> <input class="form-control" type="text" name="phone" value="{$user_data['phone']}"></td></tr>
+			<tr><th>邮箱</th><td> <input class="form-control" type="text" name="email" value="{$user_data['email']}"></td></tr>
+			<tr><th>初始密码</th><td> <input class="form-control" type="password" name="password">如不改密码；留空即可</td></tr>
+			<tr><th>新密码</th><td> <input class="form-control" type="password" name="passwordes">如不改密码；留空即可</td></tr>
+			<tr><th></th><td> <input class="btn btn-success" type="submit" value="修改"></td></tr>
+		</table>
+		</form>
+		<bootstrapjs/>
+		<icheckjs color="blue"/>
+	</body>
+	</html>

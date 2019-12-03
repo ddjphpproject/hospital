@@ -1,0 +1,208 @@
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<title>预约系统 - 复诊患者信息 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css">
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css">
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+
+<h1>
+<span class="action-span"><a href="{:U('Admin/FuZhen/excel')}">复诊患者信息导出</a></span>
+<span class="action-span1"><a href="#">预约系统</a> </span><span id="search_id" class="action-span1"> - 复诊患者信息修改 </span>
+<div style="clear:both"></div>
+</h1>
+
+
+<!-- start goods form -->
+<div class="tab-div">
+    <!-- tab bar -->
+    <div id="tabbar-div">
+      <p>
+        <span class="tab-front" id="general-tab">复诊患者信息修改</span>
+      </p>
+    </div>
+
+    <!-- tab body -->
+    <div id="tabbody-div">
+      <form enctype="multipart/form-data" action="{:U('Admin/FuZhen/edit')}" method="post" onSubmit="return checkbaoming();" name="theForm">
+      <foreach name="data" item="data">
+      <input type="hidden" name="id" value="{$data.id}" />
+        <table id="general-table" width="90%" align="center">
+          <tbody>
+      <tr>
+            <td class="label">看诊日期：</td>
+            <td>
+              <input type="text" id="kzrq" name="kzrq" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px" value="{$data.kzrq|date='Y-m-d H:i:s',###}"/>
+      </td>
+          </tr>
+      <tr>
+            <td class="label">来源：</td>
+            <td><input name="source" id="source" style="float:left;color:;" size="30" type="text" value="{$data.source}"></td>
+          </tr>
+      <tr>
+            <td class="label">姓名：</td>
+            <td><input name="name" id="name" style="float:left;color:;" size="30" type="text" value="{$data.name}">
+            <span class="require-field">*</span></td>
+          </tr>
+          <tr>
+            <td class="label">性别：</td>
+            <td>
+        <input class="radio" id="radio" type="radio" name="gender" value="男" <?php if($data.gender=='男') echo("checked");?>/> 男 
+        <input class="radio" id="radio" type="radio" name="gender" value="女" <?php if($data.gender=='女') echo("checked");?>/> 女
+        <input class="radio" id="radio" type="radio" name="gender" value="不详" <?php if($data.gender=='不详') echo("checked");?>/>不详
+        <span class="require-field">*</span>
+      </td>
+          </tr>
+<!--            <tr>
+            <td class="label">初/复诊：</td>
+            <td>
+        <input class="radio2" type="radio" name="again" value="0" checked="checked" /> 初诊
+        <input class="radio2" type="radio" name="again" value="1" /> 复诊
+        <span class="require-field">*</span>
+      </td>
+          </tr> -->
+      <tr>
+            <td class="label">年龄：</td>
+            <td><input name="age" id="age" style="float:left;color:;" size="30" type="text" value="{$data.age}"></td>
+          </tr>
+      <tr>
+            <td class="label">家庭住址：</td>
+            <td><input name="address" style="float:left;color:;" size="30" type="text" value="{$data.address}"></td>
+          </tr>
+      <tr>
+            <td class="label">电话：</td>
+            <td><input name="phone" id="phone" style="float:left;color:;" size="30" type="text" value="{$data.phone}"><span class="require-field">若没有请留空</span></td>
+          </tr>
+      <tr>
+            <td class="label">看诊专家：</td>
+            <td>
+        <select name="expert" id="yuyuezj">
+          <option value="{$data.expert}">{$data.expert}</option>
+          <foreach name="expert" item="zj">
+          <option value="{$zj.zjname}">{$zj.zjname}</option>
+          </foreach>
+        </select>
+        <span class="require-field">*</span>
+      </td>
+          </tr>
+  	  <tr>
+            <td class="label">挂号费：</td>
+            <td><input name="ghf" id="ghf" style="float:left;color:;" size="30" type="text" value="{$data.ghf}"></td>
+          </tr>
+          <tr>
+            <td class="label">检查费：</td>
+            <td><input name="jcf" id="jcf" style="float:left;color:;" size="30" type="text" value="{$data.jcf}"></td>
+          </tr>
+          <tr>
+            <td class="label">治疗次数：</td>
+            <td><input name="zlcs" id="zlcs" style="float:left;color:;" size="30" type="text" value="{$data.zlcs}"></td>
+          </tr>
+          <tr>
+            <td class="label">治疗金额：</td>
+            <td><input name="zlfy" id="zlfy" style="float:left;color:;" size="30" type="text" value="{$data.zlfy}"></td>
+          </tr>
+          <tr>
+            <td class="label">中药副数：</td>
+            <td><input name="zyfs" id="zyfs" style="float:left;color:;" size="30" type="text" value="{$data.zyfs}"></td>
+          </tr>
+          <tr>
+            <td class="label">中药金额：</td>
+            <td><input name="zyfy" id="zyfy" style="float:left;color:;" size="30" type="text" value="{$data.zyfy}"></td>
+          </tr>
+          <tr>
+            <td class="label">代煎：</td>
+            <td><input name="dj" id="dj" style="float:left;color:;" size="30" type="text" value="{$data.dj}"></td>
+          </tr>
+          <tr>
+            <td class="label">外用药副数：</td>
+            <td><input name="wyfs" id="zyfs" style="float:left;color:;" size="30" type="text" value="{$data.wyfs}"></td>
+          </tr>
+          <tr>
+            <td class="label">外用药金额：</td>
+            <td><input name="wyfy" id="zyfy" style="float:left;color:;" size="30" type="text" value="{$data.wyfy}"></td>
+          </tr>
+          <tr>
+            <td class="label">中成药/西药金额：</td>
+            <td><input name="xyfy" id="xyfy" style="float:left;color:;" size="30" type="text" value="{$data.xyfy}"></td>
+          </tr>
+          <tr>
+            <td class="label">合计：</td>
+            <td><input name="all" id="all" style="float:left;color:;" size="30" type="text" value="{$data.all}"></td>
+          </tr>
+          <tr>
+            <td class="label">回访时间：</td>
+            <td>
+              <input type="text" id="hfrq" name="hfrq" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px" value="{$data.hfrq|date='Y-m-d H:i:s',###}"/>
+          <span class="require-field">*</span>
+      </td>
+          </tr>
+      <tr>
+            <td class="label">
+            <!-- <a href="javascript:showNotice('noticeSellerNote');" title="点击此处查看提示信息"><img src="__ADMIN_ACEADMIN__/avatars/notice.gif" alt="点击此处查看提示信息" width="16" height="16" border="0"></a>  -->
+            回访情况： </td>
+            <td><textarea name="hfqk" cols="40" rows="3" value="">{$data.hfqk}</textarea><br>
+            <span class="notice-span" style="display:block" id="noticeSellerNote">是否有意向住院或病人亲诊或家人代诊等信息备注</span></td>
+          </tr>
+          <tr>
+            <td class="label">复诊日期：</td>
+            <td>
+              <input type="text" id="fzrq" name="fzrq" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px" value="{$data.fzrq|date='Y-m-d H:i:s',###}" />
+      </td>
+          </tr>
+      <tr>
+            <td class="label">
+            <!-- <a href="javascript:showNotice('noticeSellerNote');" title="点击此处查看提示信息"><img src="__ADMIN_ACEADMIN__/avatars/notice.gif" alt="点击此处查看提示信息" width="16" height="16" border="0"></a>  -->
+            病症描述： </td>
+            <td><textarea name="illness" cols="40" rows="3" value="">{$data.illness}</textarea><br>
+            <span class="notice-span" style="display:block" id="noticeSellerNote">患者病情，交流对话</span></td>
+          </tr>
+        </tbody></table>
+      </foreach>
+        <div class="button-div">
+          <input value=" 确定 " class="button" onSubmit="return checkbaoming();" type="submit">
+          <input value=" 重置 " class="button" type="reset">
+        </div>
+      </form>
+    </div>
+</div>
+<!--<script language="javascript">
+    function checkbaoming(){
+        var name = $("#name").val().trim();
+        var phone = $("#phone").val().trim();
+        var yuyuetime = $("#yuyuetime").val().trim();
+        var sex=$('input:radio[name="sex"]:checked').val();
+        var zj=$("#yuyuezj").val();    
+        if(name=="")
+        {
+                alert("未添加姓名！");
+                return false;
+        }
+        else if(phone=="")
+        {
+                alert("电话号码不能为空！");
+                return false;
+        }
+        else if(sex==null)
+        {
+            alert('性别未选择！');                   
+            return false;
+        }
+        else if(yuyuetime=="")
+        {
+            alert('预约时间未选择！');                   
+            return false;
+        }
+        else if(zj=="")
+        {
+            alert('预约专家未选择！');                   
+            return false;
+        }
+    }
+</script>-->

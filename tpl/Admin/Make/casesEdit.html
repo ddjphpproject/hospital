@@ -1,0 +1,289 @@
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<title>预约系统 - 修改预约 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css">
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css">
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+
+<h1>
+<span class="action-span"><a href="{:U('Admin/Make/index')}">预约列表</a></span>
+<span class="action-span1"><a href="{:U('Admin/Index/index')}">预约系统</a> </span><span id="search_id" class="action-span1"> - 修改预约 </span>
+<div style="clear:both"></div>
+</h1>
+
+
+<!-- start goods form -->
+<div class="tab-div">
+    <!-- tab bar -->
+    <div id="tabbar-div">
+      <p>
+        <span class="tab-front" id="general-tab">修改患者信息</span>
+      </p>
+    </div>
+
+    <!-- tab body -->
+    <div id="tabbody-div">
+      <form enctype="multipart/form-data" action="{:U('Admin/Make/control_edit')}" method="post" onSubmit="return checkbaoming();" name="theForm">
+<?php foreach ($make as $key => $va): ?> <?php endforeach ?>  
+        <table id="general-table" width="90%" align="center">
+          <tbody><tr>
+            <td class="label">患者姓名：</td>
+            <td><input name="name" id="name" style="float:left;color:;" size="30" type="text" value="<?php echo $make['name']; ?>">
+            <span class="require-field">*</span></td>
+          </tr>
+      <tr>
+            <td class="label">患者别名：</td>
+            <td><input name="alias" style="float:left;color:;" size="30" type="text"  value="<?php echo $make['alias']; ?>"></td>
+          </tr>
+      <tr>
+            <td class="label">患者电话：</td>
+            <td><input name="phone" id="phone" style="float:left;color:;" size="30" type="text" value="<?php echo $make['phone']; ?>"><span class="require-field">*</span></td>
+          </tr>
+      <tr>
+            <td class="label">患者电话2：</td>
+            <td><input name="phones" style="float:left;color:;" size="30" type="text" value="<?php echo $make['phones']; ?>"></td>
+          </tr>
+          <tr>
+            <td class="label">性别：</td>
+            <td>
+        <input class="radio" id="radio" type="radio" name="sex" value="男" <?php if($make['sex']=='男') echo("checked");?>/> 男 
+        <input class="radio" id="radio" type="radio" name="sex" value="女" <?php if($make['sex']=='女') echo("checked");?>/> 女
+        <input class="radio" id="radio" type="radio" name="sex" value="不详" <?php if($make['sex']=='不详') echo("checked");?>/>不详
+        <span class="require-field">*</span>
+      </td>
+          </tr>
+                   <tr>
+            <td class="label">初/复诊：</td>
+            <td>
+        <input class="radio2" type="radio" name="again" value="0" <?php if($make['again']=='0') echo("checked");?>/> 初诊
+        <input class="radio2" type="radio" name="again" value="1" <?php if($make['again']=='1') echo("checked");?>/> 复诊
+        <span class="require-field">*</span>
+      </td>
+          </tr>
+      <tr>
+            <td class="label">年龄：</td>
+            <td><input name="age" id="age" style="float:left;color:;" size="30" type="text" value="<?php echo $make['age']; ?>"></td>
+          </tr>
+      <tr>
+            <td class="label">家庭住址：</td>
+            <td>
+              <select name="address" id="address">
+              <option value="">请选择...</option>
+              <foreach name="address" item="address">
+              <option value="{$address['area_name']}" >{$address['area_name']}</option>
+              </foreach>
+              </select>
+
+              <select name="city" id="city" style="display:none;">
+              <option value="">请选择...</option>
+              <foreach name="rcity" item="rcity">
+              <option value="{$rcity['area_name']}" >{$rcity['area_name']}</option>
+              </foreach>
+              </select>
+              <input type="hidden" value="" id="rcity">
+
+              <select name="zone" id="zone" style="display:none;">
+              <option value="">请选择...</option>
+              <foreach name="rzone" item="rzone">
+              <option value="{$rzone['area_name']}" >{$rzone['area_name']}</option>
+              </foreach>
+              </select>
+              <input type="hidden" value="" id="rcity">
+            </td>
+          </tr>
+  
+          <tr>
+            <td class="label">预约时间：</td>
+            <td>
+              <input type="text" id="yuyuetime" name="yuyuetime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px" value="<?php echo date('Y-m-d H:i:s',$make['yuyuetime']); ?>"/>
+          <span class="require-field">*</span>   
+        </td>
+                 
+      </td>
+          </tr>
+      <tr>
+            <td class="label">预约专家：</td>
+            <td>
+        <select name="yuyuezj" id="yuyuezj">
+          <option value="">请选择...</option>
+          <foreach name="expert" item="zj">
+          <option value="{$zj['zjname']}" >{$zj['zjname']}</option>
+          </foreach>
+        </select>
+        <span class="require-field">*</span>            
+      </td>
+          </tr>
+      <tr>
+            <td class="label">预约科室：</td>
+            <td>
+        <select name="yuyueks" id="yuyueks">
+          <option value="">请选择...</option>
+          <foreach name="govern" item="ks">
+          <option value="{$ks['ksname']}">{$ks['ksname']}</option>
+          </foreach>
+        </select>
+      </td>
+          </tr>
+      <tr>
+            <td class="label">预约病种：</td>
+            <td>
+        <select name="yuyuebz" id="yuyuebz">
+          <option value="">请选择...</option>
+          <foreach name="entity" item="e">
+            <option value="{$e['bzname']}">{$e['bzname']}</option>
+          </foreach>
+        </select>         
+      </td>
+          </tr>
+      <tr>
+            <td class="label">渠道：</td>
+            <td>
+        <select name="channel" id="channel">
+          <option value="">请选择...</option>
+          <foreach name="channel" item="c">
+            <option value="{$c['name']}">{$c['name']}</option>
+          </foreach>
+        </select>         
+      </td>
+          </tr>
+      <tr>
+
+            <td class="label">来源：</td>
+            <td>
+        <select name="source" id="source">
+          <option value="">请选择...</option>
+          <foreach name="source" item="s">
+            <option value="{$s['name']}">{$s['name']}</option>
+          </foreach>
+        </select>           
+      </td>
+          </tr>
+          <input id="addre" type="text" />
+<script>  
+  $("#yuyuezj").val("<?php echo $make['yuyuezj']; ?>"); 
+    $("#yuyueks").val("<?php echo $make['yuyueks']; ?>"); 
+    $("#address").val("<?php echo $make['province']; ?>"); 
+    $("#city").val("<?php echo $make['city']; ?>"); 
+    $("#rcity").val("<?php echo $make['city']; ?>"); 
+    $("#zone").val("<?php echo $make['zone']; ?>"); 
+    $("#rzone").val("<?php echo $make['zone']; ?>"); 
+      $("#yuyuebz").val("<?php echo $make['yuyuebz']; ?>"); 
+        $("#channel").val("<?php echo $make['channel']; ?>"); 
+          $("#source").val("<?php echo $make['source']; ?>"); 
+
+</script> 
+      <tr>
+            <td class="label">
+            <a href="javascript:showNotice('noticeSellerNote');" title="点击此处查看提示信息"><img src="__ADMIN_ACEADMIN__/avatars/notice.gif" alt="点击此处查看提示信息" width="16" height="16" border="0"></a> 患者备注： </td>
+            <td><textarea name="remark" cols="40" rows="3" ><?php echo $make['remark']; ?></textarea><br>
+            <span class="notice-span" style="display:block" id="noticeSellerNote">是否有意向住院或病人亲诊或家人代诊等信息备注</span></td>
+          </tr>
+      <tr>
+            <td class="label">
+            <a href="javascript:showNotice('noticeSellerNote');" title="点击此处查看提示信息"><img src="__ADMIN_ACEADMIN__/avatars/notice.gif" alt="点击此处查看提示信息" width="16" height="16" border="0"></a> 病情描述： </td>
+            <td><textarea name="dialogue" cols="40" rows="3" ><?php echo $make['dialogue']; ?></textarea><br>
+            <span class="notice-span" style="display:block" id="noticeSellerNote">患者病情，交流对话</span></td>
+          </tr>
+        </tbody></table>
+
+        <div class="button-div">
+          <input name="id" value="<?php echo $make['id']; ?>" type="hidden">
+          <input value=" 确定 " class="button" onSubmit="return checkbaoming();" type="submit">
+          <input value=" 重置 " class="button" type="reset">
+        </div>
+      </form>
+    </div>
+</div>
+<script language="javascript">
+    function checkbaoming(){
+        var name = $("#name").val().trim();
+        var phone = $("#phone").val().trim();
+        var yuyuetime = $("#yuyuetime").val().trim();
+        var sex=$('input:radio[name="sex"]:checked').val();
+        var zj=$("#yuyuezj").val();    
+        if(name=="")
+        {
+                alert("未添加姓名！");
+                return false;
+        }
+        else if(phone=="")
+        {
+                alert("电话号码不能为空！");
+                return false;
+        }
+        else if(sex==null)
+        {
+            alert('性别未选择！');                   
+            return false;
+        }
+        else if(yuyuetime=="")
+        {
+            alert('预约时间未选择！');                   
+            return false;
+        }
+        else if(zj=="")
+        {
+            alert('预约专家未选择！');                   
+            return false;
+        }
+    }
+</script>
+<script type="text/javascript">
+    function isnull(val) {
+
+        var str = val.replace(/(^\s*)|(\s*$)/g, '');//去除空格;
+
+        if (str == '' || str == undefined || str == null) {
+            return true;
+            // console.log('空')
+        } else {
+            return false;
+            // console.log('非空');
+        }
+    }
+    var rcity = $('#rcity').val();
+    var cityv = isnull(rcity);
+    if(city)
+    {
+      alert(1);
+      $('#city').css('display','block');
+    }
+    var rzone = $('#rzone').val();
+    var zonev = isnull(rzone);
+    if(zone)
+    {
+      alert(1);
+      $('#zone').css('display','block');
+    }
+  // $(function(){
+  //   $('#address').change(function(){
+  //        $.ajax({
+  //            type: "POST",
+  //            url: "{:U('areaChange')}",
+  //            data: {zjname:$("#zjname").val()},
+  //            dataType: "json",
+  //            success: function(data){
+                 
+  //               }
+  //                        // $('#resText').empty();   //清空resText里面的所有内容
+  //                        // var html = ''; 
+  //                        // $.each(data, function(commentIndex, comment){
+  //                        //       html += '<div class="comment"><h6>' + comment['username']
+  //                        //                 + ':</h6><p class="para"' + comment['content']
+  //                        //                 + '</p></div>';
+  //                        // });
+  //                        // $('#resText').html(html);
+  //             }
+  //         });
+  //     });
+  // });
+</script>
+</body>
+</html>

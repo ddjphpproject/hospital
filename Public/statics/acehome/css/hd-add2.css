@@ -1,0 +1,32 @@
+@charset "utf-8";
+
+body,.container{background-color:#efefef !important;}
+.item{padding:0 0.25rem;}
+
+.hd-add li{background-color:#fff;border-top:1px solid #d9d9d9;border-bottom:1px solid #d9d9d9;margin-bottom:0.2rem;}
+.hd-add li dl{border-bottom:1px solid #efefef;padding:0 0.25rem;overflow:hidden;}
+.hd-add li dl:last-child{border-bottom:0;}
+.hd-add li dt{font-size:0.3rem;line-height:0.8rem;float:left;}
+.hd-add li dd{padding-left:2rem;}
+.hd-add li dd input,.hd-add li dd select{width:100%;font-size:0.28rem;height:0.3rem;line-height:0.3rem;padding-top:0.25rem;padding-bottom:0.25rem; border:0;}
+.hd-add li dd select,.hd-add li dd input[type='date']{height:0.8rem;padding:0; background:url(../img/push_arrow.png) right center no-repeat;background-size:0.24rem 0.16rem;}
+.hd-add li:nth-child(1) dl:nth-child(1) dt{line-height:1.1rem;}
+.hd-add li:nth-child(1) dl:nth-child(1) dd input{padding-top:0.4rem;padding-bottom:0.4rem;}
+.hd-add li:nth-child(1) dl:nth-child(2){padding:0.2rem 0.25rem;}
+.hd-add li:nth-child(1) dl:nth-child(2) dt{line-height:0.44rem;}
+.hd-add li dd label{display:inline-block;line-height:0.8rem;margin-right:0.2rem;font-size:0.28rem;position:relative;}
+.hd-add li dd label em{display:block;width:0.24rem;height:0.24rem;border-radius:50%; background-color:#ddd;position:absolute;left:0;top:50%;margin-top:-0.12rem;}
+.hd-add li dd label em i{display:block;width:0.1rem;height:0.1rem;background-color:#fff;border-radius:50%;position:absolute;left:50%;top:50%;margin-left:-0.05rem;margin-top:-0.05rem;display:none;}
+.hd-add li dd label.active em{background-color:#448fb9;}
+.hd-add li dd label.active em i{display:block;}
+.hd-add li dd label input{display:inline-block;width:0.28rem;height:0.28rem;vertical-align:middle;margin:0 0.1rem 0 0;opacity:0;}
+.hd-add li dd textarea{width:100%;line-height:0.44rem;font-size:0.28rem;height:1.32rem;overflow-y:scroll;border:none;font-family:Arial;}
+.hd-add li dd input.no,.hd-add li dd textarea.no,.hd-add li dd select.no,.hd-add li dd label.no{color:#ccc;}
+.hd-add li dd label.no em{opacity:0.5;}
+.hd-add .upPic{overflow:hidden;padding:0.35rem 0;}
+.hd-add #ImgPr{width:1.6rem;height:1.6rem;float:left;margin-right:0.24rem;}
+.hd-add .choose{display:block; width:1.6rem;height:1.6rem;background:url(../img/hd-add01.jpg) no-repeat;background-size:100%;position:relative;float:left;}
+.hd-add #up{width:1.6rem;height:1.6rem;position:absolute;left:0;top:0;opacity:0;}
+.hd-add .btn1{display:block;width:6.8rem;height:1.05rem;background-color:#448fb9;border-radius:0.06rem;color:#fff;text-align:center;line-height:1.05rem;margin:1.2rem auto 0;font-size:0.38rem;}
+
+.hd-add input[disabled],.hd-add textarea[disabled]{background-color:#fff;}

@@ -1,0 +1,318 @@
+<!DOCTYPE html><html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<title>预约系统</title>
+	<bootstrapcss/>
+	<link href="__ADMIN_ACEADMIN__/css/global.css" rel="stylesheet" type="text/css">
+	<link href="__ADMIN_ACEADMIN__/css/hd-list.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+        .a_g{
+            display: block;
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            background: #438eb9;
+            border: 0;
+            color: #fff;
+            text-align: center;
+            font-size: 14px;
+            border-radius: 4px;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!--<ul id="myTab" class="nav nav-tabs">
+	<li class="active"> <a href="#home" data-toggle="tab">活动类别列表</a></li>
+	<li> <a href="javascript:;" onclick="add()">添加活动类别</a>
+	</li></ul>-->
+<form action="{:U('Admin/Activity/add_class_activity')}" method="post">
+<!--<div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade in active hd-list" id="home">
+            <table id="all"  class="table table-striped table-bordered table-hover table-condensed">
+                <tr>
+                    <th>标题</th>
+                    <th>操作</th>
+                </tr>
+                <foreach name="data" item="v">
+                    <tr>
+                        <td>{$v['name']}</td>
+                        <td>
+                            <a href="javascript:;" id="{$v['id']}" name="{$v['name']}" onclick="edit(this)">修改</a> | <a href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Activity/delete_class_activity',array('id'=>$v['id']))}'">删除
+                        </a>
+                        </td>
+                    </tr>
+                </foreach>
+
+            </table>
+        </div>
+    </div>-->
+	<div class="warp">
+
+    <section class=" clearfix">
+        <div class="item">
+
+            <div class="content-right" style="margin-left:0px;">
+                <h2>活动类别列表</h2>
+                <div class="hd-tab">
+                    <span class="active">活动类别列表<i></i></span>
+					<span style="left: 72%;width: 150px;" ><a href="javascript:;" onclick="add()" class="a_g">添加活动品牌</a><i></i></span>
+                </div>
+                <div class="conBox hd-list" style="margin-top: 0px;padding-top: 0px;">
+                <table id="all"  class="">
+                <tr>
+                    <th>标题</th>
+                    <th>操作</th>
+                </tr>
+                <foreach name="data" item="v">
+                    <tr>
+                        <td>{$v['name']}</td>
+                        <td>
+                            <a href="javascript:;" id="{$v['id']}" name="{$v['name']}" onclick="edit(this)">修改</a> | <a href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Activity/delete_class_activity',array('id'=>$v['id']))}'">删除
+                        </a>
+                        </td>
+                    </tr>
+                </foreach>
+            </table>
+					<div class="page">
+						<ul>
+							<li>显示行数：</li>
+							<li>
+								<select id="status"  onchange="test()">
+									<option value="1" selected="selected">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+								</select>
+							</li>
+							<li><span id="current_page">{$current_page}</span>/<span id="total_page">{$total_page}</span></li>
+							<li><a class="btn1" id="btn1"></a></li>
+							<li><input type="text" id="page_shu" value=""></li>
+							<li><span class="btn2" id="tiaozhuan">跳转</span></li>
+						</ul>
+					</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+</form>
+
+
+
+
+<div class="modal fade" id="bjy-add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+				<h4 class="modal-title" id="myModalLabel"> 添加活动类别</h4>
+			</div>
+			<div class="modal-body">
+				<form id="bjy-form" class="form-inline" action="{:U('Admin/Activity/add_class_activity')}" method="post">
+					<input type="hidden" name="name" value="">
+					<table class="table table-striped table-bordered table-hover table-condensed">
+						<tr>
+							<th width="12%">类别名：</th>
+							<td> <input class="form-control" type="text" name="name"></td>
+						</tr>
+                        <th></th>
+						<td>
+                        <input class="btn btn-success" type="submit" value="添加" style="width: 56px;height: 35px;"></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="bjy-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog"><div class="modal-content">
+		<div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+			<h4 class="modal-title" id="myModalLabel"> 修改类别</h4>
+		</div>
+		<div class="modal-body">
+			<form id="bjy-form" class="form-inline" action="{:U('Admin/Activity/edit_class_activity')}" method="post">
+				<input type="hidden" name="id" value="">
+				<table class="table table-striped table-bordered table-hover table-condensed">
+					<tr>
+						<th width="12%">类别名：</th>
+						<td> <input class="form-control" type="text" name="name"></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td>
+							<input class="btn btn-success" type="submit" value="修改" style="width: 56px;height: 35px;">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	</div>
+</div><bootstrapjs/><script>
+
+	function test() {
+		var page = $('#status').val();
+
+		var data = {};
+		data.page = page;
+		$.ajax({
+			type: "post",
+			dataType: "json",
+			url: "{:U('Admin/Activity/list_class_activity')}",
+			data: data,
+			success:function (shuju) {
+
+				$('#all tr:gt(0)').remove();//删除之前的数据
+
+
+				var data = eval('(' + shuju + ')'); //转为json对象
+
+				var str = "";
+
+				for (var i = 0; i < data.data.length; i++) {
+					str += '<tr><td>' + data.data[i].name + '</td></tr>'
+				}
+				$('#all').append(str);
+
+				var dianqian_page = $('#current_page').text();
+
+				if(dianqian_page > data.total_page){
+					dianqian_page = data.total_page;
+				}
+
+				$('#current_page').html(dianqian_page);
+				$('#total_page').html(data.total_page);
+
+			}
+		});
+	}
+
+
+
+	$('#btn1').click(function(){
+		var dianqian_page = $('#current_page').text();
+		var total_page = $('#total_page').text();
+		var xianshi_tiao = $("#status  option:selected").text();
+
+		dianqian_page++;
+
+		if(dianqian_page > total_page){
+			return;
+		}
+
+
+		data = {};
+		data.dianqian_page = dianqian_page;
+		data.xianshi_tiao = xianshi_tiao;
+
+		$.ajax({
+			type: "post",
+			dataType: "json",
+			url: "{:U('Admin/Activity/list_class_activity')}",
+			data: data,
+			success:function (shuju) {
+
+				$('#all tr:gt(0)').remove();//删除之前的数据
+
+
+				var data = eval('(' + shuju + ')'); //转为json对象
+				console.log(data);
+				var str = "";
+
+				for (var i = 0; i < data.data.length; i++) {
+					str += '<tr><td>' + data.data[i].name + '</td>';
+				}
+				$('#all').append(str);
+//				$('.data-search table tr:even').addClass('grey');
+
+//				console.log(data.current_page);
+//				console.log(data.total_page);
+				if(data.current_page > data.total_page){
+					data.current_page = data.total_page;
+				}
+
+				$('#current_page').html(data.current_page);
+				$('#total_page').html(data.total_page);
+
+			}
+		});
+
+
+	});
+
+
+
+	$('#tiaozhuan').click(function () {
+		var xianshi = $("#status  option:selected").text();
+		var page_shu = $('#page_shu').val();
+
+		data = {};
+		data.page_shu = page_shu;
+		data.xianshi = xianshi;
+		$.ajax({
+			type: "post",
+			dataType: "json",
+			url: "{:U('Admin/Activity/list_class_activity')}",
+			data: data,
+			success:function (shuju) {
+
+				$('#all tr:gt(0)').remove();//删除之前的数据
+
+				var data = eval('(' + shuju + ')'); //转为json对象
+
+				var str = "";
+
+				for (var i = 0; i < data.data.length; i++) {
+					str += '<tr><td>' + data.data[i].name + '</td>';
+				}
+				$('#all').append(str);
+
+				if(data.current_page > data.total_page){
+					data.current_page = data.total_page;
+				}
+
+				$('#current_page').html(data.current_page);
+				$('#total_page').html(data.total_page);
+
+			}
+		});
+
+
+//        var url = "{:U('Admin/Analyze/show')}?page_shu=" + page_shu + "xianshi = " + xianshi;
+//
+//        $(this).attr("href", url);  //改变当前a的href值
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+	// 添加菜单
+	function add(){
+		$("input[name='name']").val();
+		$('#bjy-add').modal('show');
+	}
+
+
+	// 修改菜单
+	function edit(obj){
+		var id=$(obj).attr('id');
+		var name=$(obj).attr('name');
+		$("input[name='id']").val(id);
+		$("input[name='name']").val(name);
+		$('#bjy-edit').modal('show');
+	}
+
+</script></body></html>

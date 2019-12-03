@@ -1,0 +1,315 @@
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+<title>预约系统 - 住院患者信息 </title>
+
+<meta name="robots" content="noindex, nofollow">
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css">
+
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css">
+
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+
+<body>
+
+
+
+<!-- <h1>
+
+<span class="action-span"><a href="{:U('Admin/Make/index')}">预约列表</a></span>
+
+<span class="action-span1"><a href="{:U('Admin/Index/index')}">预约系统</a> </span><span id="search_id" class="action-span1"> - 修改预约 </span>
+
+<div style="clear:both"></div>
+
+</h1> -->
+
+
+
+
+
+<!-- start goods form -->
+
+<div class="tab-div">
+
+    <!-- tab bar -->
+
+    <div id="tabbar-div">
+
+      <p>
+
+        <span class="tab-front" id="general-tab">住院患者信息</span>
+
+      </p>
+
+    </div>
+
+    <div id="tabbody-div">
+      <form enctype="multipart/form-data" action="{:U('Admin/Make/inpatient_edit')}" method="post" onSubmit="return checkbaoming();" name="theForm">
+
+        <table id="general-table" width="90%" align="center">
+
+          <tbody>
+    <foreach name="data" item="data">
+    <input name="id" value="{$data.id}" type="hidden">
+          <tr>
+
+            <td class="label">患者姓名：</td>
+
+            <td><input name="name" id="name" style="float:left;color:;" size="30" type="text" value="{$data.name}">
+
+            <span class="require-field">*</span></td>
+
+      </tr>
+      <tr>
+
+            <td class="label">性别：</td>
+
+            <td>
+
+        <input class="radio" id="radio" type="radio" name="sex" value="男" <?php if($data['sex']=='男') echo("checked");?>/> 男 
+
+        <input class="radio" id="radio" type="radio" name="sex" value="女" <?php if($data['sex']=='女') echo("checked");?>/> 女
+
+        <input class="radio" id="radio" type="radio" name="sex" value="不详" <?php if($data['sex']=='不详') echo("checked");?>/>不详
+
+        <span class="require-field">*</span>
+
+        </td>
+
+      </tr>
+      <tr>
+
+            <td class="label">年龄：</td>
+
+            <td><input name="age" id="age" style="float:left;color:;" size="30" type="text" value="{$data.age}"></td>
+
+      </tr>
+      <tr>
+
+            <td class="label">预约病种：</td>
+
+            <td>
+          <select name="zycs" id="zycs">
+            <if condition="$data.yuyuebz eq ''"><option value="">选择病症</option><else/><option value="{$data['yuyuebz']}">{$data['yuyuebz']}</option></if>
+          <foreach name="entity" item="e">
+
+            <option value="{$e['bzname']}">{$e['bzname']}</option>
+
+          </foreach>
+          </select>
+          </td>
+
+      </tr>
+    </foreach>
+    <foreach name="result" item="result">
+      <tr>
+            <td class="label"> 过往病史： </td>
+
+            <td><textarea name="gwbs" cols="40" rows="3" >{$result.gwbs}</textarea></td>
+      </tr>
+      <tr>
+
+        <td class="label">过往治疗：</td>
+        <td>
+          <input class="radio" id="" type="checkbox" name="gwzl[]" value="放疗" <if condition="in_array('放疗', $gwzl)">checked=checked</if>/> 放疗
+          <input class="radio" id="" type="checkbox" name="gwzl[]" value="化疗" <if condition="in_array('化疗', $gwzl)">checked=checked</if>/> 化疗
+          <input class="radio" id="" type="checkbox" name="gwzl[]" value="手术" <if condition="in_array('手术', $gwzl)">checked=checked</if>/>手术
+          <input class="radio" id="" type="checkbox" name="gwzl[]" value="靶向" <if condition="in_array('靶向', $gwzl)">checked=checked</if>/>靶向
+          <input class="radio" id="" type="checkbox" name="gwzl[]" value="中药" <if condition="in_array('中药', $gwzl)">checked=checked</if>/>中药
+          <span class="require-field">*</span>
+        </td>
+
+      </tr>
+                <tr>
+
+            <td class="label">入院时间：</td>
+
+            <td>
+
+              <input type="text" id="rysj" name="rysj" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px" value="{$result.rysj|date='Y-m-d H:i',###}"/>
+
+          <span class="require-field">*</span>   
+
+        </td>
+
+          </tr>
+      <tr>
+
+            <td class="label">入院次数：</td>
+
+            <td>
+
+          <select name="zycs" id="zycs">
+
+          <if condition="$result.rycs eq ''"><option value="">请选择...</option><else/><option value="{$result.rycs}">{$result.rycs}</option></if>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">3次以上</option>
+
+        </select>
+
+      </td>
+
+      </tr>
+            <tr>
+
+            <td class="label">治疗方式：</td>
+
+            <td>
+
+        <input class="radio" id="radio" type="checkbox" name="zlfs[]" value="中医" <if condition="in_array('中医', $zlfs)">checked=checked</if>/> 中医
+
+        <input class="radio" id="radio" type="checkbox" name="zlfs[]" value="中西医结合" <if condition="in_array('中西医结合', $zlfs)">checked=checked</if>/> 中西医结合
+
+        <span class="require-field">*</span>
+
+      </td>
+
+          </tr>
+      <tr>
+
+            <td class="label">疗效：</td>
+
+            <td><input type="text" name="zlxg" id="" value="{$result.zlxg}"></td>
+
+          </tr>
+                  <tr>
+
+            <td class="label">出院建议：</td>
+
+            <td>
+
+        <input class="radio" id="radio" type="checkbox" name="cyjy[]" value="再次入院" <if condition="in_array('再次入院', $cyjy)">checked=checked</if>/> 再次入院
+
+        <input class="radio" id="radio" type="checkbox" name="cyjy[]" value="转院" <if condition="in_array('转院', $cyjy)">checked=checked</if>/> 转院
+
+        <input class="radio" id="radio" type="checkbox" name="cyjy[]" value="中药" <if condition="in_array('中药', $cyjy)">checked=checked</if>/> 中药
+        <span class="require-field">*</span>
+
+      </td>
+
+          </tr>
+  </foreach>
+
+<script>
+
+  $("#yuyuezj").val("<?php echo $make['yuyuezj']; ?>"); 
+
+    $("#yuyueks").val("<?php echo $make['yuyueks']; ?>"); 
+
+      $("#yuyuebz").val("<?php echo $make['yuyuebz']; ?>"); 
+
+        $("#channel").val("<?php echo $make['channel']; ?>"); 
+
+          $("#source").val("<?php echo $make['source']; ?>"); 
+
+
+
+</script> 
+
+        </tbody></table>
+
+
+
+        <div class="button-div">
+
+
+          <input value=" 确定 " class="button" onSubmit="return checkbaoming();" type="submit">
+
+          <input value=" 重置 " class="button" type="reset">
+
+        </div>
+
+      </form>
+  <!-- </foreach> -->
+    </div>
+
+</div>
+
+<script language="javascript">
+
+    function checkbaoming(){
+
+        var name = $("#name").val().trim();
+
+        var phone = $("#phone").val().trim();
+
+        var yuyuetime = $("#yuyuetime").val().trim();
+
+        var sex=$('input:radio[name="sex"]:checked').val();
+
+        var zj=$("#yuyuezj").val();    
+
+        if(name=="")
+
+        {
+
+                alert("未添加姓名！");
+
+                return false;
+
+        }
+
+        else if(phone=="")
+
+        {
+
+                alert("电话号码不能为空！");
+
+                return false;
+
+        }
+
+        else if(sex==null)
+
+        {
+
+            alert('性别未选择！');                   
+
+            return false;
+
+        }
+
+        else if(yuyuetime=="")
+
+        {
+
+            alert('预约时间未选择！');                   
+
+            return false;
+
+        }
+
+        else if(zj=="")
+
+        {
+
+            alert('预约专家未选择！');                   
+
+            return false;
+
+        }
+
+    }
+
+</script>
+
+
+
+</body>
+
+</html>

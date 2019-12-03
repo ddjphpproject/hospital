@@ -1,0 +1,86 @@
+<!-- $Id: goods_list.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>预约系统 - 预约列表 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css" />
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css" />
+<link href="/tpl/Public/css/page.css" rel="stylesheet" type="text/css" />
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+<!-- 商品列表 -->
+<form method="post" action="{:U('online_fenpei')}" name="listForm">
+  <!-- start goods list -->
+  <div class="list-div" id="listDiv">
+<table cellpadding="3" cellspacing="1">
+  <tr>
+    <th><span>序号</span></th>
+    <th><span>患者姓名</span></th>
+    <th><span>电话</span></th>
+    <th><span>到诊时间</span></th>
+    <th><span>预约专家</span></th>
+    <th><span>挂号费</span></th>
+    <th><span>来源</span></th>
+    <th><span>是否到诊</span></th>
+    <th><span>支付状态</span></th>
+    <th><span>是否消费</span></th>
+    <th><span>是否住院</span></th>
+    <th><span>初/复诊</span></th>
+    <th><span>提交时间</span></th>
+    <!-- <th>操作</th> -->
+  </tr>
+    <foreach name="data" item="data">
+  <tr>
+    <td align="center"><?php echo ++$i ?></td>
+    <td align="center"><span>{$data.name}</span></td>
+	  <td align="center" class="first-cell" style=""><span>{$data.phone}</span></td>
+    <td align="center"><span>{$data.time|date="Y-m-d H:i:s",###}</span></td>
+    <td align="center"> <span>{$data.expert}</span></td>
+	  <td align="center"> <span>{$data.money}</span></td>
+    <td align="center"><span>{$data.source}</span></td>
+    <td align="center"><a href="javascript:if(confirm('您确定修改到诊记录吗？'))location='{:U('Admin/Make/online_hos_edit',array('id'=>$data['id'],'arrive'=>$data['arrive']))}'" title="是否到诊"><img src="__ADMIN_ACEADMIN__/avatars/{$data.arrive}.gif" /></a></td>
+    <td align="center"><span><?php if($data['paystate']==1){ echo '已支付'; }elseif($data['paystate']==2){ echo '已退款'; }else{ echo '未支付';}  ?></span></td>
+    <td align="center"><a href="javascript:if(confirm('您确定修改消费记录吗？'))location='{:U('Admin/Make/online_hos_edit',array('id'=>$data['id'],'consumption'=>$data['consumption']))}'" title="是否消费"><img src="__ADMIN_ACEADMIN__/avatars/{$data.consumption}.gif" /></a></td>
+    <td align="center"><a href="javascript:if(confirm('您确定修改住院记录吗？'))location='{:U('Admin/Make/online_hos_edit',array('id'=>$data['id'],'hospital'=>$data['hospital']))}'" title="是否住院"><img src="__ADMIN_ACEADMIN__/avatars/{$data.hospital}.gif" /></a></td>
+    <td align="center"><span><?php if($data['type']==0){ echo '初诊'; }else{ echo '复诊'; }  ?></span></td>
+    <td align="center"><span>{$data.addtime|date="Y-m-d H:i:s",###}</span></td>
+<!--     <td align="center">
+      <a href="{:U('Admin/Make/edit_make',array('id'=>$va['id']))}" title="查看">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_view.gif" width="16" height="16" border="0" />
+      </a>
+      <a href="{:U('Admin/Make/edit_make',array('id'=>$va['id']))}" title="编辑">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_edit.gif" width="16" height="16" border="0" />
+      </a>
+      <a href="javascript:if(confirm('您确实要把该商品放入回收站吗？'))location='{:U('Admin/Make/delete_make',array('id'=>$va['id']))}'" title="回收站">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_trash.gif" width="16" height="16" border="0" />
+      </a>
+      <img src="__ADMIN_ACEADMIN__/avatars/empty.gif" width="16" height="16" border="0" /> 
+    </td> -->
+  </tr>
+  </foreach>
+  </table>
+<!-- end goods list -->
+
+<!-- 分页 -->
+<table id="page-table" cellspacing="0">
+  <tr>
+    <td align="center" nowrap="true" >
+          <!-- $Id: page.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+		<div class="pagination">
+　　		{$page}
+		</div>
+    </td>
+  </tr>
+</table>
+
+</div>
+</form>
+
+</body>
+</html>

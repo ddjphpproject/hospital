@@ -1,0 +1,20 @@
+@charset "utf-8";
+
+/*netBook1*/
+.commonTit  h2 span{display:inline-block;border-bottom:1px solid #438eb9;padding:0 10px;}
+.commonTit  h2 a{font-size:20px;color:#438eb9;float:right;}
+.netBook1 form{font-size:14px;color:#353535;width:420px;}
+.netBook1 form dl{overflow:hidden;margin-bottom:16px;}
+.netBook1 form dt{width:100px;float:left;line-height:36px;}
+.netBook1 form dd{width:320px;float:left;}
+.netBook1 form dd input,.netBook1 form dd select{width:280px;height:34px;line-height:34px; border:1px solid #c2c2c2;border-radius:4px;}
+.netBook1 form dd select{height:36px;line-height:36px; width:284px;}
+.netBook1 form dd textarea{width:300px;height:118px; border:1px solid #c2c2c2;border-radius:4px;}
+.netBook1 form dd label{line-height:36px;margin-right:20px;}
+.netBook1 form dd label input{width:12px;height:12px;}
+.netBook1 form p{font-size:12px;color:#438eb9;line-height:20px;}
+.netBook1 .datepicker{background:url(../img/date.jpg) 250px center no-repeat;}
+.netBook1 .btns{overflow:hidden;margin-top:38px;text-align:center;}
+.netBook1 .btns input{width:120px;height:45px;background-color:#438eb9;font-size:16px;color:#fff;line-height:45px;border:none;margin:0 26px;cursor:pointer;}
+.netBook1 .btns input.reset{background-color:#fd6637;}
+

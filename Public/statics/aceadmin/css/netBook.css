@@ -1,0 +1,32 @@
+@charset "utf-8";
+
+
+/*netBook*/
+.commonTit  h2 span{display:inline-block;border-bottom:1px solid #438eb9;padding:0 10px;}
+.netBook #form1 dl{overflow:hidden;margin-bottom:28px;font-size:14px;color:#444442;margin-right:20px;}
+.netBook #form1 dt{display:inline-block;padding-right:20px; line-height:32px;float:left;}
+.netBook #form1 dd{float:left;}
+.netBook #form1 input{width:130px;height:30px;line-height:30px; border:1px solid #e4e8eb;background:#f8f9fb;}
+.netBook #form1 ul{overflow:hidden;}
+.netBook #form1 ul li{float:left;}
+.netBook #form1 span{color:#d9dadc;margin-left:10px;}
+.netBook #form1 span b{color:#438eb9;cursor:pointer;}
+.netBook #form1 span em{color:#fd6637;}
+.netBook #form1 .yyTime input{background:#f8f9fb url(../img/arrow_down.png) 110px center no-repeat;}
+.netBook #form1 .search-btn input{width:94px;height:32px;padding-right:18px;line-height:32px; font-size:12px;color:#fff;border:none;background:#438eb9 url(../img/search01.png) 60px center no-repeat;}
+.netBook table{width:100%;font-size:12px;color:#444442;line-height:40px;border-collapse:collapse;background-color:#f7fcff;}
+.netBook table th,.netBook table td{padding-left:10px;text-align:center;border:1px solid #e1e1e1;}
+.netBook table td em{color:red;}
+.netBook table td b{color:#438eb9;}
+.netBook table td a{display:inline-block;width:12px;height:12px;background:url(../img/ico01.png) no-repeat;margin:0 5px;}
+.netBook table td .del{background-position:-12px 0;}
+.netBook .page ul{margin-top:40px;overflow:hidden;text-align:center;}
+.netBook .page ul li{display:inline-block;font-size:14px;color:#353535;line-height:30px;margin:0 4px;text-align:center;vertical-align:middle;}
+.netBook .page ul li a,.netBook .page ul li input,.netBook .page select{display:block;height:30px;border:1px solid #e4e8eb;border-radius:4px;background:#f8f9fb;}
+.netBook .page ul li .prev{width:30px;background:#f8f9fb url(../img/prev.png) center center no-repeat;}
+.netBook .page ul li .next{width:30px;background:#f8f9fb url(../img/next.png) center center no-repeat;}
+.netBook .page ul li .btn2{width:70px;color:#353535;}
+.netBook .page ul li input{width:78px;background-color:#fff;}
+.netBook .page select{width:70px;}
+.netBook .page ul li a:hover{background-color:#eaebed;}
+

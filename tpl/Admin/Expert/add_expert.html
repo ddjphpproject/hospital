@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>添加管理员</title>
+    <link href="/Public/statics/aceother/css/global.css" rel="stylesheet" type="text/css">
+    <link href="/Public/statics/aceother/css/admin.css" rel="stylesheet" type="text/css">
+    <script src="/Public/statics/aceother/js/jquery-1.8.3.min.js"></script>
+    <script src="/Public/statics/aceother/js/common.js"></script>
+    <!--[if lt IE 9]>
+    <script src="/Public/statics/aceother/js/html5shiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="commonTit">
+    <!--<h2>添加管理员</h2>-->
+    <div class="hd-tab">
+        <span><a href="{:U('Admin/Expert/index')}">专家列表</a><i></i></span>
+        <span class="active">添加专家<i></i></span>
+    </div>
+</div>
+<div class="conBox admin">
+    <form action="{:U('Admin/Expert/add_expert')}" method="post" id="form1">
+        <dl>
+            <dt>姓名</dt>
+            <dd><input type="text" value="" name="zjname"></dd>
+        </dl>
+        <dl>
+            <dt>专家头像：</dt>
+            <dd>
+                <label class="upPic">
+                    <input type="file" accept="image/*" id="up"/>
+                    <img src="/Public/statics/aceother/img/upPic.jpg" alt="" id="ImgPr">
+                    <input type="hidden" name="file" value="" id="imag1"/>
+                </label>
+            </dd>
+        </dl>
+        <dl>
+            <dt>职称：</dt>
+            <dd><input type="text" name="major" value=""></dd>
+        </dl>
+        <dl>
+            <dt>挂号费：</dt>
+            <dd><input type="text" name="ghf"></dd>
+        </dl>
+        <dl>
+            <dt>所属科室：</dt>
+            <dd>
+                <select name="ksname" id="ksname">
+                    <foreach name="govern" item="ks">
+                        <option value="{$ks['ksname']}">{$ks['ksname']}</option>
+                    </foreach>
+
+                </select>
+            </dd>
+        </dl>
+        <dl>
+            <dt>擅长治疗：</dt>
+            <dd><textarea name="intro"  cols="30" rows="10"></textarea></dd>
+        </dl>
+        <dl>
+            <dt>医生简介：</dt>
+            <dd><textarea name="info" cols="30" rows="10"></textarea></dd>
+        </dl>
+        <div class="btns">
+            <input type="reset" value="重置" class="reset">
+            <input type="submit" value="确定" class="submit">
+        </div>
+    </form>
+</div>
+
+<script src="/Public/statics/aceother/js/admin.js"></script>
+
+<script>
+    $(function(){
+        $("#up").change(function () {
+            uploadImage();
+
+        })
+    });
+
+
+    function uploadImage() {
+
+        //formdata储存异步上传数据
+        var formData = new FormData($('form')[0]);
+        formData.append('file',$(':file')[0].files[0]);
+        //坑点: 无论怎么传数据,console.log(formData)都会显示为空,但其实值是存在的,f12查看Net tab可以看到数据被上传了
+        $.ajax({
+            url: "{:U('Home/Activity/upload')}",
+            type: 'POST',
+            data: formData,
+            //这两个设置项必填
+            contentType: false,
+            processData: false,
+            success:function(data){
+                var data = eval('(' + data + ')');
+//                console.log(data.url);
+
+                $('#imag1').val(data.url);
+            }
+        })
+    }
+
+
+
+</script>
+
+</body>
+</html>

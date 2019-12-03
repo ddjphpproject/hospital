@@ -1,0 +1,10 @@
+@charset "utf-8";
+
+.item{padding:0 0.25rem;}
+
+.sign dl{overflow:hidden;padding:0.25rem 0;border-bottom:1px solid #dfdfdf;}
+.sign dl dt,.sign dl dt img{width:1.84rem;height:0.92rem;}
+.sign dl dt{float:left;}
+.sign dl dd{padding-left:2.1rem;}
+.sign dl dd a{display:block;font-size:0.28rem;color:#080808;height:0.92rem;line-height:0.92rem;overflow:hidden;padding-right:0.4rem;position:relative;}
+.sign dl dd a i{display:block;width:0.16rem;height:0.24rem;background:url(../img/sign_arrow.png) no-repeat;background-size:0.16rem 0.24rem;position:absolute;right:0;top:50%;margin-top:-0.12rem;}

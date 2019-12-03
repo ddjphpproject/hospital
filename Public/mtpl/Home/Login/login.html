@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>登录</title>
+		
+	</head>
+	 <style>
+    	body{
+    		background: url(/mtpl/Public/images/back.jpg);
+    		background-size:cover ;
+    	}
+    	h1{
+    		color:white;
+    		width: 200px;
+    		height: 50px;
+    		margin: 100px auto;
+    		margin-bottom: 0;
+    	}
+    	.number{
+    		outline: none;
+    		width: 90%;
+    		margin-left: 5%;
+    		border: none;
+    		background: transparent;
+    		color: rgba(255,255,255,0.4);
+    		height: 40px;
+    		font-size: 18px;
+    		line-height: 40px;
+    		border-bottom: 1px solid rgba(255,255,255,0.5);
+    		margin-top: 150px;
+    		
+    	}
+    	:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+		    color: #ffffff; opacity:0.5; 
+		}
+		
+		::-moz-placeholder { /* Mozilla Firefox 19+ */
+		    color: #ffffff; opacity:0.5; 
+		}
+		
+		input:-ms-input-placeholder{
+		    color: #ffffff; opacity:0.5; 
+		}
+		
+		input::-webkit-input-placeholder{
+		    color: #ffffff; opacity:0.5; 
+		}
+		.confirm{
+			border: none;
+			background: #0a4484;
+			width: 90%;
+    		margin-left: 5%;
+    		height: 50px;
+    		border-radius: 8px;
+    		color: white;
+    		margin-top: 50px;
+    		font-size: 20px;
+		}
+		h2{
+			color:white;
+			width: 150px;
+    		height: 30px;
+    		margin: 8px auto;
+		}
+		.mart{
+			margin-top: 60px;
+		}
+		.martt{
+			margin-top: 10px;
+		}
+	</style>
+	<body>
+	<h1>预约系统登录</h1>
+		<form action="" method="post"id="formdown">
+		<input type="text" required="required" placeholder="账号"  class='number mart' name='username'/>
+		<input type="password" required="required" placeholder="密码" class='number martt' name='password'/>
+		<input type="submit" value="登录"class="confirm"/>
+	</form>
+	    <script src="__PUBLIC_JS__/jquery-3.1.0.min.js"></script>
+	    <script src="__PUBLIC_JS__/js/vue.js"></script>
+	    <script src="__PUBLIC_JS__/js/init.js"></script>
+	</body>
+
+</html>

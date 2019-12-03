@@ -1,0 +1,40 @@
+#tiaozhuan{
+    display: block;
+    height: 30px;
+    border: 1px solid #e4e8eb;
+    border-radius: 4px;
+    background: #f8f9fb;
+    cursor: pointer;
+}
+#btn {
+    text-align: center;
+    margin-right: 254px;
+}
+.page ul li .btn2 {
+    width: 67px;
+    color: rgb(53, 53, 53);
+}
+.page{
+    text-align:center;
+}
+.page ul{margin-top:40px;overflow:hidden;width:420px;display:inline-block;}
+.page ul li{display:block;float:left; font-size:14px;color:#353535;line-height:30px;margin:0 4px;text-align:center;}
+.page ul li a,.page ul li input,.page select{display:block;height:30px;border:1px solid #e4e8eb;border-radius:4px;background:#f8f9fb;}
+.page ul li .btn1{width:30px;background:#f8f9fb url(../img/arrow.png) center center no-repeat;}
+.page ul li .btn2{width:70px;color:#353535;}
+.page ul li input{width:42px;}
+.page select{width:70px;}
+.page ul li a:hover{background-color:#eaebed;}
+
+#form1{margin-bottom:25px;}
+#form1 ul{overflow:hidden}
+#form1 input{color:#353535;}
+/*#form1 ul li{width:259px;float:left;}*/
+.search-btn{width: 94px;
+    height: 30px;
+    padding-right: 18px;
+    font-size: 12px;
+    color: #fff;
+    border: none;
+    background: #438eb9 url(../img/search01.png) 60px center no-repeat;
+}

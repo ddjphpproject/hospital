@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>活动添加</title>
+    <!--<link href="__ADMIN_ACEADMIN__/css/global.css" rel="stylesheet" type="text/css">-->
+    <link rel="stylesheet" href="/Public/statics/acehome/css/reset.css" type="text/css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/common.css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/hd-add.css">
+    <script src="/Public/statics/acehome/js/jquery-1.8.3.min.js"></script>
+    <script src="/Public/statics/acehome/js/rem.js"></script>
+    <script src="/Public/statics/acehome/js/hd-add.js"></script>
+    <script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script>
+    <script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<style>
+    #imag1{
+        width: 1.6rem;
+        height: 1.6rem;
+        float: left;
+        margin-right: 0.24rem;
+        margin-top: 0.3rem;
+    }
+
+</style>
+<body>
+<div id="warmp" class="warmp">
+    <header class="header">
+        <h2><a href="/index.php/Home/Activity/list_activity"></a>活动添加</h2>
+    </header>
+    <section class="container">
+        <form action="{:U('Home/Activity/add_activity')}" method="post">
+        <div class="hd-add">
+            <ul>
+                <li>
+                    <dl>
+                        <dt>活动标题</dt>
+                        <dd><input type="text" placeholder="请填写活动标题" name="name"></dd>
+                    </dl>
+                    <dl>
+                        <dt>活动介绍</dt>
+                        <dd><textarea  placeholder="请填写活动介绍"  name="jianjie"></textarea></dd>
+                    </dl>
+                </li>
+                <li>
+                    <dl>
+                        <dt>活动网址</dt>
+                        <dd><input type="text" placeholder="请填写活动网址" name="a_url"></dd>
+                    </dl>
+                    <dl>
+                        <dt>模板标识</dt>
+                        <dd><input type="text" placeholder="请填写模板标识" name="url"></dd>
+                    </dl>
+                    <dl>
+                        <dt>开始时间</dt>
+                        <dd><input type="text" name="start_time" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"></dd>
+                    </dl>
+                    <dl>
+                        <dt>结束时间</dt>
+                        <dd><input type="text" name="end_time" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></dd>
+                    </dl>
+                    <dl>
+                        <dt>活动类别</dt>
+                        <dd>
+                            <select name="class" id="">
+                                <foreach name="class_list" item="v">
+                                    <option value="{$v['name']}">{$v['name']}</option>
+                                </foreach>
+                            </select>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>活动状态</dt>
+                        <dd>
+                            <label class="active"><em><i></i></em><input type="radio" name="state" checked="checked" value="3">未开始</label>
+                            <label><em><i></i></em><input type="radio" name="state" value="2" >进行中</label>
+                            <label><em><i></i></em><input type="radio" name="state" value="1">已过期</label>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>活动是否开始</dt>
+                        <dd>
+                            <label class="active"><em><i></i></em><input type="radio" name="open" value="0" checked="checked">开始</label>
+                            <label><em><i></i></em><input type="radio" name="open" value="1">关闭</label>
+                        </dd>
+                    </dl>
+
+                </li>
+                <li>
+                    <dl>
+                        <dt>活动banner</dt>
+                        <dd>
+                            <div class="upPic">
+                                <!--<input type="image"  src="img/hd-add02.jpg" alt="" id="imag1">-->
+                                <img src="img/hd-add02.jpg"  alt="" id="imag1"/>
+                                <!--<img src="img/hd-add02.jpg" alt="" id="imag1">-->
+                                <a href="#" class="choose" id="choose">
+                                    <input type="file"  accept="image/*" id="up"/>
+                                </a>
+
+                                <input type="hidden" name="image_url" value="" id="hidden">
+                            </div>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+            <!--<a href="javascript:;" class="btn1">保存</a>-->
+            <input type="submit" value="保存" class="btn1">
+        </div>
+        </form>
+    </section>
+</div>
+</body>
+<script>
+    $(function(){
+        $("#up").change(function () {
+            uploadImage();
+
+        })
+    });
+
+
+    function uploadImage() {
+        //formdata储存异步上传数据
+        var formData = new FormData($('form')[0]);
+        formData.append('file',$(':file')[0].files[0]);
+        //坑点: 无论怎么传数据,console.log(formData)都会显示为空,但其实值是存在的,f12查看Net tab可以看到数据被上传了
+        $.ajax({
+            url: "{:U('Home/Activity/upload')}",
+            type: 'POST',
+            data: formData,
+            //这两个设置项必填
+            contentType: false,
+            processData: false,
+            success:function(data){
+              var data = eval('(' + data + ')');
+                console.log(data.url);
+
+                $('#imag1').attr("src", data.url);
+                $('#hidden').val(data.url);
+            }
+        })
+    }
+
+
+
+
+</script>
+</html>

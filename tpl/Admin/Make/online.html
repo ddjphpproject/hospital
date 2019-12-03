@@ -1,0 +1,148 @@
+<!-- $Id: goods_list.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>预约系统 - 预约列表 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css" />
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css" />
+<link href="/tpl/Public/css/page.css" rel="stylesheet" type="text/css" />
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+
+<h1>
+<span class="action-span"><a href="{:U('Admin/Make/online_excel')}">患者导出</a></span>
+<span class="action-span1"><a href="{:U('Admin/Index/welcome')}">预约系统</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/index',array('sign'=>1))}">今日预约信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/index',array('sign'=>2))}">今日添加信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/index',array('sign'=>3))}">全部信息列表</a> </span>
+<div style="clear:both"></div>
+</h1>
+<!-- 预约搜索 -->
+<!-- $Id: goods_search.htm 16790 2009-11-10 08:56:15Z wangleisvn $ -->
+
+
+<div class="form-div">
+  <form action="{:U('online_search')}" name="searchForm" method="post">
+    <img src="__ADMIN_ACEADMIN__/avatars/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
+<!--     <select name="fenpei">
+      <option value="">是否分配</option>
+        <option value="1">已分配话务员</option>
+        <option value="0">未分配话务员</option>
+    </select> -->
+
+    预约时间   <input type="text" id="yuyuetime" name="start" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/>
+        <input type="text" id="yuyuetime" name="end" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/>
+    姓名 <input type="text" name="name" size="15" autocomplete="off"/>
+    电话 <input type="text" name="phone" size="15" autocomplete="off"/>
+    <input type="submit" value=" 搜索 " class="button" />
+  </form>
+</div>
+
+<!-- 商品列表 -->
+<form method="post" action="https://pc.tianjianh.cn/yytest/index.php?m=Home&c=User&a=ajaxtest" name="listForm">
+  <!-- start goods list -->
+  <div class="list-div" id="listDiv">
+<table cellpadding="3" cellspacing="1">
+  <tr>
+    <th><span><input id="sel_1" onchange="selectAll()" type="checkbox" value="1"/>全选</span></th>
+    <th><span>序号</span></th>
+    <th><span>话务员</span></th>
+	  <th><span>患者编号</span></th>
+    <th><span>患者姓名</span></th>
+    <th><span>电话</span></th>
+    <th><span>到诊时间</span></th>
+    <th><span>预约专家</span></th>
+    <th><span>挂号费</span></th>
+    <th><span>来源</span></th>
+    <th><span>是否回访</span></th>
+    <th><span>是否到诊</span></th>
+    <th><span>支付状况</span></th>
+    <th><span>是否消费</span></th>
+    <th><span>是否住院</span></th>
+    <th><span>初/复诊</span></th>
+    <th><span>提交时间</span></th>
+    <th>操作</th>
+  </tr>
+    <foreach name="data" item="data">
+  <tr>
+    <if condition="$data.state eq 1">
+    <td align="center"><div style="width: 10px;height: 10px;background-color:red;border-radius: 50%;display: inline-block;"></div><input type="checkbox" name="id[]" value="{$data.id}"/></td>
+    <else/>
+    <td align="center"><input type="checkbox" name="id[]" value="{$data.id}"/></td>
+    </if>
+    <td align="center"><?php echo ++$i ?></td>
+    <td align="center" class="first-cell" style=""><span>{$data.username}</span></td>
+    <td align="center"><span>{$data.id}</span></td>
+    <td align="center"><span>{$data.name}</span></td>
+	  <td align="center" class="first-cell" style=""><span>{$data.phone}</span></td>
+    <td align="center"><span>{$data.time|date="Y-m-d H:i:s",###}</span></td>
+    <td align="center"> <span>{$data.yuyuezj}</span></td>
+    <td align="center"> <span>{$data.money}</span></td>
+	  <td align="center"> <span>{$data.source}</span></td>
+    <td align="center">
+      <if condition="$data.huif eq 0"><span>未回访</span><elseif condition="$data.huif eq 1"/><span style="color:green">回访已约</span><elseif condition="$data.huif eq 2"/><span style="color:red">回访未约</span></if>
+    </td>
+    <td align="center"><a href="{:U('Admin/Make/online_hos_edit',array('id'=>$data['id'],'diagnosis'=>$data['diagnosis']))}" title="修改到诊"><img src="__ADMIN_ACEADMIN__/avatars/{$data.diagnosis}.gif" /></a></td>
+    <td align="center"><span><?php if($data['paystate']==1){ echo '已支付'; }elseif($data['paystate']==2){ echo '已退款'; }else{ echo '未支付';}  ?></span></td>
+    <td align="center"><a href="{:U('Admin/Make/online_hos_edit',array('id'=>$data['id'],'consumption'=>$data['consumption']))}" title="修改消费"><img src="__ADMIN_ACEADMIN__/avatars/{$data.consumption}.gif" /></a></td>
+    <td align="center"><a href="{:U('Admin/Make/online_hos_edit',array('id'=>$data['id'],'hospital'=>$data['hospital']))}" title="修改住院"><img src="__ADMIN_ACEADMIN__/avatars/{$data.hospital}.gif" /></a></td>
+    <td align="center"><span><?php if($data['type']==0){ echo '初诊'; }else{ echo '复诊'; }  ?></span></td>
+    <td align="center"><span>{$data.addtime|date="Y-m-d H:i:s",###}</span></td>
+    <td align="center">
+      <a href="{:U('Admin/Make/online_edit',array('id'=>$data['id']))}" title="查看">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_view.gif" width="16" height="16" border="0" />
+      </a>
+      <a href="{:U('Admin/Make/online_edit',array('id'=>$data['id']))}" title="编辑">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_edit.gif" width="16" height="16" border="0" />
+      </a>
+      <a href="javascript:if(confirm('您确实要把该商品放入回收站吗？'))location='{:U('Admin/Make/online_delete',array('id'=>$data['id']))}'" title="回收站">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_trash.gif" width="16" height="16" border="0" />
+      </a>
+      <img src="__ADMIN_ACEADMIN__/avatars/empty.gif" width="16" height="16" border="0" /> 
+    </td>
+  </tr>
+  </foreach>
+  </table>
+<!-- end goods list -->
+
+<!-- 分页 -->
+<table id="page-table" cellspacing="0">
+  <tr>
+    <td>
+      <select name="huawu" style="width:200px;">
+        <option value="">请选择话务员</option>
+      <foreach name="huawu" item="huawu">
+        <option value="{$huawu.username}">{$huawu.username}</option>
+      </foreach>
+      </select>
+      <input type="submit" name="fp" value="分配患者"/>
+      <input type="submit" name="qxfp" value="取消分配"/>
+    </td>
+    <td align="center" nowrap="true" >
+          <!-- $Id: page.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+		<div class="pagination">
+　　		{$page}
+		</div>
+    </td>
+  </tr>
+</table>
+
+</div>
+</form>
+
+</body>
+<script type="text/javascript">  
+function selectAll(){
+    var isCheck=$("#sel_1").is(':checked');  //获得全选复选框是否选中
+    $("input[type='checkbox']").each(function() {  
+        this.checked = isCheck;       //循环赋值给每个复选框是否选中
+    });
+}
+</script>
+</html>

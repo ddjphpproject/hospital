@@ -1,0 +1,196 @@
+<?php
+namespace Admin\Controller;
+use Common\Controller\AdminBaseController;
+/**
+ * 活动管理控制器
+ */
+class ActivityController extends AdminBaseController
+{
+    public function list_activity()
+    {
+        // $m = M('Activity as a');
+        // $where = "recycle=0 AND huawu<>88";
+        // $p = getpage($m,$where,10);
+        // $assign = array('data' => $result,'area' => $area,'expert'=>$expert,'govern'=>$govern,'entity'=>$entity,'channel'=>$channel,'source'=>$source);
+        // $this->page=$p->show();
+        // $this -> assign($assign);
+        $this -> display();
+    }
+    public function add_activity(){
+      $this->display();
+    }
+    public function edit_activity(){
+      $this->display();
+    }
+    public function delete_activity(){
+      $this->display();
+    }
+    public function search_activity(){
+      $this->display();
+    }
+    public function list_class_activity(){
+      $where ='recycle=0';
+      $class_list=M("Activity_class")->where($where)->select();
+      $assign=array(
+          'data'=>$class_list
+          );
+      $this->assign($assign);
+      $this->display();
+    }
+    public function add_class_activity(){
+      $data=I('post.');
+      $data['time']=time();
+      $ks = M("Activity_class"); // 实例化User对象
+      $where="name="."'".$data['name']."'";
+      $isks=$ks->where($where)->select();
+      if($data['name'] == "" || !empty($isks)){
+          $this->error('添加失败');
+      }
+      $ks->data($data)->add();
+      if ($ks) {
+          $this->success('添加成功',U('Admin/Activity/list_class_activity'));
+      }else{
+          $this->error('添加失败');
+      }
+    }
+    public function edit_class_activity(){
+      $data=I('post.');
+      $class_list=M("Activity_class");
+      $where="name="."'".$data['name']."'";
+      $is_class_list=$class_list->where($where)->select();
+      if($data['name'] == ""  || empty($is_class_list)){
+          $this->error('修改失败,参数错误');
+      }
+      $data['pubdate']=time();
+      $id='id='.$data['id'];
+      $class_list=$class_list->data($data)->where($id)->save();
+      if (!empty($class_list)) {
+          $this->success('修改成功',U('Admin/Activity/list_class_activity'));
+      }else{
+          $this->error('修改失败');
+      }
+    }
+    public function delete_class_activity(){
+      $id=I('get.id');
+      $where='id='.$id.' and recycle = 0';
+      if(!empty($id)){
+        $is_class_list=$class_list->where($where)->select();
+        if(empty($is_class_list)){
+          $this->error('删除失败,参数错误');
+        }
+      }else{
+        $this->error('删除失败,参数错误');
+      }
+      $data['pubdate']=time();
+      $data['recycle']='1';
+      $class_list=$class_list->data($data)->where($id)->save();
+      if (!empty($class_list)) {
+          $this->success('删除成功',U('Admin/Activity/list_class_activity'));
+      }else{
+          $this->error('删除失败');
+      }
+    }
+    public function search()
+    {
+        $post = I('post.');
+        $m = M('Patient as a');
+        if(IS_POST)
+        {           
+            $_SESSION['where'] = $where;
+        }
+        else
+        {
+            $where = $_SESSION['where'];
+        }
+        $p = getpage($m,$where,10);
+        $result = $m -> join('yuyue_users as  b  on b.id = a.huawu') -> field('a.*,b.username') -> where($where) -> order('a.id desc') -> select();
+        $assign = array('data' => $result,'area' => $area,'expert'=>$expert,'govern'=>$govern,'entity'=>$entity,'channel'=>$channel,'source'=>$source);
+        $this->page=$p->show();
+        $this -> assign($assign);
+        $this -> display();
+    }
+    public function edit(){
+        $make = M("Patient");
+        if(IS_POST){
+            $data=I('post.');
+            $province = $data['address'];
+            $city = $data['city'];
+            $zone = $data['zone'];
+            $pwhere = "area_name='$province' and area_parent_id=0";
+            $cwhere = "area_name='$city' and area_parent_id<>0";
+            $zwhere = "area_name='$zone' and area_parent_id<>0";
+            $m = M('area');
+            $pid = $m -> field('id') -> where($pwhere) -> find();
+            $pid = $pid['id'];
+            $cid = $m -> field('id') -> where($cwhere) -> find();
+            $cid = $cid['id'];
+            $zid = $m -> field('id') -> where($zwhere) -> find();
+            $zid = $zid['id'];
+            $data['address'] = $pid . ',' . $cid . ',' . $zid;
+            unset($data['city']);
+            unset($data['zone']);
+            if($data['name'] == "")
+            {
+                $this->error('请填写患者姓名');die;
+            }
+            $where='id='.$data['id'];
+            $make=$make->where($where)->save($data);
+            if ($make)
+            {
+                $this->success('修改成功',U('show'));die;
+            }else{
+                $this->error('修改失败');die;
+            }
+        }elseif(IS_GET){
+            $data=I('get.');
+            $make=$make->where($data)->find();
+            $address = $make['address'];
+            $address = explode(',',$address);
+            $pid = $address[0];
+            $cid = $address[1];
+            $zid = $address[2];
+            $am = M('area');
+            $province = $am -> field('area_name') -> where("id='$pid'") -> find();
+            $province = $province['area_name'];
+            $city = $am -> field('area_name') -> where("id='$cid'") -> find();
+            $city = $city['area_name'];
+            $rcity = $am -> field('area_name') -> where("area_parent_id='$pid'") -> select();
+            $zone = $am -> field('area_name') -> where("id='$zid'") -> find();
+            $zone = $zone['area_name'];
+            $rzone = $am -> field('area_name') -> where("area_parent_id='$cid'") -> select();
+            $make['province'] = $province;
+            $make['city'] = $city;
+            $make['zone'] = $zone;
+        }
+        $this->make=$make;
+        $make = array($make);
+        $assign=array(
+            'data'=>$make,
+            'address'=>$address,
+            'province'=>$province,
+            'city'=>$city,
+            'rcity'=>$rcity,
+            'zone'=>$zone,
+            'rzone'=>$rzone,
+            'govern'=>$govern,
+            'entity'=>$entity,
+            'expert'=>$expert,
+            'govern'=>$govern,
+        );
+        $this->assign($assign);
+        $this->display();
+    }
+    public function delete()
+    {
+        $id = I('get.id');
+        $result = D('Activity') -> deleteAnalyze($id);
+        if($result)
+        {
+            $this -> success('删除成功',U('list'));
+        }
+        else
+        {
+            $this -> error('删除失败',U('list'));
+        }
+    }
+}

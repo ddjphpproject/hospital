@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta content="telephone=no" name="format-detection">
+    <title>患者预约信息</title>
+    <link rel="stylesheet" href="__ADMIN_ACEADMIN__/css/style.css?v=20170404">
+    <link rel="stylesheet" href="__ADMIN_ACEADMIN__/css/swiper.min.css">
+</head>
+<body>
+    <div class="container page-user-info">
+        <header class="header">
+            <a href="javascript:;" class="icon-menu js-show-menu">导航</a>
+            <a href="tel:0755-86528116" class="icon-phone">退出</a>
+            <h1>患者预约信息</h1>
+        </header>
+
+        <section class="page-wrap">
+            <div class="user-info form">
+                <div class="form-group">
+                    <div class="item-radio clearfix">
+                        <label class="tit icon-name" for="">就诊类型：</label>
+                        <label class="radio"><input name="gener" type="radio" value="0"> 男</label>
+                        <label class="radio ml10"><input name="gener" type="radio" value="1"> 女</label>
+                    </div>
+                    <div class="item-text clearfix">
+                        <label class="tit icon-time" for="">预约时间：</label>
+                        <input type="text" class="js-date-time" >
+                    </div>
+                    <div class="item-text clearfix">
+                        <label class="tit icon-expert" for="">预约专家：</label>
+                        <select name="" id="">
+                            <option value="0">请选择</option>
+                        </select>
+                    </div>
+                    <div class="item-text clearfix">
+                        <label class="tit icon-section" for="">预约科室：</label>
+                        <select name="" id="">
+                            <option value="0">请选择</option>
+                        </select>
+                    </div>
+                    <div class="item-text clearfix">
+                        <label class="tit icon-entity" for="">预约病种：</label>
+                        <select name="" id="">
+                            <option value="0">请选择</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="item-text clearfix">
+                        <label class="tit icon-channel" for="">渠　　道：</label>
+                        <select name="" id="">
+                            <option value="0">请选择</option>
+                        </select>
+                    </div>
+                    <div class="item-text clearfix">
+                        <label class="tit icon-source" for="">来　　源：</label>
+                        <select name="" id="">
+                            <option value="0">请选择</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="item-textarea">
+                        <label class="tit icon-write" for="">患者备注：</label>
+                        <textarea name="" id="" cols="30" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="form-group nbg">
+                    <div class="item-button">
+                        <input type="reset" class="btn btn-reset" value="重置">
+                        <input type="submit" class="btn btn-submit" value="确定">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="__ADMIN_ACEADMIN__/js/jquery-3.1.0.min.js"></script>
+    <script src="__ADMIN_ACEADMIN__/js/vue.js"></script>
+    <script src="__ADMIN_ACEADMIN__/js/init.js"></script>
+</body>
+</html>

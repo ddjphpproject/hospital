@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta content="telephone=no" name="format-detection">
+    <title>预约查看</title>
+    <link rel="stylesheet" href="__PUBLIC_CSS__/style.css?v=20170404">
+    <link rel="stylesheet" href="__PUBLIC_CSS__/swiper.min.css">
+</head>
+<body>
+	<div class="container page-home">
+		<header class="header">
+			<a href="javascript:;" class="icon-menu js-show-menu">导航</a>
+            <a href="{:U('Home/Index/logout')}" class="icon-phone">退出</a>
+            <h1>预约查看</h1>
+        </header>
+
+        <section class="page-wrap" id="page-subscribe">
+            <div class="query clearfix">
+                <div class="left">
+                    <input type="text" class="input-name" placeholder="输入名字/电话">
+                    <input type="text" id="star-data"  class="input-date input-date-stare" placeholder="2017/04/5">
+                    <span class="split fl"></span>
+                    <input type="text" id="end-data"  class="input-date input-date-end" placeholder="2017/04/12">
+                </div>
+                <div class="right">
+                    <input type="submit" class="queryButton" value="查询">
+                </div>
+            </div>
+
+            <div class="date-content">
+                <demo-grid
+                    :data="gridData"
+                    :columns="gridColumns"
+                    :filter-key="searchQuery">
+                </demo-grid>
+            </div>
+		</section>
+	</div>
+
+    <!-- component template -->
+    <script type="text/x-template" id="grid-template">
+        <div class="table">
+            <div class="table-head">
+                <table>
+                    <thead>
+                        <tr>
+                            <th v-for="(key, index) in columns"
+                                @click="sortBy(key,index)"
+                                :class="[{ active: sortKey == key }, 'table-cell-'+key]">
+                                {{ key | replaceYuYueKey }}
+                                <span v-if="index!=0" class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'"></span>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="table-body">
+                <table>
+                    <tbody>
+                        <tr v-for="entry in filteredData">
+                            <td v-for="key in columns"
+                            :class="'table-cell-'+key"
+                            v-html="outHtml(entry[key])"
+                            >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </script>
+
+    <script src="__PUBLIC_JS__/jquery-3.1.0.min.js"></script>
+    <script src="__PUBLIC_JS__/vue.js"></script>
+    <script src="__PUBLIC_JS__/init.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>患者画像</title>
+    <link rel="stylesheet" href="/Public/statics/acehome/css/reset.css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/common.css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/portrait.css">
+    <script src="/Public/statics/acehome/js/jquery-1.8.3.min.js"></script>
+    <script src="/Public/statics/acehome/js/rem.js"></script>
+
+    <script src="/Public/statics/acehome/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script>
+    <script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<script>
+    $(function(){
+        var pageno = '0';
+
+        var data = {};
+        data.pageno = pageno;
+        $.ajax({
+            url:"{:U('Home/ShouYe/ajax')}",
+            type:'post',
+            data:data,
+            success:function(data){
+                $('.listInfo').html(data);
+            }
+        });
+    })
+</script>
+<style>
+    .pull-loading {
+        text-align: center;
+        height: 40px;
+        line-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #font{
+        text-align: inherit;
+    }
+
+    .nuli_zhuan {
+        padding: 20px 0;
+        height: 18px;
+        line-height: 18px;
+        margin: 0 auto;
+        background: #fff;
+        font-size: 14px;
+        color: #787878;
+        text-align: center;
+        display: none;
+    }
+    .nuli_zhuan img {
+        display: inline-block;
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+        animation: zhuan 1s infinite linear;
+    }
+</style>
+<body>
+<div id="warmp" class="warmp">
+    <header class="header">
+        <h2><a href="/index.php/Home/ShouYe/shouye"></a>患者画像<em id="choice">选择</em></h2>
+    </header>
+    <section class="container">
+        <div class="f2Box">
+            <table style="table-layout:fixed" id="table1">
+                <tr>
+                    <th>姓名</th>
+                    <th>性别</th>
+                    <th>年龄</th>
+                    <th width="24%">病种</th>
+                    <th>省份</th>
+                </tr>
+                <foreach name="data" item="v">
+                    <tr>
+                        <td id="font"><i class="yangshi"><em class="bgImg"></em></i>{$v['name']}</td>
+                        <td>{$v['sex']}</td>
+                        <td>{$v['age']}</td>
+                        <td>{$v['yuyuebz']}</td>
+                        <td>{$v['province']}</td>
+                    </tr>
+                </foreach>
+            </table>
+            <p class="nuli_zhuan" ><img src="http://www.conxun.cn/images/zhuan.png" alt="">努力加载中...</p>
+        </div>
+        <div class="filterMask"></div>
+        <div class="f1Box">
+            <div class="sortBlock">
+                <span class="active" id="age">年龄<em id="age_up"></em><em class="active" id="age_down"></em></span>
+                <span id="time">时间<em id="time_up"></em><em id="time_down"></em></span>
+                <span id="xiaofei">消费<em id="xiaofei_up"></em><em id="xiaofei_down"></em></span>
+                <span id="screen">筛选<i class="bgImg"></i></span>
+            </div>
+            <div class="tabBlock">
+                <ul class="barTabs">
+                    <li><span>专家<i class="bgImg"></i></span></li>
+                    <li><span>地区<i class="bgImg"></i></span></li>
+                    <li><span>状态<i class="bgImg"></i></span></li>
+                    <li><span>科室<i class="bgImg"></i></span></li>
+                </ul>
+                <div class="tabBox">
+                    <div class="tabCon">
+                        <ul class="zhuajia">
+                            <foreach name="expert" item="zhuanjia">
+                                <li>{$zhuanjia['zjname']}<i class="bgImg"></i></li>
+                            </foreach>
+                        </ul>
+                        <div class="btns">
+                            <a href="javascript:;" class="reset">重置</a>
+                            <a href="javascript:;" class="ok" id="queding">确定</a>
+                        </div>
+                    </div>
+                    <div class="tabCon tabCon2">
+                        <div class="areaTab">
+                            <span class="province" onclick="city('北京市')">北京市</span>
+                            <span onclick="city('上海市')">上海市</span>
+                            <span onclick="city('天津市')">天津市</span>
+                            <span onclick="city('重庆市')">重庆市</span>
+                            <span onclick="city('河北省')">河北省</span>
+                            <span onclick="city('山西省')">山西省</span>
+                            <span onclick="city('内蒙古自治区')">内蒙古自治区</span>
+                            <span onclick="city('辽宁省')">辽宁省</span>
+                            <span onclick="city('吉林省')">吉林省</span>
+                            <span onclick="city('黑龙江省')">黑龙江省</span>
+                            <span onclick="city('江苏省')">江苏省</span>
+                            <span onclick="city('浙江省')">浙江省</span>
+                            <span onclick="city('安徽省')">安徽省</span>
+                            <span onclick="city('福建省')">福建省</span>
+                            <span onclick="city('江西省')">江西省</span>
+                            <span onclick="city('山东省')">山东省</span>
+                            <span onclick="city('河南省')">河南省</span>
+                            <span onclick="city('湖北省')">湖北省</span>
+                            <span onclick="city('湖南省')">湖南省</span>
+                            <span onclick="city('广东省')">广东省</span>
+                            <span onclick="city('广西壮族自治区')">广西壮族自治区</span>
+                            <span onclick="city('海南省')">海南省</span>
+                            <span onclick="city('四川省')">四川省</span>
+                            <span onclick="city('贵州省')">贵州省</span>
+                            <span onclick="city('云南省')">云南省</span>
+                            <span onclick="city('西藏自治区')">西藏自治区</span>
+                            <span onclick="city('陕西省')">陕西省</span>
+                            <span onclick="city('甘肃省')">甘肃省</span>
+                            <span onclick="city('宁夏回族自治区')">宁夏回族自治区</span>
+                            <span onclick="city('青海省')">青海省</span>
+                            <span onclick="city('新疆维吾尔族自治区')">新疆维吾尔族自治区</span>
+                            <span onclick="city('香港特别行政区')">香港特别行政区</span>
+                            <span onclick="city('澳门特别行政区')">澳门特别行政区</span>
+                            <span onclick="city('台湾省')">台湾省</span>
+                        </div>
+                        <div class="areaBox">
+                            <div class="areaCon" style="display:block;">
+                                <span>全部<i><em class="bgImg"></em></i></span>
+                                <span class="city"><i><em class="bgImg"></em></i></span>
+                                <!--<span>邯郸<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>邢台<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>保定<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>张家口<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>承德<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>秦皇岛<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>石家庄<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>邯郸<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>邢台<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>保定<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>张家口<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>承德<i><em class="bgImg"></em></i></span>-->
+                                <!--<span>秦皇岛<i><em class="bgImg"></em></i></span>-->
+                            </div>
+
+                        </div>
+                        <div class="btns">
+                            <a href="javascript:;" class="reset">重置</a>
+                            <a href="javascript:;" class="ok">确定</a>
+                        </div>
+                    </div>
+                    <div class="tabCon">
+                        <ul>
+                            <li>到诊<i class="bgImg"></i></li>
+                            <li>未到诊<i class="bgImg"></i></li>
+                            <li>初诊<i class="bgImg"></i></li>
+                            <li>复诊<i class="bgImg"></i></li>
+                            <li>消费<i class="bgImg"></i></li>
+                            <li>未消费<i class="bgImg"></i></li>
+                            <li>住院<i class="bgImg"></i></li>
+                            <li>住院<i class="bgImg"></i></li>
+                        </ul>
+                        <div class="btns">
+                            <a href="javascript:;" class="reset">重置</a>
+                            <a href="javascript:;" class="ok" id="ok">确定</a>
+                        </div>
+                    </div>
+                    <div class="tabCon">
+                        <ul>
+                            <foreach name="govern" item="keshi">
+                                <li>{$keshi['ksname']}<i class="bgImg"></i></li>
+                            </foreach>
+                        </ul>
+                        <div class="btns">
+                            <a href="javascript:;" class="reset">重置</a>
+                            <a href="javascript:;" class="ok" id="keshi">确定</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="sideMask"></div>
+    <div class="sideBox">
+        <div class="sideCon">
+            <dl>
+                <dt>时间</dt>
+                <dd><input type="text" value=""  onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" id="start"> - <input type="text" id="end"  onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"></dd>
+            </dl>
+            <dl>
+                <dt>消费</dt>
+                <dd><input type="text" id="zuidi_xiaofei"> - <input type="text" id="zuigao_xiaofei"></dd>
+            </dl>
+            <dl>
+                <dt>专家<em id="zhuanjia"></em><i class="bgImg"></i></dt>
+                <dd>
+                    <foreach name="expert" item="zhuanjia">
+                        <span>{$zhuanjia['zjname']}</span>
+                    </foreach>
+
+                </dd>
+            </dl>
+            <dl>
+                <dt>客服<em id="client"></em><i class="bgImg"></i></dt>
+                <dd>
+                    <foreach name="client" item="kefu">
+                        <span>{$kefu['username']}</span>
+                    </foreach>
+                </dd>
+            </dl>
+            <dl>
+                <dt>媒体<em id="source"></em><i class="bgImg"></i></dt>
+                <dd>
+                    <foreach name="source" item="laiyuan">
+                        <span>{$laiyuan['name']}</span>
+                    </foreach>
+                </dd>
+            </dl>
+            <dl>
+                <dt>渠道<em id="channel"></em><i class="bgImg"></i></dt>
+                <dd>
+                    <foreach name="channel" item="qudao">
+                        <span>{$qudao['name']}</span>
+                    </foreach>
+                </dd>
+            </dl>
+            <dl>
+                <dt>科室<em id="yuyueks"></em><i class="bgImg"></i></dt>
+                <dd>
+                    <foreach name="govern" item="ks">
+                        <span>{$ks['ksname']}</span>
+                    </foreach>
+                </dd>
+            </dl>
+            <dl>
+                <dt>状态<em id="status"></em><i class="bgImg"></i></dt>
+                <dd>
+                    <span>到诊</span>
+                    <span>未到诊</span>
+                    <span>初诊</span>
+                    <span>复诊</span>
+                    <span>住院</span>
+                    <span>未住院</span>
+                    <span>消费</span>
+                    <span>未消费</span>
+                </dd>
+            </dl>
+            <!--<dl>-->
+                <!--<dt>地区<em></em><i class="bgImg"></i></dt>-->
+                <!--<dd>-->
+                    <!--<foreach name="area" item="quyu">-->
+                        <!--<span>{$quyu['area_name']}</span>-->
+                    <!--</foreach>-->
+                <!--</dd>-->
+            <!--</dl>-->
+        </div>
+        <div class="btns">
+            <a href="javascript:;" class="reset">重置</a>
+            <a href="javascript:;" class="ok" id="submit">确定</a>
+
+        </div>
+    </div>
+</div>
+
+<!-- 底部按钮 -->
+<footer class="footer">
+    <div class="footer-btn">
+        <a href="#">全选</a>
+        <a href="#"><span id="tuisong">推送</span></a>
+    </div>
+</footer>
+
+
+<script src="/Public/statics/acehome/js/iscroll.js"></script>
+
+<script>
+
+    var pageno = 15;
+    var isbool=true;
+    pageno=parseInt(pageno)
+    var isend=false;
+
+    $(window).scroll(function(){
+
+        var daibiao = '';
+        if($('#age_down').hasClass('active')){
+            daibiao =1;
+        }else if($('#age_up').hasClass('active')){
+            daibiao =2;
+        }else if($('#time_down').hasClass('active')){
+            daibiao =3;
+        }else if($('#time_up').hasClass('active')){
+            daibiao =4;
+        }else if($('#xiaofei_down').hasClass('active')){
+            daibiao =5;
+        }else if($('#xiaofei_up').hasClass('active')){
+            daibiao =6;
+        }
+
+        var yuyuezj = $('#zhuanjia').text();
+        if(yuyuezj == '' || yuyuezj == 'null'){
+
+             var str = '';
+            var list=document.getElementsByClassName("status")
+            for(var i=0;i<list.length;i++){
+                str += list[i].innerHTML.replace(/<\/?.+?>/g,"") + ',';
+            }
+            var shuju = str.substr(0,str.length-1);
+            yuyuezj = shuju;
+        }
+
+
+//        alert(yuyuezj);
+
+        var scrollTop = $(this).scrollTop();
+        var scrollHeight = $(document).height();
+        var windowHeight = $(this).height();
+        var client = $('#client').text();
+        var source = $('#source').text();
+        var channel = $('#channel').text();
+        var yuyueks = $('#yuyueks').text();
+        var status = $('#status').text();
+        var start = $('#start').val();
+        var end = $('#end').val();
+        var zuidi_xiaofei = $('#zuidi_xiaofei').val();
+        var zuigao_xiaofei = $('#zuigao_xiaofei').val();
+
+        var data = {};
+        data.start = start;
+        data.end = end;
+        data.zuidi_xiaofei = zuidi_xiaofei;
+        data.zuigao_xiaofei = zuigao_xiaofei;
+        data.yuyuezj = yuyuezj;
+        data.client = client;
+        data.source = source;
+        data.channel = channel;
+        data.yuyueks = yuyueks;
+        data.status = status;
+        data.pageno = pageno;
+        data.daibiao = daibiao;
+
+        if(isend==false){
+            // alert(parseInt(scrollTop+windowHeight))
+            // alert(scrollHeight-1)
+            if(parseInt(scrollTop + windowHeight) >= scrollHeight-2000 && isbool==true){
+                isbool=false;
+//                var url = '/plus/listc.php?ajax=1&channel=1&tid='+tid+'&style=m&pageno='+pageno;
+
+                $.ajax({
+                    url:"{:U('Home/ShouYe/ajax')}",
+                    type:'post',
+                    data:data,
+                    success: function(data){
+
+                        if(null != data && "" != data){
+                            var data = eval('(' + data + ')');
+                            console.log(data);
+                            // $("listend_1").eq(0).append(data)
+                            $(".nuli_zhuan").eq(0).css("display","block");
+                            setTimeout(function(){
+                                var str = "";
+                                for (var i = 0; i < data.length; i++) {
+                                    str += ' <tr><td><i><em class="bgImg"></em></i>' + data[i].name + '</td><td>' + data[i].sex + '</td><td>' + data[i].age + '</td><td>' + data[i].yuyuebz + '</td><td>' + data[i].province + '</td></tr>'
+                                }
+                                $('#table1').append(str);
+
+                                isbool=true;
+                                pageno = pageno+15;
+                                $(".nuli_zhuan").eq(0).css("display","block");
+                            },1000)
+                            if(data.length==0||data==""||data==undefined){
+                                $(".nuli_zhuan").eq(0).html("没有信息了!");
+                                $(".nuli_zhuan").eq(0).css("display","none");
+                                isend=true;
+                            }
+                        }else{
+                            $(".nuli_zhuan").eq(0).html("没有信息了!");
+                            $(".nuli_zhuan").eq(0).css("display","none");
+                            isend=true;
+                        }
+                    },error: function(data){
+                        console.log(data)
+                    }
+                });
+            }
+
+        }
+    });
+
+
+
+
+
+
+
+
+    try {
+        var sf = new Array();
+        sf[0] = new Array("北京市", "东城|西城|崇文|宣武|朝阳|丰台|石景山|海淀|门头沟|房山|通州|顺义|昌平|大兴|平谷|怀柔|密云|延庆");
+        sf[1] = new Array("上海市", "黄浦|卢湾|徐汇|长宁|静安|普陀|闸北|虹口|杨浦|闵行|宝山|嘉定|浦东|金山|松江|青浦|南汇|奉贤|崇明");
+        sf[2] = new Array("天津市", "和平|东丽|河东|西青|河西|津南|南开|北辰|河北|武清|红挢|塘沽|汉沽|大港|宁河|静海|宝坻|蓟县");
+        sf[3] = new Array("重庆市", "万州|涪陵|渝中|大渡口|江北|沙坪坝|九龙坡|南岸|北碚|万盛|双挢|渝北|巴南|黔江|长寿|綦江|潼南|铜梁 |大足|荣昌|壁山|梁平|城口|丰都|垫江|武隆|忠县|开县|云阳|奉节|巫山|巫溪|石柱|秀山|酉阳|彭水|江津|合川|永川|南川");
+        sf[4] = new Array("河北省", "石家庄|邯郸|邢台|保定|张家口|承德|廊坊|唐山|秦皇岛|沧州|衡水");
+        sf[5] = new Array("山西省", "太原|大同|阳泉|长治|晋城|朔州|吕梁|忻州|晋中|临汾|运城");
+        sf[6] = new Array("内蒙古自治区", "呼和浩特|包头|乌海|赤峰|呼伦贝尔盟|阿拉善盟|哲里木盟|兴安盟|乌兰察布盟|锡林郭勒盟|巴彦淖尔盟|伊克昭盟");
+        sf[7] = new Array("辽宁省", "沈阳|大连|鞍山|抚顺|本溪|丹东|锦州|营口|阜新|辽阳|盘锦|铁岭|朝阳|葫芦岛");
+        sf[8] = new Array("吉林省", "长春|吉林|四平|辽源|通化|白山|松原|白城|延边");
+        sf[9] = new Array("黑龙江省", "哈尔滨|齐齐哈尔|牡丹江|佳木斯|大庆|绥化|鹤岗|鸡西|黑河|双鸭山|伊春|七台河|大兴安岭");
+        sf[10] = new Array("江苏省", "南京|镇江|苏州|南通|扬州|盐城|徐州|连云港|常州|无锡|宿迁|泰州|淮安");
+        sf[11] = new Array("浙江省", "杭州|宁波|温州|嘉兴|湖州|绍兴|金华|衢州|舟山|台州|丽水");
+        sf[12] = new Array("安徽省", "合肥|芜湖|蚌埠|马鞍山|淮北|铜陵|安庆|黄山|滁州|宿州|池州|淮南|巢湖|阜阳|六安|宣城|亳州");
+        sf[13] = new Array("福建省", "福州|厦门|莆田|三明|泉州|漳州|南平|龙岩|宁德");
+        sf[14] = new Array("江西省", "南昌市|景德镇|九江|鹰潭|萍乡|新馀|赣州|吉安|宜春|抚州|上饶");
+        sf[15] = new Array("山东省", "济南|青岛|淄博|枣庄|东营|烟台|潍坊|济宁|泰安|威海|日照|莱芜|临沂|德州|聊城|滨州|菏泽");
+        sf[16] = new Array("河南省", "郑州|开封|洛阳|平顶山|安阳|鹤壁|新乡|焦作|濮阳|许昌|漯河|三门峡|南阳|商丘|信阳|周口|驻马店|济源");
+        sf[17] = new Array("湖北省", "武汉|宜昌|荆州|襄樊|黄石|荆门|黄冈|十堰|恩施|潜江|天门|仙桃|随州|咸宁|孝感|鄂州");
+        sf[18] = new Array("湖南省", "长沙|常德|株洲|湘潭|衡阳|岳阳|邵阳|益阳|娄底|怀化|郴州|永州|湘西|张家界");
+        sf[19] = new Array("广东省", "广州|深圳|珠海|汕头|东莞|中山|佛山|韶关|江门|湛江|茂名|肇庆|惠州|梅州|汕尾|河源|阳江|清远|潮州|揭阳|云浮");
+        sf[20] = new Array("广西壮族自治区", "南宁|柳州|桂林|梧州|北海|防城港|钦州|贵港|玉林|南宁地区|柳州地区|贺州|百色|河池");
+        sf[21] = new Array("海南省", "海口|三亚");
+        sf[22] = new Array("四川省", "成都|绵阳|德阳|自贡|攀枝花|广元|内江|乐山|南充|宜宾|广安|达川|雅安|眉山|甘孜|凉山|泸州");
+        sf[23] = new Array("贵州省", "贵阳|六盘水|遵义|安顺|铜仁|黔西南|毕节|黔东南|黔南");
+        sf[24] = new Array("云南省", "昆明|大理|曲靖|玉溪|昭通|楚雄|红河|文山|思茅|西双版纳|保山|德宏|丽江|怒江|迪庆|临沧");
+        sf[25] = new Array("西藏自治区", "拉萨|日喀则|山南|林芝|昌都|阿里|那曲");
+        sf[26] = new Array("陕西省", "西安|宝鸡|咸阳|铜川|渭南|延安|榆林|汉中|安康|商洛");
+        sf[27] = new Array("甘肃省", "兰州|嘉峪关|金昌|白银|天水|酒泉|张掖|武威|定西|陇南|平凉|庆阳|临夏|甘南");
+        sf[28] = new Array("宁夏回族自治区", "银川|石嘴山|吴忠|固原");
+        sf[29] = new Array("青海省", "西宁|海东|海南|海北|黄南|玉树|果洛|海西");
+        sf[30] = new Array("新疆维吾尔族自治区", "乌鲁木齐|石河子|克拉玛依|伊犁|巴音郭勒|昌吉|克孜勒苏柯尔克孜|博尔塔拉|吐鲁番|哈密|喀什|和田|阿克苏");
+        sf[31] = new Array("香港特别行政区", "香港特别行政区");
+        sf[32] = new Array("澳门特别行政区", "澳门特别行政区");
+        sf[33] = new Array("台湾省", "台北|高雄|台中|台南|屏东|南投|云林|新竹|彰化|苗栗|嘉义|花莲|桃园|宜兰|基隆|台东|金门|马祖|澎湖");
+        sf[34] = new Array("其它", "北美洲|南美洲|亚洲|非洲|欧洲|大洋洲");
+    } catch (e) {
+        alert(e);
+    }
+
+    $(function () {
+
+        try {
+            var pro = $(".province").text();
+
+            var i, j, tmpcity = new Array();
+            for (i = 0; i < sf.length; i++) {
+
+                if (pro == sf[i][0].toString()) {
+                    tmpcity = sf[i][1].split("|");
+
+                    $(".city").html("");
+
+                    for (j = 0; j < tmpcity.length; j++) {
+                        $(".city").append('<span>' + tmpcity[j] + '<i><em class="bgImg"></em></i></span>');
+                    }
+                }
+            }
+        } catch (e) {
+            alert(e);
+        }
+    });
+
+    function city(city) {
+
+        var pro = city;
+
+        var i, j, tmpcity = new Array();
+        for (i = 0; i < sf.length; i++) {
+
+            if (pro == sf[i][0].toString()) {
+                tmpcity = sf[i][1].split("|");
+
+                $(".city").html("");
+
+                for (j = 0; j < tmpcity.length; j++) {
+                    $(".city").append('<span>' + tmpcity[j] + '<i><em class="bgImg"></em></i></span>');
+                }
+            }
+        }
+    }
+
+
+    $("#age").click(function () {
+        if ($("#age_down").hasClass("active")) {
+            var daibiao = 1;
+            paixu(daibiao);
+        } else if ($("#age_up").hasClass("active")) {
+            var daibiao = 2;
+            paixu(daibiao);
+        }
+    })
+
+    $("#time").click(function () {
+        if ($("#time_down").hasClass("active")) {
+            var daibiao = 3;
+            paixu(daibiao);
+        } else if ($("#time_up").hasClass("active")) {
+            var daibiao = 4;
+            paixu(daibiao);
+        }
+    })
+
+    $("#xiaofei").click(function () {
+        if ($("#xiaofei_down").hasClass("active")) {
+            var daibiao = 5;
+            paixu(daibiao);
+        } else if ($("#xiaofei_up").hasClass("active")) {
+            var daibiao = 6;
+            paixu(daibiao);
+        }
+    })
+
+
+    function paixu(daibiao) {
+
+        var yuyuezj = $('#zhuanjia').text();
+        var status = $('#status').text();
+        if(yuyuezj == '' || yuyuezj == 'null'){
+
+            var str = '';
+            var list=document.getElementsByClassName("status")
+            for(var i=0;i<list.length;i++){
+                str += list[i].innerHTML.replace(/<\/?.+?>/g,"") + ',';
+            }
+            var shuju = str.substr(0,str.length-1);
+            yuyuezj = shuju;
+        }
+
+
+        console.log(yuyuezj);
+//        if(status == '' || status == 'null'){
+//
+//            var a=document.getElementsByClassName("status")
+//            for(var i=0;i<list.length;i++){
+//                str += list[i].innerHTML.replace(/<\/?.+?>/g,"") + ',';
+//            }
+//            var shuju = str.substr(0,str.length-1);
+//
+//        }
+
+
+
+
+
+        var client = $('#client').text();
+        var source = $('#source').text();
+        var channel = $('#channel').text();
+        var yuyueks = $('#yuyueks').text();
+
+        var start = $('#start').val();
+        var end = $('#end').val();
+        var zuidi_xiaofei = $('#zuidi_xiaofei').val();
+        var zuigao_xiaofei = $('#zuigao_xiaofei').val();
+
+        var data = {};
+        data.start = start;
+        data.end = end;
+        data.zuidi_xiaofei = zuidi_xiaofei;
+        data.zuigao_xiaofei = zuigao_xiaofei;
+        data.yuyuezj = yuyuezj;
+        data.client = client;
+        data.source = source;
+        data.channel = channel;
+        data.yuyueks = yuyueks;
+        data.status = status;
+        data.pageno = pageno;
+        data.daibiao = daibiao;
+
+
+
+
+
+
+
+
+        var data = {};
+
+        data.daibiao = daibiao;
+
+        $.ajax({
+            url: "{:U('Home/ShouYe/ajax')}",
+            type: "post",
+            dataType: "json",
+            data: data,
+            success: function (data) {
+                console.log(data);
+                $('#table1 tr:gt(0)').remove();//删除之前的数据
+
+                var data = eval('(' + data + ')');
+                console.log(data);
+                var str = "";
+                for (var i = 0; i < data.length; i++) {
+//                    console.log(data[i].name);
+                    str += ' <tr><td><i><em class="bgImg"></em></i>' + data[i].name + '</td><td>' + data[i].sex + '</td><td>' + data[i].age + '</td><td>' + data[i].yuyuebz + '</td><td>' + data[i].province + '</td></tr>'
+
+//                         <tr><td><i><em class="bgImg"></em></i>{$v['name']}</td><td>{$v['sex']}</td><td>{$v['age']}</td><td>{$v['yuyuebz']}</td><td>{$v['province']}</td></tr>
+                }
+                $('#table1').append(str);
+//                $('#imag1').attr("src", data.url);
+//                $('#hidden').val(data.url);
+            }
+        })
+    }
+
+
+    //选中条件点击确定执行ajax
+    $('#submit').click(function(){
+
+        $('.sideBox').removeClass('open');
+        $('.sideMask').fadeOut();
+
+        var yuyuezj = $('#zhuanjia').text();
+        var client = $('#client').text();
+        var source = $('#source').text();
+        var channel = $('#channel').text();
+        var yuyueks = $('#yuyueks').text();
+        var status = $('#status').text();
+        var start = $('#start').val();
+        var end = $('#end').val();
+        var zuidi_xiaofei = $('#zuidi_xiaofei').val();
+        var zuigao_xiaofei = $('#zuigao_xiaofei').val();
+
+        var data = {};
+        data.start = start;
+        data.end = end;
+        data.zuidi_xiaofei = zuidi_xiaofei;
+        data.zuigao_xiaofei = zuigao_xiaofei;
+        data.yuyuezj = yuyuezj;
+        data.client = client;
+        data.source = source;
+        data.channel = channel;
+        data.yuyueks = yuyueks;
+        data.status = status;
+
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Home/ShouYe/ajax')}",
+            data: data,
+            success: function (shuju) {
+
+                $('#table1 tr:gt(0)').remove();//删除之前的数据
+
+                var data = eval('(' + shuju + ')'); //转为json对象
+
+                var str = "";
+                for (var i = 0; i < data.length; i++) {
+                    str += ' <tr><td  id="font"><i class="yangshi"><em class="bgImg"></em></i>' + data[i].name + '</td><td>' + data[i].sex + '</td><td>' + data[i].age + '</td><td>' + data[i].yuyuebz + '</td><td>' + data[i].province + '</td></tr>'
+                }
+                $('#table1').append(str);
+            }
+        });
+
+    });
+
+    $('#queding').click(function(){
+        var str = '';
+        var list=document.getElementsByClassName("status")
+        for(var i=0;i<list.length;i++){
+            str += list[i].innerHTML.replace(/<\/?.+?>/g,"") + ',';
+        }
+        var shuju = str.substr(0,str.length-1);
+
+        var data = {};
+        data.yuyuezj = shuju;
+
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Home/ShouYe/ajax')}",
+            data: data,
+            success: function (shuju) {
+
+                $('#table1 tr:gt(0)').remove();//删除之前的数据
+
+                var data = eval('(' + shuju + ')'); //转为json对象
+                console.log(data);
+                var str = "";
+
+                for (var i = 0; i < data.length; i++) {
+                    str += ' <tr><td  id="font"><i><em class="bgImg"></em></i>' + data[i].name + '</td><td>' + data[i].sex + '</td><td>' + data[i].age + '</td><td>' + data[i].yuyuebz + '</td><td>' + data[i].province + '</td></tr>'
+                }
+                $('#table1').append(str);
+            }
+        });
+
+    });
+
+    $('#ok').click(function(){
+        var str = '';
+        var list=document.getElementsByClassName("status")
+        for(var i=0;i<list.length;i++){
+            str += list[i].innerHTML.replace(/<\/?.+?>/g,"") + ',';
+        }
+        var shuju = str.substr(0,str.length-1);
+
+        var data = {};
+        data.status = shuju;
+
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Home/ShouYe/ajax')}",
+            data: data,
+            success: function (shuju) {
+
+                $('#table1 tr:gt(0)').remove();//删除之前的数据
+
+                var data = eval('(' + shuju + ')'); //转为json对象
+                console.log(data);
+                var str = "";
+
+                for (var i = 0; i < data.length; i++) {
+                    str += ' <tr><td  id="font"><i><em class="bgImg"></em></i>' + data[i].name + '</td><td>' + data[i].sex + '</td><td>' + data[i].age + '</td><td>' + data[i].yuyuebz + '</td><td>' + data[i].province + '</td></tr>'
+                }
+                $('#table1').append(str);
+            }
+        });
+
+    });
+
+    $('#keshi').click(function(){
+        var str = '';
+        var list=document.getElementsByClassName("status")
+        for(var i=0;i<list.length;i++){
+            str += list[i].innerHTML.replace(/<\/?.+?>/g,"") + ',';
+        }
+        var shuju = str.substr(0,str.length-1);
+
+        var data = {};
+        data.yuyueks = shuju;
+
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Home/ShouYe/ajax')}",
+            data: data,
+            async: false,
+            success: function (shuju) {
+
+                $('#table1 tr:gt(0)').remove();//删除之前的数据
+
+                var data = eval('(' + shuju + ')'); //转为json对象
+                console.log(data);
+                var str = "";
+
+                for (var i = 0; i < data.length; i++) {
+
+                    str += ' <tr><td id="font"><i><em class="bgImg"></em></i>' + data[i].name + '</td><td>' + data[i].sex + '</td><td>' + data[i].age + '</td><td>' + data[i].yuyuebz + '</td><td>' + data[i].province + '</td></tr>'
+                }
+                $('#table1').append(str);
+            }
+        });
+    });
+
+    $('#tuisong').click(function(){
+//        /index.php/Home/ShouYe/push
+        var list=document.getElementsByClassName("name")
+
+        var str = '';
+        for(var i=0;i<list.length;i++){
+            str += list[i].innerHTML.replace(/<\/?.+?>/g,"") + ',';
+        }
+        var shuju = str.substr(0,str.length-1);
+
+        window.location.href  = " /index.php/Home/ShouYe/push/shuju/" + shuju;
+    });
+
+</script>
+<script src="/Public/statics/acehome/js/portrait.js"></script>
+
+</body>
+</html>

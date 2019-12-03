@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>添加管理员1</title>
+    <link href="/Public/statics/aceother/css/global.css" rel="stylesheet" type="text/css">
+    <link href="/Public/statics/aceother/css/admin.css" rel="stylesheet" type="text/css">
+    <script src="/Public/statics/aceother/js/jquery-1.8.3.min.js"></script>
+    <script src="/Public/statics/aceother/js/common.js"></script>
+    <!--[if lt IE 9]>
+    <script src="/Public/statics/aceother/js/html5shiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="commonTit">
+    <!--<h2>添加管理员</h2>-->
+    <div class="hd-tab">
+        <span><a href="{:U('Admin/Rule/admin_user_list')}">管理员列表</a><i></i></span>
+        <span class="active">添加管理员<i></i></span>
+    </div>
+</div>
+<div class="conBox admin admin1">
+    <form action="{:U('Admin/Rule/add_admin')}" method="post" id="form1">
+        <dl>
+            <dt>管理组：</dt>
+            <dd>
+                <select name="group_ids" id="">
+                    <foreach name='data' item='v'>
+                        <option value="{$v['id']}" name="admin">{$v['title']}</option>
+                    </foreach>
+                </select>
+            </dd>
+        </dl>
+        <dl>
+            <dt>姓名：</dt>
+            <dd><input type="text" name="username"></dd>
+        </dl>
+        <dl>
+            <dt>手机号：</dt>
+            <dd><input type="text" name="phone"></dd>
+        </dl>
+        <dl>
+            <dt>邮箱：</dt>
+            <dd><input type="text" name="email"></dd>
+        </dl>
+        <dl>
+            <dt>初始密码：</dt>
+            <dd><input type="text" name="password"></dd>
+        </dl>
+        <dl>
+            <dt>状态：</dt>
+            <dd>
+                <label><input type="radio" name="status" value="1" checked="checked">允许登录</label>
+                <label><input type="radio" name="status" value="0">禁止登录</label>
+            </dd>
+        </dl>
+
+        <div class="btns">
+            <input type="submit" value="添加" class="submit">
+        </div>
+
+    </form>
+</div>
+</body>
+</html>

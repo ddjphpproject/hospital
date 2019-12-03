@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="UTF-8">
+<title>科室管理</title>
+<link href="__ADMIN_ACEADMIN__/css/ks_global.css" rel="stylesheet" type="text/css">
+<link href="__ADMIN_ACEADMIN__/css/ks.css" rel="stylesheet" type="text/css">
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script src="__ADMIN_ACEADMIN__/js/common.js"></script>
+<!--[if lt IE 9]>
+    <script src="js/html5shiv.min.js"></script>
+<![endif]-->
+</head>
+<body>
+<div class="commonTit">
+    <h2>科室管理</h2>
+    <div class="hd-tab">
+        <span class="active">科室列表<i></i></span>
+        <span style="color: red"><a href="javascript:;"  class="add" id='add' name="add" onclick="add()">添加科室</a><i></i></span>
+    </div>
+</div>
+<div class="conBox ks">
+    <table id="table1">
+        <tr> 
+            <th width="20%">科室名</th>
+            <th width="60%">病种名</th>
+            <th style="display: none">id</th>
+            <th width="20%">操作</th>
+        </tr>
+        <foreach name="data" item="v">
+
+            <tr> 
+            <td>{$v['ksname']}</td>
+            <td>{$v['bznames']}</td>
+            <td style="display: none">{$v['ksid']}</td>
+            <td> <a href="javascript:;"  class="revise"  onclick="edit(this)"></a> | <a href="javascript:if(confirm('确定删除科室及科室下的病种吗？'))location='{:U('Admin/Govern/delete_ks',array('id'=>$v['ksid']))}'"  class="del"></a>
+
+            </td>
+
+            </tr>
+
+            </foreach>  
+    </table>
+    <div class="commonPage">
+        <ul>
+            <li>显示行数：</li>
+            <li>
+                <select id="pageSize" onchange="changePagesize()">
+                    <option value="10" <php>if($pageSize== 10){</php>selected<php>}</php> >10</option>
+                    <option value="20" <php>if($pageSize== 20){</php>selected<php>}</php>>20</option>
+                    <option value="30" <php>if($pageSize== 30){</php>selected<php>}</php>>30</option>
+                </select>
+            </li>
+            <li>
+                <span id="current_page">{$current_page}</span>/<span id="total_page">{$total_page}</span>
+            </li>
+            <li><a class="next" id="btn1"></a></li> 
+            <li><input type="text" id="page_shu" value=""></li>
+            <li><a class="btn2" id="tiaozhuan">跳转</a></li>
+        </ul>
+    </div>
+</div>
+<div class="pop">
+    <div class="pop-mask"></div>
+    <div class="popCon">
+        <h2>修改科室<a class="close"></a></h2>
+        <form action="{:U('Admin/Govern/edit_ks')}"> 
+            <dl>
+                <dt>科室名：</dt>
+                <dd><input type="text" id='ksname' name="ksname"></dd>
+            </dl>
+            <dl>
+                <dt>病种名：</dt>
+                <dd><textarea id="bznames" cols="30" rows="10" name="bznames"></textarea></dd>
+            </dl> 
+              <dl>
+                <dt style="display: none">ksid</dt>
+                <dd style="display: none"><input type="text" id='ksid' name="ksid"></dd>
+            </dl> 
+             <input type="submit" value="修改" class="submit">
+        </form>
+    </div>
+</div>
+
+<div class="po">
+    <div class="po-mask"></div>
+    <div class="poCon">
+        <h2>添加科室<a class="close"></a></h2>
+        <form action="{:U('Admin/Govern/add_ks')}"> 
+            <dl>
+                <dt>科室名：</dt>
+                <dd><input type="text" id='ksname' name="ksname"></dd>
+            </dl>
+            <dl>
+                <dt>病种名：</dt>
+                <dd><textarea id="bznames" cols="30" rows="10" name="bznames"></textarea></dd>
+            </dl> 
+              <dl>
+                <dt style="display: none">ksid</dt>
+                <dd style="display: none"><input type="text" id='ksid' name="ksid"></dd>
+            </dl> 
+             <input type="submit" value="添加" class="submit">
+        </form>
+    </div>
+</div>
+        
+
+<script src="__ADMIN_ACEADMIN__/js/ks.js"></script>   
+<script>
+   function add(){  
+    var now1;
+    var now2;
+    $('#add').click(function(){
+        now1=$(this).parent().parent().find('td').eq(0); 
+        now2=$(this).parent().parent().find('td').eq(1); 
+        now3=$(this).parent().parent().find('td').eq(2); 
+        $('.po').fadeIn();
+        var input= $('#ksname');
+        var textarea= $('.po dd textarea');
+        var ksid=$('#ksid');
+        input.val(now1.html());
+        textarea.val(now2.html());
+        ksid.val(now3.html());
+        $('.po .submit').click(function(){
+                now1.html(input.val());
+                now2.html(textarea.val());
+                now3.html(ksid.val());
+                $('.pop').fadeOut();
+        })
+        $('.po .close').click(function(){
+                $('.po').fadeOut();
+        })
+    })  
+   }
+     function commonTable(data){
+         $('#table1 tr:gt(0)').remove();
+        var str='';
+        for(var i=0;i<data.length;i++){
+            str+='<tr><td>'+data[i].ksname+'</td><td>'+data[i].bznames+'</td><td><a href="javascript:;" class="revise"></a><a href="javascript:;" class="del"></a></td></tr>';
+        }
+        $('#table1').append(str);
+        $('#table1 tr:odd').css('backgroundColor','#fff');
+    }
+
+
+        /**
+     * ajax请求每页数据的时候进行封装数据
+     * @returns {boolean}
+     */
+    function dataCombine(){
+        var pageSize = $("#pageSize  option:selected").text();
+        var current_page = $("#current_page").html();
+        var total_page = $("#total_page").html();
+        var page_shu = $('#page_shu').val();
+        current_page++;
+        if (current_page > total_page) {
+            alert('已经是最后一页');
+            return false;
+        }
+        data = {};
+        data.pageSize = pageSize;
+        data.current_page = current_page;
+        data.total_page = total_page;
+        data.page_shu = page_shu;
+    }
+   /**
+     * 跳转到第几页
+     */
+    $('#tiaozhuan').click(function () {
+        dataCombine();
+        if (!data.page_shu) {
+            alert('必须填写跳转页');
+            return false;
+        }
+        if (parseInt(data.page_shu) > parseInt(data.total_page)) {
+            alert('不能超过最后一页');
+            return false;
+        }
+       console.log(data)
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Admin/Govern/index')}",
+            data: data,
+            success: function (obj) { 
+                console.log(obj)
+                commonTable(obj.data);
+                $('#current_page').html(obj.page_shu);
+                if (obj.total_page == 0) {
+                    obj.total_page = 1;
+                }
+                $('#total_page').html(obj.total_page);
+            }
+        });
+    });
+    $('#btn1').click(function () {
+        dataCombine();
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Admin/Govern/index')}",
+            data: data,
+            success: function (obj) {
+                commonTable(obj.data);
+                $('#current_page').html(obj.current_page);
+                if (obj.total_page == 0) {
+                    obj.total_page = 1;
+                }
+                $('#total_page').html(obj.total_page);
+            }
+        });
+    });
+        /**
+     * 改变每页显示条数
+     * 默认改变后是第一页
+     */
+    function changePagesize() {
+        dataCombine();
+        data.current_page = 1;
+        $.ajax({
+            type: "post",
+            dataType: "json",
+             url: "{:U('Admin/Govern/index')}",
+            data: data,
+            success: function (obj) {
+                commonTable(obj.data);
+                $('#current_page').html(obj.current_page);
+                if (obj.total_page == 0) {
+                    obj.total_page = 1;
+                }
+                $('#total_page').html(obj.total_page);
+            }
+        });
+    }
+</script>  
+</body>
+</html>

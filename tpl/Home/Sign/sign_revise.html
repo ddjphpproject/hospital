@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>修改报名信息</title>
+    <link rel="stylesheet" href="/Public/statics/acehome/css/reset.css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/common.css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/sign-revise.css">
+    <script src="/Public/statics/acehome/js/jquery-1.8.3.min.js"></script>
+    <script src="/Public/statics/acehome/js/rem.js"></script>
+    <script src="/Public/statics/acehome/js/sign-revise.js"></script>
+</head>
+<body>
+<div id="warmp" class="warmp">
+    <header class="header">
+        <h2><a href="/index.php/Home/Sign/sign_detail"></a>修改报名信息</h2>
+    </header>
+    <section class="container">
+        <div class="sign-revise">
+            <ul>
+                <li>
+                    <dl>
+                        <dt>姓 名</dt>
+                        <dd><input type="text" placeholder="请填写姓名"></dd>
+                    </dl>
+                </li>
+                <li>
+                    <dl>
+                        <dt>电 话</dt>
+                        <dd><input type="text" placeholder="请填写电话"></dd>
+                    </dl>
+                </li>
+                <li>
+                    <dl>
+                        <dt>年 龄</dt>
+                        <dd><input type="text" placeholder="请填写年龄"></dd>
+                    </dl>
+                </li>
+                <li>
+                    <dl>
+                        <dt>性 别</dt>
+                        <dd>
+                            <label class="active"><em><i></i></em><input type="radio" name="sex" value="男" checked>男</label>
+                            <label><em><i></i></em><input type="radio" name="sex" value="女">女</label>
+                        </dd>
+                    </dl>
+                </li>
+                <li>
+                    <dl>
+                        <dt>省 份</dt>
+                        <dd><div class="area" id="area">请选择区域</div></dd>
+                    </dl>
+                </li>
+                <li>
+                    <dl>
+                        <dt>详细地址</dt>
+                        <dd>
+                            <textarea name="" id="" cols="30" rows="3" placeholder="街道、楼牌号等"></textarea>
+                        </dd>
+                    </dl>
+                </li>
+                <li>
+                    <dl>
+                        <dt>备 注</dt>
+                        <dd><textarea name="" id="" cols="30" rows="3" placeholder="备注"></textarea></dd>
+                    </dl>
+                </li>
+            </ul>
+            <a href="javascript:;" class="btn1">保存</a>
+        </div>
+    </section>
+
+</div>
+<!-- 地区选择弹窗 -->
+<footer class="footer">
+    <div class="cPopup">
+        <div class="layer"></div>
+        <div class="PopupCon">
+            <h3>选择区域<i class="close"></i></h3>
+            <div class="address">
+                <div class="addressTab">
+                    <span class="active">请选择</span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="addressBox">
+                    <div class="addressCon" style="display:block;">
+                        <ul>
+                            <li><span>北京</span><i></i></li>
+                            <li><span>广州</span><i></i></li>
+                            <li><span>上海</span><i></i></li>
+                            <li><span>天津</span><i></i></li>
+                            <li><span>武汉</span><i></i></li>
+                            <li><span>长沙</span><i></i></li>
+                            <li><span>深圳</span><i></i></li>
+                            <li><span>北京</span><i></i></li>
+                            <li><span>广州</span><i></i></li>
+                            <li><span>上海</span><i></i></li>
+                            <li><span>天津</span><i></i></li>
+                            <li><span>武汉</span><i></i></li>
+                            <li><span>长沙</span><i></i></li>
+                            <li><span>深圳</span><i></i></li>
+                        </ul>
+                    </div>
+                    <div class="addressCon">
+                        <ul>
+                            <li><span>朝阳区</span><i></i></li>
+                            <li><span>海定区</span><i></i></li>
+                            <li><span>西城区</span><i></i></li>
+                            <li><span>东城区</span><i></i></li>
+                            <li><span>朝阳区</span><i></i></li>
+                            <li><span>海定区</span><i></i></li>
+                            <li><span>西城区</span><i></i></li>
+                            <li><span>东城区</span><i></i></li>
+                            <li><span>朝阳区</span><i></i></li>
+                            <li><span>海定区</span><i></i></li>
+                            <li><span>西城区</span><i></i></li>
+                            <li><span>东城区</span><i></i></li>
+                            <li><span>朝阳区</span><i></i></li>
+                            <li><span>海定区</span><i></i></li>
+                            <li><span>西城区</span><i></i></li>
+                            <li><span>东城区</span><i></i></li>
+                        </ul>
+                    </div>
+                    <div class="addressCon">
+                        <ul>
+                            <li><span>街道1</span><i></i></li>
+                            <li><span>街道2</span><i></i></li>
+                            <li><span>街道3</span><i></i></li>
+                            <li><span>街道4</span><i></i></li>
+                            <li><span>街道5</span><i></i></li>
+                            <li><span>街道6</span><i></i></li>
+                            <li><span>街道7</span><i></i></li>
+                            <li><span>街道8</span><i></i></li>
+                            <li><span>街道9</span><i></i></li>
+                            <li><span>街道10</span><i></i></li>
+                            <li><span>街道11</span><i></i></li>
+                            <li><span>街道12</span><i></i></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!-- $Id: goods_list.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>预约系统 - 预约列表 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css" />
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css" />
+<link href="/tpl/Public/css/page.css" rel="stylesheet" type="text/css" />
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+
+<h1><!-- 
+<span class="action-span"><a href="{:U('Admin/Make/control_xls')}">数据导出</a></span>
+<span class="action-span"><a href="{:U('Admin/Make/control_add')}">添加新预约</a></span> -->
+<span class="action-span1"><a href="{:U('Admin/Index/welcome')}">预约系统</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/control_show',array('sign'=>1))}">今日预约信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/control_show',array('sign'=>2))}">今日添加信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/control_show',array('sign'=>3))}">全部信息列表</a> </span>
+<div style="clear:both"></div>
+</h1>
+<!-- 预约搜索 -->
+<!-- $Id: goods_search.htm 16790 2009-11-10 08:56:15Z wangleisvn $ -->
+<div class="form-div">
+  <form action="{:U('Admin/Make/zyfx_search')}" name="searchForm" method="post">
+    <img src="__ADMIN_ACEADMIN__/avatars/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" /> 
+    时间段   <input type="text" id="yuyuetime" name="start" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/>
+        <input type="text" id="yuyuetime" name="end" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/>
+    <!-- 专家 -->
+    <select name="expert">
+      <option value="">所有专家</option>
+        <option value="朱世杰">朱世杰</option>
+        <option value="钟伟">钟伟</option>
+        <option value="李佩文">李佩文</option>
+        <option value="陈淑艳">陈淑艳</option>
+    </select>
+    住院次数：1次<input type="radio" name="zycs" value="1"/>2次<input type="radio" name="zycs" value="2"/>3次及以上<input type="radio" name="zycs" value="3"/>
+    <input type="submit" value=" 搜索 " class="button" />
+  </form>
+</div>
+
+<!-- 商品列表 -->
+<form method="post" action="" name="listForm" onsubmit="return confirmSubmit(this)">
+  <!-- start goods list -->
+  <div class="list-div" id="listDiv">
+<table cellpadding="3" cellspacing="1">
+  <tr>
+    <th><span>病历号</span></th>
+    <th><span>患者姓名</span></th>
+    <th><span>患者性别</span></th>
+    <th><span>患者年龄</span></th>
+    <th><span>住院次数</span></th>
+    <th><span>门诊医师</span></th>
+    <th><span>主治医师</span></th>
+    <th><span>科室</span></th>
+    <th><span>入院日期</span></th>
+    <th><span>出院日期</span></th>
+    <th><span>住院天数</span></th>
+    <th>详情</th>
+  </tr>
+    <?php foreach ($data as $key => $va): ?>
+  <tr>
+    <!-- <td align="center"><?php echo ++$i ?></td> -->
+    <td align="center" class="first-cell" style=""><span><?php echo $va['blh']; ?></span></td>
+    <td align="center" class="first-cell" style=""><span><?php echo $va['name']; ?></span></td>
+    <td align="center"><span><?php echo $va['gender']; ?></span></td>
+    <td align="center"><span><?php echo $va['age']; ?></span></td>
+    <td align="center"><span><?php echo $va['num']; ?></span></td>
+    <td align="center" class="first-cell" style=""><span><?php echo $va['mzys']; ?></span></td>
+    <td align="center"> <span><?php echo $va['zzys']; ?></span></td>
+    <td align="center"><span><?php echo $va['ks']; ?></span></td>
+    <td align="center"><span><?php echo date("Y-m-d",$va['ryrq']); ?></span></td>
+    <td align="center"><span><?php echo date("Y-m-d",$va['cyrq']); ?></span></td>
+    <td align="center"><span><?php echo $va['zyts']; ?></span></td>
+    <td align="center">
+      <a href="{:U('Admin/Make/zyfxinfo',array('blh'=>$va['blh']))}" title="查看">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_view.gif" width="16" height="16" border="0" />
+      </a>
+    </td> 
+  </tr>
+<?php endforeach ?>
+  </table>
+<!-- end goods list -->
+
+<!-- 分页 -->
+<table id="page-table" cellspacing="0">
+  <tr>
+    <td align="center" nowrap="true" >
+          <!-- $Id: page.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+    <div class="pagination">
+　　    {$page}
+    </div>
+    </td>
+  </tr>
+</table>
+
+</div>
+</form>
+
+</body>
+</html>

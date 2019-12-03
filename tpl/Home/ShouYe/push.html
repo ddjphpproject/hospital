@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>推送消息</title>
+    <link rel="stylesheet" href="/Public/statics/acehome/css/reset.css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/common.css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/push.css">
+    <script src="/Public/statics/acehome/js/jquery-1.8.3.min.js"></script>
+    <script src="/Public/statics/acehome/js/rem.js"></script>
+    <script src="/Public/statics/acehome/js/push.js"></script>
+</head>
+<body>
+<div id="warmp" class="warmp">
+    <header class="header">
+        <h2><a href="/index.php/Home/ShouYe/portrait"></a>推送消息</h2>
+    </header>
+    <section class="container">
+        <div class="push">
+            <dl>
+                <dt>活动信息</dt>
+                <dd id="choice"><span id="activity">请选择</span></dd>
+                <input type="hidden" name="condition" id="condition" value="<?php echo $condition;?>"/>
+            </dl>
+            <div class="channel">
+                <label><i><em></em></i><input type="checkBox" name="pushStyle" value="1">短信</label>
+                <label><i><em></em></i><input type="checkBox" name="pushStyle" value="2">站内消息</label>
+                <label><i><em></em></i><input type="checkBox" name="pushStyle" value="3">微信</label>
+
+            </div>
+            <a href="#" class="send-btn" id="sendmsg">发送</a>
+        </div>
+    </section>
+</div>
+<!-- 弹窗 -->
+<footer class="footer">
+    <div class="cPopup">
+        <div class="layer"></div>
+        <div class="PopupCon">
+            <h3><a href="javascript:;" class="cancel">取消</a><a href="javascript:;" class="ok">确定</a></h3>
+            <ul>
+                <foreach name="activity" item="activity">
+                    <li><label><span value="{$activity.id}">{$activity.name}</span><input type="radio" name="hd"><i><em></em></i></label></li>
+                </foreach>
+            </ul>
+        </div>
+    </div>
+</footer>
+</body>
+<script>
+    $('#sendmsg').click(function () {
+
+    var huodong_name = $('#activity').text();
+
+
+
+
+        var list=document.getElementsByClassName("active")
+
+        var send_way = new Array();
+        var str = '';
+        var num ='';
+        for(var i=0;i<list.length;i++){
+            str = list[i].innerHTML.replace(/<\/?.+?>/g,"") ;
+            if(str == '短信'){
+                num = 1;
+            }else if(str == '站内消息'){
+                num = 2;
+            }else if(str == '微信'){
+                num = 3;
+            }
+            send_way.push(num);
+        }
+
+        send_way = uniq(send_way);
+
+        $.ajax({
+            type: "POST",
+            url: "{:U('Admin/Analyze/sendMessage')}",
+            data: {activity: huodong_name, send_way: send_way, condition: $("#condition").val()},
+            dataType: "json",
+            beforeSend: function (XMLHttpRequest) {
+                //此处可添加等待状态
+            },
+            success: function (data) {
+                if (data.code == 100) {
+                    $('#successson').html('');
+                    $('#failson').html('');
+                    $('#success').css("display", "none");
+                    $('#fail').css("display", "none");
+                    $('#success').css("display", "block");
+                    $('#successson').html(data.msg);
+                    alert('推送成功');
+                }
+                else if (data.code == 200) {
+                    $('#successson').html('');
+                    $('#failson').html('');
+                    $('#success').css("display", "none");
+                    $('#fail').css("display", "none");
+                    $('#fail').css("display", "block");
+                    $('#failson').html(data.msg);
+                    alert('推送失败');
+
+                }
+            }
+        });
+    });
+
+    function uniq(array) {
+
+        var temp = []; //一个新的临时数组
+        for (var i = 0; i < array.length; i++) {
+            if (temp.indexOf(array[i]) == -1) {
+                temp.push(array[i]);
+            }
+        }
+        return temp;
+    }
+</script>
+
+
+</html>

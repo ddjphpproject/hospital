@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<title>预约系统 - 修改预约 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css">
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css">
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+
+<h1>
+<span class="action-span"><a href="{:U('Admin/Make/index')}">预约列表</a></span>
+<span class="action-span1"><a href="{:U('Admin/Index/index')}">预约系统</a> </span><span id="search_id" class="action-span1"> - 修改预约 </span>
+<div style="clear:both"></div>
+</h1>
+
+<div class="tab-div">
+    <div id="tabbar-div">
+      <p>
+        <span class="tab-front" id="general-tab">修改患者信息</span>
+      </p>
+    </div>
+    <div id="tabbody-div">
+      <form enctype="multipart/form-data" action="{:U('Admin/Analyze/edit')}" method="post" onSubmit="return checkbaoming();" name="theForm">
+<foreach name="data" item="data">
+        <table id="general-table" width="90%" align="center">
+          <tbody><tr>
+            <td class="label">患者姓名：</td>
+            <td><input name="name" id="name" style="float:left;color:;" size="30" type="text" value="<?php echo $data['name']; ?>">
+            <span class="require-field">*</span></td>
+          </tr>
+      <tr>
+            <td class="label">患者别名：</td>
+            <td><input name="alias" style="float:left;color:;" size="30" type="text"  value="<?php echo $data['alias']; ?>"></td>
+          </tr>
+      <tr>
+            <td class="label">患者电话：</td>
+            <td><input name="phone" id="phone" style="float:left;color:;" size="30" type="text" value="<?php echo $data['phone']; ?>"><span class="require-field">*</span></td>
+          </tr>
+      <tr>
+            <td class="label">患者电话2：</td>
+            <td><input name="phones" style="float:left;color:;" size="30" type="text" value="<?php echo $data['phones']; ?>"></td>
+          </tr>
+          <tr>
+            <td class="label">性别：</td>
+            <td>
+        <input class="radio" id="radio" type="radio" name="sex" value="男" <?php if($data['sex']=='男') echo("checked");?>/> 男 
+        <input class="radio" id="radio" type="radio" name="sex" value="女" <?php if($data['sex']=='女') echo("checked");?>/> 女
+        <input class="radio" id="radio" type="radio" name="sex" value="不详" <?php if($data['sex']=='不详') echo("checked");?>/>不详
+        <span class="require-field">*</span>
+      </td>
+          </tr>
+                   <tr>
+            <td class="label">初/复诊：</td>
+            <td>
+        <input class="radio2" type="radio" name="again" value="0" <?php if($data['again']=='0') echo("checked");?>/> 初诊
+        <input class="radio2" type="radio" name="again" value="1" <?php if($data['again']=='1') echo("checked");?>/> 复诊
+        <span class="require-field">*</span>
+      </td>
+          </tr>
+      <tr>
+            <td class="label">年龄：</td>
+            <td><input name="age" id="age" style="float:left;color:;" size="30" type="text" value="<?php echo $data['age']; ?>"></td>
+          </tr>
+      <tr>
+            <td class="label">家庭住址：</td>
+            <td>
+              <select name="address" id="address">
+              <option value="">请选择...</option>
+              <foreach name="address" item="address">
+              <option value="{$address['area_name']}" >{$address['area_name']}</option>
+              </foreach>
+              </select>
+
+              <select name="city" id="city" style="display:none;">
+              <option value="">请选择...</option>
+              <foreach name="rcity" item="rcity">
+              <option value="{$rcity['area_name']}" >{$rcity['area_name']}</option>
+              </foreach>
+              </select>
+              <input type="hidden" value="" id="rcity">
+
+              <select name="zone" id="zone" style="display:none;">
+              <option value="">请选择...</option>
+              <foreach name="rzone" item="rzone">
+              <option value="{$rzone['area_name']}" >{$rzone['area_name']}</option>
+              </foreach>
+              </select>
+              <input type="hidden" value="" id="rzone">
+            </td>
+          </tr>
+  
+          <tr>
+            <td class="label">预约时间：</td>
+            <td><input type="text" id="yuyuetime" name="yuyuetime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px" value="<?php echo date('Y-m-d H:i:s',$make['yuyuetime']); ?>" readonly="readonly"/>
+            </td>
+          </tr>
+      <tr>
+            <td class="label">预约专家：</td>
+            <td><input name="yuyuezj" style="float:left;color:;" size="30" type="text"  value="<?php echo $data['yuyuezj']; ?>" readonly="readonly">
+            </td>
+          </tr>
+      <tr>
+            <td class="label">预约科室：</td>
+            <td><input name="yuyueks" style="float:left;color:;" size="30" type="text"  value="<?php echo $data['yuyueks']; ?>" readonly="readonly">
+            </td>
+          </tr>
+      <tr>
+            <td class="label">预约病种：</td>
+            <td><input name="yuyuebz" style="float:left;color:;" size="30" type="text"  value="<?php echo $data['yuyuebz']; ?>" readonly="readonly">
+            </td>
+          </tr>
+      <tr>
+            <td class="label">渠道来源：</td>
+            <td><input name="channel" style="float:left;color:;" size="30" type="text"  value="<?php echo $data['channel']; ?>" readonly="readonly">
+            </td>
+          </tr>
+      <tr>
+
+            <td class="label">预约方式：</td>
+            <td><input name="source" style="float:left;color:;" size="30" type="text"  value="<?php echo $data['source']; ?>" readonly="readonly">
+            </td>
+          </tr>
+<script>  
+
+    $("#address").val("<?php echo $data['province']; ?>"); 
+    $("#city").val("<?php echo $data['city']; ?>"); 
+    $("#rcity").val("<?php echo $data['city']; ?>"); 
+    $("#zone").val("<?php echo $data['zone']; ?>"); 
+    $("#rzone").val("<?php echo $data['zone']; ?>");
+        $("#channel").val("<?php echo $data['channel']; ?>"); 
+          $("#sources").val("<?php echo $data['source']; ?>"); 
+
+</script> 
+      <tr>
+            <td class="label">
+            <a href="javascript:showNotice('noticeSellerNote');" title="点击此处查看提示信息"><img src="__ADMIN_ACEADMIN__/avatars/notice.gif" alt="点击此处查看提示信息" width="16" height="16" border="0"></a> 患者备注： </td>
+            <td><textarea name="remark" cols="40" rows="3" ><?php echo $data['remark']; ?></textarea><br>
+            <span class="notice-span" style="display:block" id="noticeSellerNote">是否有意向住院或病人亲诊或家人代诊等信息备注</span></td>
+          </tr>
+      <tr>
+            <td class="label">
+            <a href="javascript:showNotice('noticeSellerNote');" title="点击此处查看提示信息"><img src="__ADMIN_ACEADMIN__/avatars/notice.gif" alt="点击此处查看提示信息" width="16" height="16" border="0"></a> 病情描述： </td>
+            <td><textarea name="dialogue" cols="40" rows="3" ><?php echo $data['dialogue']; ?></textarea><br>
+            <span class="notice-span" style="display:block" id="noticeSellerNote">患者病情，交流对话</span></td>
+          </tr>
+        </tbody>
+        </table>
+    </foreach>
+        <div class="button-div">
+          <input name="id" value="<?php echo $data['id']; ?>" type="hidden">
+          <input value=" 确定 " class="button" onSubmit="return checkbaoming();" type="submit">
+          <input value=" 重置 " class="button" type="reset">
+        </div>
+      </form>
+    </div>
+</div>
+<script language="javascript">
+    function checkbaoming(){
+        var name = $("#name").val().trim();
+        var phone = $("#phone").val().trim();
+        var yuyuetime = $("#yuyuetime").val().trim();
+        var sex=$('input:radio[name="sex"]:checked').val();
+        var zj=$("#yuyuezj").val();    
+        if(name=="")
+        {
+                alert("未添加姓名！");
+                return false;
+        }
+        else if(phone=="")
+        {
+                alert("电话号码不能为空！");
+                return false;
+        }
+        else if(sex==null)
+        {
+            alert('性别未选择！');                   
+            return false;
+        }
+        else if(yuyuetime=="")
+        {
+            alert('预约时间未选择！');                   
+            return false;
+        }
+        else if(zj=="")
+        {
+            alert('预约专家未选择！');                   
+            return false;
+        }
+    }
+</script>
+<script type="text/javascript">
+    function isnull(val) {
+
+        var str = val.replace(/(^\s*)|(\s*$)/g, '');//去除空格;
+
+        if (str == '' || str == undefined || str == null) {
+            // console.log('空')
+            return false;
+        } else {
+            return true;
+            // console.log('非空');
+        }
+    }
+    var rcity = $('#rcity').val();
+    var cityv = isnull(rcity);
+    // alert(cityv);
+    if(cityv)
+    {
+      // alert(1);
+      $('#city').removeAttr('style');
+    }
+    else
+    {
+      // alert(123);
+      $('#zone').remove();
+    }
+    var rzone = $('#rzone').val();
+    var zonev = isnull(rzone);
+    // alert(zonev);
+    if(zonev)
+    {
+      // alert(1);
+      $('#zone').removeAttr('style');
+    }
+  $(function(){
+       $('#address').change(function(){
+         $.ajax({
+             type: "POST",
+             url: "{:U('areaChange')}",
+             data: {address:$("#address").val()},
+             dataType: "json",
+             success: function(data){
+                $('#city').remove();
+                $('#zone').remove();
+                $('#address').after(data);
+                }
+          });
+      });
+
+      $(document).on('change','#city',function(){
+         $.ajax({
+             type: "POST",
+             url: "{:U('areaChange')}",
+             data: {city:$("#city").val()},
+             dataType: "json",
+             success: function(data){
+                $('#zone').remove();
+                $('#city').after(data);
+                }
+          });
+      });
+
+
+        $('#channel').change(function(){
+         $.ajax({
+             type: "POST",
+             url: "{:U('sourceGet')}",
+             data: {mode:$("#channel").val()},
+             dataType: "json",
+             success: function(data){
+
+                $('#sources').empty();
+                $('#sources').prepend(data);
+                }
+          });
+      });
+  });
+</script>
+</body>
+</html> 

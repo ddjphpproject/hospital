@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<title>预约</title>
+	<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css" />
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css" />
+<link href="/tpl/Public/css/page.css" rel="stylesheet" type="text/css" />
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+
+<h1>
+<span class="action-span"><a href="{:U('Admin/Make/add_make')}">添加新预约</a></span>
+<span class="action-span1"><a href="{:U('Admin/Index/welcome')}">预约系统</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/index',array('sign'=>1))}">今日预约信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/index',array('sign'=>2))}">今日添加信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/index',array('sign'=>3))}">全部信息列表</a> </span>
+<div style="clear:both"></div>
+</h1>
+<!-- 预约搜索 -->
+<!-- $Id: goods_search.htm 16790 2009-11-10 08:56:15Z wangleisvn $ -->
+<div class="form-div">
+  <form action="{:U('Admin/Make/search')}" name="searchForm" method="post">
+    <img src="__ADMIN_ACEADMIN__/avatars/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
+        <!-- 科室 -->
+    <select name="yuyueks">
+      <option value="">所有科室</option>
+      <foreach name="govern" item="g">
+        <option value="{$g['ksname']}">{$g['ksname']}</option>
+      </foreach>
+    </select>
+    <!-- 专家 -->
+    <select name="yuyuezj">
+      <option value="">所有专家</option>
+      <foreach name="expert" item="e">
+        <option value="{$e['zjname']}">{$e['zjname']}</option>
+      </foreach>
+    </select>
+    <!-- 病种 -->
+    <select name="yuyuebz">
+      <option value="">所有病种</option>
+      <foreach name="entity" item="e">
+        <option value="{$e['bzname']}">{$e['bzname']}</option>
+      </foreach>
+    </select>
+           <!-- 渠道 -->
+    <select name="channel">
+      <option value=''>渠道</option>
+      <foreach name="channel" item="c">
+        <option value="{$c['name']}">{$c['name']}</option>
+      </foreach>
+    </select>
+    <!-- 来源 -->
+    <select name="source">
+      <option value=''>来源</option>
+      <foreach name="source" item="s">
+        <option value="{$s['name']}">{$s['name']}</option>
+      </foreach>
+    </select>
+        <!-- 关键字 -->
+    预约时间   <input type="text" id="yuyuetime" name="start" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/>
+        <input type="text" id="yuyuetime" name="end" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/>
+    姓名 <input type="text" name="name" size="15" />
+    电话 <input type="text" name="phone" size="15" />
+    <input type="submit" value=" 搜索 " class="button" />
+  </form>
+</div>
+				        <form action="{:U('Home/Index/xls')}" method="post">
+				        	  <div class="list-div" id="listDiv">
+				<table cellpadding="3" cellspacing="1">
+  <tr>
+    <th><span>序号</span></th>
+    <th><span>话务员</span></th>
+	<th><span>患者编号</span></th>
+    <th><span>患者姓名</span></th>
+    <th><span>电话</span></th>
+    <th><span>到诊时间</span></th>
+    <th><span>预约专家</span></th>
+    <th><span>病种类型</span></th>
+    <th><span>是否到诊</span></th>
+    <th><span>到诊类型</span></th>
+    <th><span>是否消费</span></th>
+    <th><span>是否住院</span></th>
+    <th><span>提交时间</span></th>
+  <tr>
+    <?php foreach ($make as $key => $va): ?>
+  <tr>
+    <td align="center"><?php echo ++$i ?></td>
+    <td align="center" class="first-cell" style=""><span><?php echo $va['username']; ?></span></td>
+    <td align="center"><span><?php echo $va['id']; ?></span></td>
+    <td align="center"><span><?php echo $va['name']; ?></span></td>
+	  <td align="center" class="first-cell" style=""><span><?php echo $va['phone']; ?></span></td>
+    <td align="center"><span><?php echo date('Y-m-d H:i:s',$va['yuyuetime']); ?></span></td>
+	  <td align="center"> <span><?php echo $va['yuyuezj']; ?></span></td>
+    <td align="center"><span><?php echo $va['yuyuebz']; ?></span></td>
+    <td align="center"><img src="__ADMIN_ACEADMIN__/avatars/<?php echo $va['diagnosis']; ?>.gif" /></td>
+    <td align="center"><span><?php if($va['type']==0){ echo '预约到诊'; }else{ echo '自然到诊'; }  ?></span></td>
+    <td align="center"><img src="__ADMIN_ACEADMIN__/avatars/<?php echo $va['consumption']; ?>.gif" /></td>
+    <td align="center"><img src="__ADMIN_ACEADMIN__/avatars/<?php echo $va['hospital']; ?>.gif" /></td>
+    <td align="center"><span><?php echo date('Y-m-d H:i:s',$va['time']); ?></span></td>
+  </tr>
+<?php endforeach ?>
+  </table>
+              <input type="submit" value="生成xls格式表格">
+        </form>
+        </div>
+</body></html>

@@ -1,0 +1,97 @@
+<!-- $Id: goods_list.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>预约系统 - 糯米点评添加 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css" />
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css" />
+<link href="/tpl/Public/css/page.css" rel="stylesheet" type="text/css" />
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+
+<h1>
+<span class="action-span"><a href="{:U('Admin/Make/nuomiAdd')}">添加新预约</a></span>
+<span class="action-span1"><a href="{:U('Admin/Index/welcome')}">预约系统</a> </span>
+<!-- <span class="action-span1">-----<a href="{:U('Admin/Make/control_show',array('sign'=>1))}">今日预约信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/control_show',array('sign'=>2))}">今日添加信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/control_show',array('sign'=>3))}">全部信息列表</a> </span> -->
+<div style="clear:both"></div>
+</h1>
+<!-- 预约搜索 -->
+<!-- $Id: goods_search.htm 16790 2009-11-10 08:56:15Z wangleisvn $ -->
+<!-- 商品列表 -->
+<form method="post" action="" name="listForm" onsubmit="return confirmSubmit(this)">
+  <!-- start goods list -->
+  <div class="list-div" id="listDiv">
+<table cellpadding="3" cellspacing="1">
+  <tr>
+    <th><span>序号</span></th>
+    <th><span>预约项目</span></th>
+    <th><span>预约金额</span></th>
+    <th><span>预约时间</span></th>
+    <th><span>提交时间</span></th>
+    <th><span>预约方式</span></th>
+    <th>操作</th>
+  </tr>
+    <foreach name='result' item="res">
+  <tr>
+    <td align="center"><?php echo ++$i ?></td>
+    <td align="center" class="first-cell" style=""><span>{$res.project}</span></td>
+    <td align="center" class="first-cell" style=""><span>{$res.price}</span></td>
+    <td align="center"><span><?php echo date('Y-m-d H:i:s',$res['yuyuetime']); ?></span></td>
+    <td align="center"><span><?php echo date('Y-m-d H:i:s',$res['time']); ?></span></td>
+    <td align="center"><span>{$res.source}</span></td>
+    <td align="center">
+      <a href="{:U('Admin/Make/nuomiEdit',array('id'=>$res['id']))}" title="查看">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_view.gif" width="16" height="16" border="0" />
+      </a>
+      <a href="javascript:if(confirm('您确实要把该信息放入回收站吗？'))location='{:U('Admin/Make/nuomiDelete',array('id'=>$res['id']))}'" title="回收站">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_trash.gif" width="16" height="16" border="0" />
+      </a>
+    </td>
+  </tr>
+  </foreach>
+  </table>
+<!-- end goods list -->
+
+<!-- 分页 -->
+<table id="page-table" cellspacing="0">
+  <tr>
+    <td align="center" nowrap="true" >
+          <!-- $Id: page.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+    <div class="pagination">
+　　    {$page}
+    </div>
+    </td>
+  </tr>
+</table>
+
+</div>
+</form>
+
+</body>
+<script type="text/javascript">
+  $(function(){
+        $('#channel').change(function(){
+         $.ajax({
+             type: "POST",
+             url: "{:U('sourceGet')}",
+             data: {mode:$("#channel").val()},
+             dataType: "json",
+             success: function(data){
+
+                $('#sources').empty();
+                $('#sources').prepend(data);
+                }
+          });
+      });
+
+  });
+</script>
+</html>

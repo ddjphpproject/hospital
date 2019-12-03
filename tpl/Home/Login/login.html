@@ -1,0 +1,57 @@
+<!-- <html!>
+
+管理员登录：<form method="post"> 用户名：<input type="text" name="username" value="admin"> 密码：<input type="text" name="password" value="123456"> <input type="submit" value="登录"></form><br/> 
+
+
+
+</html!> -->
+<!doctype html>
+<html lang="en-US">
+<head>
+
+	<meta charset="utf-8">
+
+	<title>登录</title>
+<link type="text/css" rel="stylesheet" href="__ADMIN_ACEADMIN__/css/logn.css"/>
+	<!--[if lt IE 9]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+</head>
+
+<body>
+
+	<div id="login">
+
+<h2>
+<div style="
+    margin-left: 18px;
+"><span class="fontawesome-lock"><img src="http://yuyuecs.tianjianh.cn/Public/statics/aceadmin/images/header-ico.png" style="
+    width: 48px;
+    margin-top: -10px;
+    /* margin-right: -16px; */
+    /* margin-left: 23px; */
+"></span><span style="
+    margin-right: -40px;
+">北京天健医院客户智能管理系统</span></div></h2>
+
+		<form method="POST">
+
+			<fieldset>
+
+				<p><label for="email">用户名</label></p>
+				<p><input type="text" id="email" name="username"></p> <!-- JS because of IE support; better: placeholder="mail@address.com" -->
+
+				<p><label for="password">密码</label></p>
+				<p><input type="password" id="password" name="password"></p> <!-- JS because of IE support; better: placeholder="password" -->
+
+				<p><input type="submit" value="登录"></p>
+
+			</fieldset>
+
+		</form>
+
+	</div> <!-- end login -->
+
+</body>	
+</html>

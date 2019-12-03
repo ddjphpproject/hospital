@@ -1,0 +1,84 @@
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<title>预约系统 - 网约患者信息 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css">
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css">
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+
+</head>
+<body>
+
+<h1>
+<span class="action-span"><a href="{:U('Admin/Make/online_excel')}">网约患者信息导出</a></span>
+<span class="action-span1"><a href="#">预约系统</a> </span><span id="search_id" class="action-span1"> - 网约患者信息 </span>
+<div style="clear:both"></div>
+</h1>
+
+
+<!-- start goods form -->
+<div class="tab-div">
+    <!-- tab bar -->
+    <div id="tabbar-div">
+      <p>
+        <span class="tab-front" id="general-tab">网约患者信息导出</span>
+      </p>
+    </div>
+
+    <!-- tab body -->
+    <div id="tabbody-div">
+      <form enctype="multipart/form-data" action="{:U('Admin/Make/online_export')}" method="post" onSubmit="return required();" name="theForm">
+        <table id="general-table" width="90%" align="center">
+          <tbody>
+      <tr>
+            <td class="label">导出时间段：</td>
+            <td>
+              <input type="text" id="start" name="start" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width:200px"/>   --   <input type="text" id="end" name="end" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="Wdate" style="width:200px"/><span class="require-field">(此为患者看诊日期)日期较大在后</span>
+      </td>
+          </tr>
+<!--            <tr>
+            <td class="label">初/网约：</td>
+            <td>
+        <input class="radio2" type="radio" name="again" value="0" checked="checked" /> 初诊
+        <input class="radio2" type="radio" name="again" value="1" /> 网约
+        <span class="require-field">*</span>
+      </td>
+          </tr> -->
+      <tr>
+            <td class="label">看诊专家：</td>
+            <td>
+        <select name="expert" id="expert">
+          <option value="">请选择...</option>
+          <foreach name="expert" item="zj">
+          <option value="{$zj['zjname']}">{$zj['zjname']}</option>
+          </foreach>
+        </select>
+        <span class="require-field">可留空</span>
+      </td>
+          </tr>
+        </tbody></table>
+        <div class="button-div">
+          <input value=" 导出 " class="button" onSubmit="return checkbaoming();" type="submit">
+          <input value=" 重置 " class="button" type="reset">
+        </div>
+      </form>
+    </div>
+</div>
+</body>
+<script>
+//  表单验证
+  function required(){
+    if(document.getElementById("start").value=="" && document.getElementById("expert").value==""){
+      alert("至少选择一项 ！")
+      return false;
+    }
+    else{
+      return true
+    }
+  }
+  </script>
+</html>

@@ -1,0 +1,151 @@
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+<title>预约系统 - 百度糯米大众点评添加 </title>
+
+<meta name="robots" content="noindex, nofollow">
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css">
+
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css">
+
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+
+
+
+</head>
+<body>
+	<h1>
+		<span class="action-span"><a href="{:U('Admin/Make/nuomiAdd')}">数据添加</a></span>
+		<span class="action-span1"><a href="{:U('Admin/Index/welcome')}">预约系统</a> </span><span id="search_id" class="action-span1"> - 添加新预约 </span>
+		<div style="clear:both"></div>
+	</h1>
+
+<!-- start goods form -->
+
+<div class="tab-div">
+
+    <!-- tab bar -->
+
+    <div id="tabbar-div">
+
+      <p>
+
+        <span class="tab-front" id="general-tab">添加患者信息</span>
+
+      </p>
+
+    </div>
+
+
+
+    <!-- tab body -->
+
+    	<div id="tabbody-div">
+
+    	<form enctype="multipart/form-data" action="{:U('Admin/Make/nuomiAdd')}" method="post" onSubmit="return checkbaoming();" name="theForm">
+
+	    <table id="general-table" width="90%" align="center">
+	        <tbody>
+			    <tr>
+			        <td class="label">就诊项目：</td>
+			        <td><input name="project" id="project" style="float:left;color:;" size="30" type="text">
+			        <span class="require-field">*</span></td>
+			    </tr>
+
+			    <tr>
+			        <td class="label">项目价格：</td>
+			        <td><input name="price" id="price" style="float:left;color:;" size="30" type="text"></td>
+			    </tr>
+
+			    <tr>
+			        <td class="label">预约时间：</td>
+			        <td>
+			        <input type="text" id="yuyuetime" name="yuyuetime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/>
+			        <span class="require-field">*</span>   
+			        </td>
+			    </tr>
+
+				<tr>
+			        <td class="label">提交时间：</td>
+			        <td>
+			        <input type="text" id="time" name="time" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/>
+			        <span class="require-field">*</span>   
+			        </td>
+			    </tr>
+
+			    <tr>
+			        <td class="label">预约方式：</td>
+			        <td>
+			        <select name="source">
+			        	<option value="">请选择...</option>
+				        
+				        <option value="1">百度糯米</option>
+				        <option value="2">大众点评</option>
+			        </select>
+			      	</td>
+			    </tr>
+	    	</tbody>
+	    </table>
+
+        <div class="button-div">
+
+          <input value=" 确定 " class="button" onSubmit="return checkbaoming();" type="submit">
+
+          <input value=" 重置 " class="button" type="reset">
+
+        </div>
+
+        </form>
+
+    	</div>
+
+	</div>
+	<script language="javascript">
+
+	    function checkbaoming(){
+	        // var sex=$('input:radio[name="sex"]:checked').val();
+	        var project=$("#project").val();
+	        var price=$("#price").val();
+	        var yuyuetime=$("#yuyuetime").val();
+	        var time=$("#time").val();
+	        var source=$("#source").val();
+
+	        if(project=="")
+	        {
+	            alert('请填写预约项目！');
+	            return false;
+	        }
+	        else if(price == '')
+	        {
+	        	alert('请填写金额！');
+	            return false;
+	        }
+	        else if(yuyuetime == '')
+	        {
+	        	alert('请填写预约时间！');
+	            return false;
+	        }
+	        else if(time == '')
+	        {
+	        	alert('请填写提交时间！');
+	            return false;
+	        }
+	        else if(source == '')
+	        {
+	        	alert('请选择预约方式！');
+	            return false;
+	        }
+	    }
+	</script>
+	</body>
+</html>

@@ -1,0 +1,7626 @@
+<?php
+
+namespace Admin\Controller;
+
+header("Content-type: text/html; charset=utf-8");
+
+use Common\Controller\AdminBaseController;
+
+use Aliyun\Core\Config;
+
+use Aliyun\Core\Profile\DefaultProfile;
+
+use Aliyun\Core\DefaultAcsClient;
+
+use Aliyun\Api\Sms\Request\V20170525\SendSmsRequest;
+
+/**
+ * 科室
+ */
+
+class MakeController extends AdminBaseController{
+
+    /**
+     * 预约列表
+     */
+
+     //话务查看
+
+    public function index(){
+
+        $huawu=$_SESSION['user']['id'];
+
+        $beginToday = mktime(0,0,0,date('m'),date('d'),date('Y'));
+
+        $endToday = mktime(0,0,0,date('m'),date('d')+1,date('Y'))-1;
+
+        if(IS_GET){
+
+            $sign=I('get.sign');
+
+            if($sign == 3){
+
+                $where='a.recycle=0 and a.huawu='.$huawu;
+
+            }elseif($sign == 2){
+
+                $where='a.recycle=0 and a.huawu='.$huawu.' and a.time>'.$beginToday.' and  a.time<'.$endToday . ' and a.ordernum is null';
+
+            }else{
+
+                $where='a.recycle=0 and a.huawu='.$huawu.' and a.yuyuetime>'.$beginToday.' and a.yuyuetime<'.$endToday . ' and a.ordernum is null';
+
+            }
+
+        }else{
+
+            $where='a.recycle=0 and a.huawu='.$huawu.' and a.yuyuetime>'.$beginToday.' and a.yuyuetime<'.$endToday . ' and a.ordernum is null';
+
+        }
+
+        $m=M("Patient as a");
+
+        $p=getpage($m,$where,10);
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.yuyuetime asc')->select();
+
+        // dump($make);die;
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+            );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    //话务添加
+
+    public function add_make(){
+
+        if(IS_POST){
+
+            $post=I('post.');
+            
+            $make = M("Patient");
+            $province = $post['address'];
+            $city = $post['city'];
+            $zone = $post['zone'];
+            $pwhere = "area_name='$province' and area_parent_id=0";
+            $cwhere = "area_name='$city' and area_parent_id<>0";
+            $zwhere = "area_name='$zone' and area_parent_id<>0";
+            $m = M('area');
+            $pid = $m -> field('id') -> where($pwhere) -> find();
+            $pid = $pid['id'];
+            $cid = $m -> field('id') -> where($cwhere) -> find();
+            $cid = $cid['id'];
+            $zid = $m -> field('id') -> where($zwhere) -> find();
+            $zid = $zid['id'];
+            $data['name'] = $post['name'];
+
+            $data['alias'] = $post['alias'];
+
+            $data['phone'] = $post['phone'];
+
+            $data['phones'] = $post['phones'];
+
+            $data['sex'] = $post['sex'];
+
+            $data['again'] = $post['again'];
+
+            $data['age'] = $post['age'];
+
+            $data['address'] = $pid . "," . $cid . "," .$zid;
+            // echo "<pre/>";
+            // var_dump($data['address']);die;
+            $data['yuyuezj'] = $post['yuyuezj'];
+
+            $data['yuyueks'] = $post['yuyueks'];
+
+            $data['yuyuebz'] = $post['yuyuebz'];
+
+            $data['channel'] = $post['channel'];
+
+            $data['source'] = $post['source'];
+
+            $data['remark'] = $post['remark'];
+
+            $data['dialogue'] = $post['dialogue'];
+
+            $data['time']=time();
+
+            $data['huawu']=$_SESSION['user']['id'];
+
+            $data['yuyuetime']=strtotime($post['yuyuetime']);
+
+            if($data['yuyuezj']==''){
+
+                $data['yuyuezj']='其他';
+
+            }
+
+            if($data['yuyueks']==''){
+
+                $data['yuyueks']='综合';
+
+            }
+
+            if($data['channel']==''){
+
+                $data['channel']='其他';
+
+            }
+
+            if($data['name'] == ""){
+
+                $this->error('添加失败');
+
+            }
+
+            $result = $make->data($data)->add();
+
+            if ($result) {
+
+                $xpflag = false;
+
+            $ctflag = false;
+
+            $jcdflag = false;
+
+            $shflag = false;
+
+            $zlflag = false;
+
+            $hcflag = false;
+
+            $qtflag = false;
+
+            $file = $_FILES;
+
+        if($file['xp']['tmp_name'][0] != ''){
+
+            foreach ($file['xp']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['ct']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['jcd']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['sh']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['zl']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['hc']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['qt']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+        //循环遍历错误信息
+
+            foreach ($file['xp']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $xpflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('X片出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['ct']['tmp_name'][0] != ''){
+
+            foreach ($file['ct']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $ctflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('CT出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['jcd']['tmp_name'][0] != ''){
+
+            foreach ($file['jcd']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $jcdflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('病理报告中图片出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['sh']['tmp_name'][0] != ''){
+
+            foreach ($file['sh']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $shflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('生化化验中图片出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['zl']['tmp_name'][0] != ''){
+
+            foreach ($file['zl']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $zlflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('肿瘤标志物化验中图片出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['hc']['tmp_name'][0] != ''){
+
+            foreach ($file['hc']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $hcflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('核磁中图片出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['qt']['tmp_name'][0] != ''){
+
+            foreach ($file['qt']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $qtflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('其他中图片出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($xpflag || $ctflag || $jcdflag || $shflag || $zlflag || $hcflag || $qtflag){
+
+            $upload = new \Think\Upload();
+
+            $info = $upload -> upload();
+
+            //循环遍历组装需要的二维数组
+
+            // echo "<pre/>";
+
+            // var_dump($info);die;
+
+            $xp = array();
+
+            $ct = array();
+
+            $jcd = array();
+
+            $sh = array();
+
+            $zl = array();
+
+            $hc = array();
+
+            $qt = array();
+
+            $image = new \Think\Image();
+
+            foreach ($info as $key => $value) {
+
+                if($value['key'] == 'xp'){
+
+                    $xpc[] = $value;
+
+                }
+
+                if($value['key'] == 'ct'){
+
+                    $ctc[] = $value;
+
+                }
+
+                if($value['key'] == 'jcd'){
+
+                    $jcdc[] = $value;
+
+                }
+
+                if($value['key'] == 'sh'){
+
+                    $shc[] = $value;
+
+                }
+
+                if($value['key'] == 'zl'){
+
+                    $zlc[] = $value;
+
+                }
+
+                if($value['key'] == 'hc'){
+
+                    $hcc[] = $value;
+
+                }
+
+                if($value['key'] == 'qt'){
+
+                    $qtc[] = $value;
+
+                }
+
+            }
+
+            foreach ($ctc as $key => $value) {
+
+                $ct[$key]['patient'] = $result;
+
+                $ct[$key]['userid'] = $_SESSION['user']['id'];
+
+                $ct[$key]['addtime'] = time();
+
+                 $ct[$key]['ct']  = $cty = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($ct[$key]['ct']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $ctsma = $upload -> rootPath . $value['savepath'] . 'ctsma_' . $value['savename'];
+
+                $image -> save($ctsma);
+
+                //将数据补充到数组中
+
+                $ct[$key]['ct'] = $cty;
+
+                // $ct[$key]['pics_mid'] = $mid;
+
+                $ct[$key]['ctsmall'] = $ctsma;
+
+            }
+
+            // var_dump($ct);die;
+
+            $resu = M('imagect') -> addAll($ct);
+
+            foreach ($xpc as $key => $value) {
+
+                $xp[$key]['patient'] = $result;
+
+                $xp[$key]['userid'] = $_SESSION['user']['id'];
+
+                $xp[$key]['addtime'] = time();
+
+                 $xp[$key]['xp'] = $xpy = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($xp[$key]['xp']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $xpsma = $upload -> rootPath . $value['savepath'] . 'xpsma_' . $value['savename'];
+
+                $image -> save($xpsma);
+
+                //将数据补充到数组中
+
+                $xp[$key]['xp'] = $xpy;
+
+                // $xp[$key]['pics_mid'] = $mid;
+
+                $xp[$key]['xpsmall'] = $xpsma;
+
+            }
+
+            $res = M('imagexp') -> addAll($xp);
+
+            // echo "<pre/>";
+
+            // var_dump($ct);die;
+
+            foreach ($jcdc as $key => $value) {
+
+                $jcd[$key]['patient'] = $result;
+
+                $jcd[$key]['userid'] = $_SESSION['user']['id'];
+
+                $jcd[$key]['addtime'] = time();
+
+                $jcd[$key]['jcd'] = $jcdy = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($jcd[$key]['jcd']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $jcdsma = $upload -> rootPath . $value['savepath'] . 'jcdsma_' . $value['savename'];
+
+                $image -> save($jcdsma);
+
+                //将数据补充到数组中
+
+                $jcd[$key]['jcd'] = $jcdy;
+
+                // $jcd[$key]['pics_mid'] = $mid;
+
+                $jcd[$key]['jcdsmall'] = $jcdsma;
+
+            }
+
+            $resul = M('imagejcd') -> addAll($jcd);
+
+            foreach ($shc as $key => $value) {
+
+                $sh[$key]['patient'] = $result;
+
+                $sh[$key]['userid'] = $_SESSION['user']['id'];
+
+                $sh[$key]['addtime'] = time();
+
+                $sh[$key]['sh'] = $shy = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($sh[$key]['sh']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $shsma = $upload -> rootPath . $value['savepath'] . 'shsma_' . $value['savename'];
+
+                $image -> save($shsma);
+
+                //将数据补充到数组中
+
+                $sh[$key]['sh'] = $shy;
+
+                // $sh[$key]['pics_mid'] = $mid;
+
+                $sh[$key]['shsmall'] = $shsma;
+
+            }
+
+            $ressh = M('imagesh') -> addAll($sh);
+
+            foreach ($zlc as $key => $value) {
+
+                $zl[$key]['patient'] = $result;
+
+                $zl[$key]['userid'] = $_SESSION['user']['id'];
+
+                $zl[$key]['addtime'] = time();
+
+                $zl[$key]['zl'] = $zly = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($zl[$key]['zl']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $zlsma = $upload -> rootPath . $value['savepath'] . 'zlsma_' . $value['savename'];
+
+                $image -> save($zlsma);
+
+                //将数据补充到数组中
+
+                $zl[$key]['zl'] = $zly;
+
+                // $zl[$key]['pics_mid'] = $mid;
+
+                $zl[$key]['zlsmall'] = $zlsma;
+
+            }
+
+            $reszl = M('imagezl') -> addAll($zl);
+
+            foreach ($hcc as $key => $value) {
+
+                $hc[$key]['patient'] = $result;
+
+                $hc[$key]['userid'] = $_SESSION['user']['id'];
+
+                $hc[$key]['addtime'] = time();
+
+                $hc[$key]['hc'] = $hcy = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($hc[$key]['hc']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $hcsma = $upload -> rootPath . $value['savepath'] . 'hcsma_' . $value['savename'];
+
+                $image -> save($hcsma);
+
+                //将数据补充到数组中
+
+                $hc[$key]['hc'] = $hcy;
+
+                // $hc[$key]['pics_mid'] = $mid;
+
+                $hc[$key]['hcsmall'] = $hcsma;
+
+            }
+
+            $reshc = M('imagehc') -> addAll($hc);
+
+            foreach ($qtc as $key => $value) {
+
+                $qt[$key]['patient'] = $result;
+
+                $qt[$key]['userid'] = $_SESSION['user']['id'];
+
+                $qt[$key]['addtime'] = time();
+
+                $qt[$key]['qt'] = $qty = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($qt[$key]['qt']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $qtsma = $upload -> rootPath . $value['savepath'] . 'qtsma_' . $value['savename'];
+
+                $image -> save($qtsma);
+
+                //将数据补充到数组中
+
+                $qt[$key]['qt'] = $qty;
+
+                // $qt[$key]['pics_mid'] = $mid;
+
+                $qt[$key]['qtsmall'] = $qtsma;
+
+            }
+
+            $resqt = M('imageqt') -> addAll($qt);
+
+            if(!$res && !$resu && !$resul && !$ressh && $reszl && !$reshc && !$resqt){
+
+                $this -> error('图像上传有错联系技术部');die;
+
+            }
+
+        }
+
+                $this->success('添加成功',U('Admin/Make/index',array('sign'=>2)));
+
+            }else{
+
+                $this->error('添加失败');
+
+            }
+
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+        $province = M("area")->field('area_name') -> where("area_parent_id=0")->select();
+        // echo "<pre/>";
+        // var_dump($province);die;
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+            'province'=>$province,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    //话务修改
+
+    public function edit_make(){
+
+        $make = M("Patient");
+
+        if(IS_POST){
+
+            $post=I('post.');
+
+            $data['name'] = $post['name'];
+
+            $data['alias'] = $post['alias'];
+
+            $data['phone'] = $post['phone'];
+
+            $data['phones'] = $post['phones'];
+
+            $data['sex'] = $post['sex'];
+
+            $data['again'] = $post['again'];
+
+            $data['age'] = $post['age'];
+
+            $data['address'] = $post['address'];
+
+            $data['yuyuetime'] = $post['yuyuetime'];
+
+            $data['yuyuezj'] = $post['yuyuezj'];
+
+            $data['yuyueks'] = $post['yuyueks'];
+
+            $data['yuyuebz'] = $post['yuyuebz'];
+
+            $data['channel'] = $post['channel'];
+
+            $data['source'] = $post['source'];
+
+            $data['remark'] = $post['remark'];
+
+            $data['dialogue'] = $post['dialogue'];
+
+            $data['id'] = $post['id'];
+
+            $xpflag = false;
+
+            $ctflag = false;
+
+            $jcdflag = false;
+
+            $shflag = false;
+
+            $zlflag = false;
+
+            $hcflag = false;
+
+            $qtflag = false;
+
+            $file = $_FILES;
+
+        if($file['xp']['tmp_name'][0] != ''){
+
+            foreach ($file['xp']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['ct']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['jcd']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['sh']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['zl']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['hc']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+            foreach ($file['qt']['size'] as $key => $value) {
+
+                if($value > 1000000){
+
+                    $this -> error('文件过大');die;
+
+                }
+
+            }
+
+        //循环遍历错误信息
+
+            foreach ($file['xp']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $xpflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('X片出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['ct']['tmp_name'][0] != ''){
+
+            foreach ($file['ct']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $ctflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('CT出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['jcd']['tmp_name'][0] != ''){
+
+            foreach ($file['jcd']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $jcdflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('检查单出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['sh']['tmp_name'][0] != ''){
+
+            foreach ($file['sh']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $shflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('检查单出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['zl']['tmp_name'][0] != ''){
+
+            foreach ($file['zl']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $zlflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('检查单出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['hc']['tmp_name'][0] != ''){
+
+            foreach ($file['hc']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $hcflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('检查单出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($file['qt']['tmp_name'][0] != ''){
+
+            foreach ($file['qt']['error'] as $key => $value) {
+
+                if($value == '0'){
+
+                    $qtflag = true;
+
+                    break;
+
+                }else{
+
+                    $this -> error('检查单出错');die;
+
+                }
+
+            }
+
+        }
+
+        if($xpflag || $ctflag || $jcdflag || $shflag || $zlflag || $hcflag || $qtflag){
+
+            $upload = new \Think\Upload();
+
+            $info = $upload -> upload();
+
+            //循环遍历组装需要的二维数组
+
+            // echo "<pre/>";
+
+            // var_dump($info);die;
+
+            $xp = array();
+
+            $ct = array();
+
+            $jcd = array();
+
+            $sh = array();
+
+            $zl = array();
+
+            $hc = array();
+
+            $qt = array();
+
+            $image = new \Think\Image();
+
+            foreach ($info as $key => $value) {
+
+                if($value['key'] == 'xp'){
+
+                    $xpc[] = $value;
+
+                }
+
+                if($value['key'] == 'ct'){
+
+                    $ctc[] = $value;
+
+                }
+
+                if($value['key'] == 'jcd'){
+
+                    $jcdc[] = $value;
+
+                }
+
+                if($value['key'] == 'sh'){
+
+                    $shc[] = $value;
+
+                }
+
+                if($value['key'] == 'zl'){
+
+                    $zlc[] = $value;
+
+                }
+
+                if($value['key'] == 'hc'){
+
+                    $hcc[] = $value;
+
+                }
+
+                if($value['key'] == 'qt'){
+
+                    $qtc[] = $value;
+
+                }
+
+            }
+
+            foreach ($ctc as $key => $value) {
+
+                $ct[$key]['patient'] = $post['id'];
+
+                $ct[$key]['userid'] = $_SESSION['user']['id'];
+
+                $ct[$key]['addtime'] = time();
+
+                 $ct[$key]['ct']  = $cty = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($ct[$key]['ct']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $ctsma = $upload -> rootPath . $value['savepath'] . 'ctsma_' . $value['savename'];
+
+                $image -> save($ctsma);
+
+                //将数据补充到数组中
+
+                $ct[$key]['ct'] = $cty;
+
+                // $ct[$key]['pics_mid'] = $mid;
+
+                $ct[$key]['ctsmall'] = $ctsma;
+
+            }
+
+            // var_dump($ct);die;
+
+            $resu = M('imagect') -> addAll($ct);
+
+            foreach ($xpc as $key => $value) {
+
+                $xp[$key]['patient'] = $post['id'];
+
+                $xp[$key]['userid'] = $_SESSION['user']['id'];
+
+                $xp[$key]['addtime'] = time();
+
+                 $xp[$key]['xp'] = $xpy = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($xp[$key]['xp']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $xpsma = $upload -> rootPath . $value['savepath'] . 'xpsma_' . $value['savename'];
+
+                $image -> save($xpsma);
+
+                //将数据补充到数组中
+
+                $xp[$key]['xp'] = $xpy;
+
+                // $xp[$key]['pics_mid'] = $mid;
+
+                $xp[$key]['xpsmall'] = $xpsma;
+
+            }
+
+            $res = M('imagexp') -> addAll($xp);
+
+            // echo "<pre/>";
+
+            // var_dump($ct);die;
+
+            foreach ($jcdc as $key => $value) {
+
+                $jcd[$key]['patient'] = $post['id'];
+
+                $jcd[$key]['userid'] = $_SESSION['user']['id'];
+
+                $jcd[$key]['addtime'] = time();
+
+                $jcd[$key]['jcd'] = $jcdy = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($jcd[$key]['jcd']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $jcdsma = $upload -> rootPath . $value['savepath'] . 'jcdsma_' . $value['savename'];
+
+                $image -> save($jcdsma);
+
+                //将数据补充到数组中
+
+                $jcd[$key]['jcd'] = $jcdy;
+
+                // $jcd[$key]['pics_mid'] = $mid;
+
+                $jcd[$key]['jcdsmall'] = $jcdsma;
+
+            }
+
+            $resul = M('imagejcd') -> addAll($jcd);
+
+            foreach ($shc as $key => $value) {
+
+                $sh[$key]['patient'] = $post['id'];
+
+                $sh[$key]['userid'] = $_SESSION['user']['id'];
+
+                $sh[$key]['addtime'] = time();
+
+                $sh[$key]['sh'] = $shy = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($sh[$key]['sh']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $shsma = $upload -> rootPath . $value['savepath'] . 'shsma_' . $value['savename'];
+
+                $image -> save($shsma);
+
+                //将数据补充到数组中
+
+                $sh[$key]['sh'] = $shy;
+
+                // $sh[$key]['pics_mid'] = $mid;
+
+                $sh[$key]['shsmall'] = $shsma;
+
+            }
+
+            $ressh = M('imagesh') -> addAll($sh);
+
+            foreach ($zlc as $key => $value) {
+
+                $zl[$key]['patient'] = $post['id'];
+
+                $zl[$key]['userid'] = $_SESSION['user']['id'];
+
+                $zl[$key]['addtime'] = time();
+
+                $zl[$key]['zl'] = $zly = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($zl[$key]['zl']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $zlsma = $upload -> rootPath . $value['savepath'] . 'zlsma_' . $value['savename'];
+
+                $image -> save($zlsma);
+
+                //将数据补充到数组中
+
+                $zl[$key]['zl'] = $zly;
+
+                // $zl[$key]['pics_mid'] = $mid;
+
+                $zl[$key]['zlsmall'] = $zlsma;
+
+            }
+
+            $reszl = M('imagezl') -> addAll($zl);
+
+            foreach ($hcc as $key => $value) {
+
+                $hc[$key]['patient'] = $post['id'];
+
+                $hc[$key]['userid'] = $_SESSION['user']['id'];
+
+                $hc[$key]['addtime'] = time();
+
+                $hc[$key]['hc'] = $hcy = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($hc[$key]['hc']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $hcsma = $upload -> rootPath . $value['savepath'] . 'hcsma_' . $value['savename'];
+
+                $image -> save($hcsma);
+
+                //将数据补充到数组中
+
+                $hc[$key]['hc'] = $hcy;
+
+                // $hc[$key]['pics_mid'] = $mid;
+
+                $hc[$key]['hcsmall'] = $hcsma;
+
+            }
+
+            $reshc = M('imagehc') -> addAll($hc);
+
+            foreach ($qtc as $key => $value) {
+
+                $qt[$key]['patient'] = $post['id'];
+
+                $qt[$key]['userid'] = $_SESSION['user']['id'];
+
+                $qt[$key]['addtime'] = time();
+
+                $qt[$key]['qt'] = $qty = $upload -> rootPath . $value['savepath'] . $value['savename'];
+
+                //生成缩略图
+
+                $image -> open($qt[$key]['qt']);//打开原图
+
+                $image -> thumb(50,50);//大图
+
+                $qtsma = $upload -> rootPath . $value['savepath'] . 'qtsma_' . $value['savename'];
+
+                $image -> save($qtsma);
+
+                //将数据补充到数组中
+
+                $qt[$key]['qt'] = $qty;
+
+                // $qt[$key]['pics_mid'] = $mid;
+
+                $qt[$key]['qtsmall'] = $qtsma;
+
+            }
+
+            $resqt = M('imageqt') -> addAll($qt);
+
+            if(!$res && !$resu && !$resul && !$ressh && $reszl && !$reshc && !$resqt){
+
+                $this -> error('图像上传有错联系技术部');die;
+
+            }
+
+        }
+
+            $data['yuyuetime']=strtotime($data['yuyuetime']);
+
+            // $huawu=$_SESSION['user']['id'];
+
+            // $where="name="."'".$data['name']."' and phone=".$data['phone']." and $huawu=".$huawu;
+
+            // $isname=$make->where($where)->select();
+
+            // dump($isname);die;
+
+            if($data['yuyuezj']==''){
+
+                $data['yuyuezj']='其他';
+
+            }
+
+            if($data['yuyueks']==''){
+
+                $data['yuyueks']='综合';
+
+            }
+
+            if($data['channel']==''){
+
+                $data['channel']='其他';
+
+            }
+
+            if($data['name'] == ""){
+
+                $this->error('修改失败');
+
+            }
+
+            $where='id='.$data['id'];
+
+            $make=$make->where($where)->save($data);
+
+            if ($make) {
+
+                $this->success('修改成功',U('Admin/Make/index'));die;
+
+            }else if($res || $resu || $resul || $ressh || $reszl || $reshc || $resqt){
+
+                $this->success('修改成功',U('Admin/Make/index'));die;
+
+            }
+
+            else{
+
+                $this->error('修改失败');die;
+
+            }
+
+        }elseif(IS_GET){
+
+            $data=I('get.');
+
+            $id = I('get.id');
+
+            // dump($data);die;
+
+            $make=$make->where($data)->find();
+
+            $xp = M('imagexp') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $ct = M('imagect') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $jcd = M('imagejcd') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $sh = M('imagesh') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $zl = M('imagezl') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $hc = M('imagehc') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $qt = M('imageqt') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        if(!empty($xp)){
+
+            foreach ($xp as $key => $value) {
+
+                $xp[$key]['xp'] = "http://yuyue.tianjianh.cn" . ltrim($value['xp'],".");
+
+            }
+
+            // $assign['xp'] = $xp;
+
+        }
+
+        if(!empty($ct)){
+
+            foreach ($ct as $key => $value) {
+
+                $ct[$key]['ct'] = "http://yuyue.tianjianh.cn" . ltrim($value['ct'],".");
+
+            }
+
+            // $assign['ct'] = $ct;
+
+        }
+
+        if(!empty($jcd)){
+
+            foreach ($jcd as $key => $value) {
+
+                $jcd[$key]['jcd'] = "http://yuyue.tianjianh.cn" . ltrim($value['jcd'],".");
+
+            }
+
+            // $assign['jcd'] = $jcd;
+
+        }
+
+        if(!empty($sh)){
+
+            foreach ($sh as $key => $value) {
+
+                $sh[$key]['sh'] = "http://yuyue.tianjianh.cn" . ltrim($value['sh'],".");
+
+            }
+
+            // $assign['sh'] = $sh;
+
+        }
+
+        if(!empty($zl)){
+
+            foreach ($zl as $key => $value) {
+
+                $zl[$key]['zl'] = "http://yuyue.tianjianh.cn" . ltrim($value['zl'],".");
+
+            }
+
+            // $assign['zl'] = $zl;
+
+        }
+
+        if(!empty($hc)){
+
+            foreach ($hc as $key => $value) {
+
+                $hc[$key]['hc'] = "http://yuyue.tianjianh.cn" . ltrim($value['hc'],".");
+
+            }
+
+            // $assign['hc'] = $hc;
+
+        }
+
+        if(!empty($qt)){
+
+            foreach ($qt as $key => $value) {
+
+                $qt[$key]['qt'] = "http://yuyue.tianjianh.cn" . ltrim($value['qt'],".");
+
+            }
+
+            // $assign['qt'] = $qt;
+
+        }
+
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        $this->make=$make;
+
+        $assign=array(
+
+            'xp' => $xp,
+
+            'ct' => $ct,
+
+            'jcd' => $jcd,
+
+            'sh' => $sh,
+
+            'zl' => $zl,
+
+            'hc' => $hc,
+
+            'qt' => $qt,
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    //话务删除
+
+    public function delete_make(){
+
+        $id=I('get.id');
+
+        $where = 'id='.$id;
+
+        $make = M("Patient"); // 实例化User对象
+
+        $make->recycle = 1;
+
+        $make=$make->where($where)->save();
+
+        // dump($make);die;
+
+        if (!empty($make)) {
+
+            $this->success('删除成功',U('Admin/Make/index'));
+
+        }else{
+
+            $this->error('删除失败');
+
+        }
+
+    }
+
+    //话务查询
+
+    public function search(){
+
+        $data=I('post.');
+
+        $huawu=$_SESSION['user']['id'];
+
+        $where='a.recycle=0 and a.ordernum is null and a.huawu='.$huawu;
+
+        if($data['yuyueks']!=""){
+
+            $where .=' and a.yuyueks='.'"'.$data['yuyueks'].'"';
+
+        }
+
+        if($data['yuyuezj']!=""){
+
+            $where .=' and a.yuyuezj='.'"'.$data['yuyuezj'].'"';
+
+            // echo $where;die;
+
+        }
+
+        if($data['yuyuebz']!=""){
+
+            $where .=' and a.yuyuebz='.'"'.$data['yuyuebz'].'"';
+
+        }
+
+        if($data['channel']!=""){
+
+            $where .=' and a.channel='.'"'.$data['channel'].'"';
+
+        }
+
+        if($data['source']!=""){
+
+            $where .=' and a.source='.'"'.$data['source'].'"';
+
+        }
+
+        if($data['start']!=""){
+
+            $start=strtotime($data['start']);
+
+            $where .=' and a.yuyuetime>'.'"'.$start.'"';
+
+        }
+
+        if($data['end']!=""){
+
+            $end=strtotime($data['end']);
+
+            $where .=' and a.yuyuetime<'.'"'.$end.'"';
+
+        }
+
+        if($data['name']!=""){
+
+            $where .=' and (a.name='.'"'.$data['name'].'"'.' or a.alias='.'"'.$data['name'].'")';
+
+        }
+
+        if($data['phone']!=""){
+
+            $where .=' and (a.phone='.'"'.$data['phone'].'"'.' or a.phones='.'"'.$data['phone'].'")';
+
+        }
+
+        $m=M("Patient as a");
+
+        $p=getpage($m,$where,10);
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.id desc')->select();
+
+        // dump($make);die;
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+            );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display('Make/index');
+
+    }
+
+    //管理查看
+
+    public function control_show(){
+
+        $beginToday = mktime(0,0,0,date('m'),date('d'),date('Y'));
+
+        $endToday = mktime(0,0,0,date('m'),date('d')+1,date('Y'))-1;
+
+        if(IS_GET){
+
+            $sign=I('get.sign');
+
+            if($sign == 3){
+
+                $where='recycle=0';
+
+            }elseif($sign == 2){
+
+                $where='a.again=0 and a.recycle=0 and a.time>'.$beginToday.' and a.time<'.$endToday . ' and a.ordernum is null';
+
+            }else{
+
+                $where='a.again=0 and a.recycle=0 and a.yuyuetime>'.$beginToday.' and a.yuyuetime<'.$endToday . ' and a.ordernum is null';
+
+            }
+
+        }else{
+
+            $where='a.again=0 and a.recycle=0 and a.yuyuetime>'.$beginToday.' and a.yuyuetime<'.$endToday . ' and a.ordernum is null';
+
+        }
+
+        // echo $where;die;
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        // dump($where);die;
+
+        $m=M("Patient as a");
+
+        $p=getpage($m,$where,10);
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.yuyuetime asc')->select();
+
+        //$make=M("Patient")->where($where)->select();
+
+        // dump($make);die;
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    //管理添加
+
+    public function control_add(){
+
+        if(IS_POST){
+
+            $data=I('post.');
+
+            $make = M("Patient");
+
+            $data['time']=time();
+
+            $data['huawu']=$_SESSION['user']['id'];
+
+            $data['yuyuetime']=strtotime($data['yuyuetime']);
+
+            if($data['yuyuezj']==''){
+
+                $data['yuyuezj']='其他';
+
+            }
+
+            if($data['yuyueks']==''){
+
+                $data['yuyueks']='综合';
+
+            }
+
+            if($data['channel']==''){
+
+                $data['channel']='其他';
+
+            }
+
+            // $where="name="."'".$data['name']."' and phone=".$data['phone'];
+
+            // $isname=$make->where($where)->select();
+
+            // // dump($isname);die;
+
+            if($data['name'] == ""){
+
+                $this->error('添加失败');
+
+            }
+
+            $make->data($data)->add();
+
+            if ($make) {
+
+                $this->success('添加成功',U('Admin/Make/index',array('sign'=>2)));
+
+            }else{
+
+                $this->error('添加失败');
+
+            }
+
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    //管理修改
+
+    public function control_edit(){
+
+        $make = M("Patient");
+
+        if(IS_POST){
+
+            $data=I('post.');
+            $province = $data['address'];
+            $city = $data['city'];
+            $zone = $data['zone'];
+            $pwhere = "area_name='$province' and area_parent_id=0";
+            $cwhere = "area_name='$city' and area_parent_id<>0";
+            $zwhere = "area_name='$zone' and area_parent_id<>0";
+            $m = M('area');
+            $pid = $m -> field('id') -> where($pwhere) -> find();
+            $pid = $pid['id'];
+            $cid = $m -> field('id') -> where($cwhere) -> find();
+            $cid = $cid['id'];
+            $zid = $m -> field('id') -> where($zwhere) -> find();
+            $zid = $zid['id'];
+            $data['address'] = $pid . ',' . $cid . ',' . $zid;
+            unset($data['city']);
+            unset($data['zone']);
+            // dump($data);die;
+
+            $data['yuyuetime']=strtotime($data['yuyuetime']);
+
+            // $huawu=$_SESSION['user']['id'];
+
+            // $where="recycle=0 and name="."'".$data['name']."' and phone=".$data['phone']." and yuyuezj="."'".$data['yuyuezj']."'";
+
+            // $isname=$make->where($where)->find();
+
+            // echo $isname['id'];die;
+
+            // dump($isname);die;
+
+            if($data['yuyuezj']==''){
+
+                $data['yuyuezj']='其他';
+
+            }
+
+            if($data['yuyueks']==''){
+
+                $data['yuyueks']='综合';
+
+            }
+
+            if($data['channel']==''){
+
+                $data['channel']='其他';
+
+            }
+
+            if($data['name'] == ""){
+
+                $this->error('修改失败');
+
+            }
+
+            $where='id='.$data['id'];
+
+            $make=$make->where($where)->save($data);
+
+            if ($make) {
+
+                $this->success('修改成功',U('Admin/Make/control_show'));
+
+            }else{
+
+                $this->error('修改失败');
+
+            }
+
+        }elseif(IS_GET){
+
+            $data=I('get.');
+
+            // dump($data);die;
+
+            $make=$make->where($data)->find();
+            $address = $make['address'];
+            $address = explode(',',$address);
+            $pid = $address[0];
+            $cid = $address[1];
+            $zid = $address[2];
+            $am = M('area');
+            $province = $am -> field('area_name') -> where("id='$pid'") -> find();
+            $province = $province['area_name'];
+            $city = $am -> field('area_name') -> where("id='$cid'") -> find();
+            $city = $city['area_name'];
+            $rcity = $am -> field('area_name') -> where("area_parent_id='$pid'") -> select();
+            $zone = $am -> field('area_name') -> where("id='$zid'") -> find();
+            $zone = $zone['area_name'];
+            $rzone = $am -> field('area_name') -> where("area_parent_id='$cid'") -> select();
+            $make['province'] = $province;
+            $make['city'] = $city;
+            $make['zone'] = $zone;
+            // echo "<pre/>";
+            // var_dump($make);
+            // var_dump($rcity);
+            // var_dump($rzone);
+            // die;
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+        $address = M("area") -> field("id,area_name") -> where("area_parent_id=0") -> select();
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        $this->make=$make;
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+            'address'=>$address,
+            'province'=>$province,
+            'city'=>$city,
+            'rcity'=>$rcity,
+            'zone'=>$zone,
+            'rzone'=>$rzone,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    //管理删除
+
+    public function control_delete(){
+
+        $id=I('get.id');
+
+        $where = 'id='.$id;
+
+        $make = M("Patient"); // 实例化User对象
+
+        $make->recycle = 1;
+
+        $make=$make->where($where)->save();
+
+        // dump($make);die;
+
+        if (!empty($make)) {
+
+            $this->success('删除成功',U('Admin/Make/control_show'));
+
+        }else{
+
+            $this->error('删除失败');
+
+        }
+
+    }
+
+    //管理搜索
+
+    public function control_search(){
+
+        if(IS_POST){
+
+        $data=I('post.');
+
+        // dump($data);die;
+
+        // $huawu=$_SESSION['user']['id'];
+
+        $where='a.recycle=0 and a.ordernum is null';
+
+        if($data['yuyueks']!=""){
+
+            $where .=' and a.yuyueks='.'"'.$data['yuyueks'].'"';
+
+        }
+
+        if($data['yuyuezj']!=""){
+
+            $where .=' and a.yuyuezj='.'"'.$data['yuyuezj'].'"';
+
+            // echo $where;die;
+
+        }
+
+        if($data['yuyuebz']!=""){
+
+            $where .=' and a.yuyuebz='.'"'.$data['yuyuebz'].'"';
+
+        }
+
+        if($data['channel']!=""){
+
+            $where .=' and a.channel='.'"'.$data['channel'].'"';
+
+        }
+
+        if($data['source']!=""){
+
+            $where .=' and a.source='.'"'.$data['source'].'"';
+
+        }
+
+        if($data['start']!=""){
+
+            $start=strtotime($data['start']);
+
+            $where .=' and a.yuyuetime>'.'"'.$start.'"';
+
+        }
+
+        if($data['end']!=""){
+
+            $end=strtotime($data['end']);
+
+            $where .=' and a.yuyuetime<'.'"'.$end.'"';
+
+        }
+
+        if($data['name']!=""){
+
+            $where .=' and (a.name='.'"'.$data['name'].'"'.' or a.alias='.'"'.$data['name'].'")';
+
+        }
+
+        if($data['phone']!=""){
+
+            $where .=' and (a.phone='.'"'.$data['phone'].'"'.' or a.phones='.'"'.$data['phone'].'")';
+
+        }
+
+        if($data['again'] != ""){
+
+            switch($data['again']){
+
+                case '0':
+
+                    $where.=" and again=0";
+
+                break;
+
+                case '1':
+
+                    $where.=" and again=1";
+
+                break;
+
+                case '2':
+
+                    $where.="";
+
+                break;
+
+            }
+
+        }
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+        $m=M("Patient as a");
+
+        $p=getpage($m,$where,10);
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.id desc')->select();
+
+        // dump($make);die;
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+            );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+/**
+
+ * [control_recover 取消预约控制]
+
+ * @return [type] [description]
+
+ */
+
+    public function control_recover(){
+
+        $huawu=$_SESSION['user']['id'];
+
+        $beginToday = mktime(0,0,0,date('m'),date('d'),date('Y'));
+
+        $endToday = mktime(0,0,0,date('m'),date('d')+1,date('Y'))-1;
+
+        $syshuawu = M('auth_group_access') -> where("uid = $huawu") -> select();
+
+        // p($syshuawu);die;
+
+            if($syshuawu[0]['group_id'] == '1' || $syshuawu[0]['group_id'] == '2'){
+
+                $where = 'a.recycle = 1 and a.time>'.$beginToday.' and  a.time<'.$endToday;
+
+            }else{
+
+            $where = 'a.recycle = 1 and a.time>'.$beginToday.' and  a.time<'.$endToday .' and a.huawu=' .$huawu;
+
+            }
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        // p($where);die;
+
+        $make=M("Patient as a");
+
+        $p=getpage($make,$where,10);
+
+        // p($where);die;
+
+        $data=$make->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.id desc')->select();
+
+        // dump($make);die;
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'data'=>$data,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+            );
+
+        $this->page=$p->show();
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+    }
+
+    public function control_recover_search(){
+
+        $huawu=$_SESSION['user']['id'];
+
+        if(IS_POST){
+
+            $data=I('post.');
+
+        // dump($data);die;
+
+        // $huawu=$_SESSION['user']['id'];
+
+            $syshuawu = M('auth_group_access') -> where("uid = $huawu") -> select();
+
+        // p($syshuawu);die;
+
+                if($syshuawu[0]['group_id'] == '1' || $syshuawu[0]['group_id'] == '2'){
+
+                    $where='a.recycle=1';
+
+                    }else{
+
+                    $where = 'a.recycle = 1  and a.huawu=' .$huawu;
+
+                }
+
+            if($data['yuyueks']!=""){
+
+                $where .=' and a.yuyueks='.'"'.$data['yuyueks'].'"';
+
+            }
+
+            if($data['yuyuezj']!=""){
+
+                $where .=' and a.yuyuezj='.'"'.$data['yuyuezj'].'"';
+
+            // echo $where;die;
+
+            }
+
+            if($data['yuyuebz']!=""){
+
+                $where .=' and a.yuyuebz='.'"'.$data['yuyuebz'].'"';
+
+            }
+
+            if($data['channel']!=""){
+
+                $where .=' and a.channel='.'"'.$data['channel'].'"';
+
+            }
+
+            if($data['source']!=""){
+
+                $where .=' and a.source='.'"'.$data['source'].'"';
+
+            }
+
+            if($data['start']!=""){
+
+                $start=strtotime($data['start']);
+
+                $where .=' and a.yuyuetime>'.'"'.$start.'"';
+
+            }
+
+            if($data['end']!=""){
+
+                $end=strtotime($data['end']);
+
+                $where .=' and a.yuyuetime<'.'"'.$end.'"';
+
+            }
+
+            if($data['name']!=""){
+
+                $where .=' and (a.name='.'"'.$data['name'].'"'.' or a.alias='.'"'.$data['name'].'")';
+
+            }
+
+            if($data['phone']!=""){
+
+                $where .=' and (a.phone='.'"'.$data['phone'].'"'.' or a.phones='.'"'.$data['phone'].'")';
+
+            }
+
+            session_start();
+
+        $_SESSION['where']=$where;
+
+            // dump($where);die;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+        $make=M("Patient as a");
+
+        $p=getpage($make,$where,10);
+
+        $data=$make->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.id desc')->select();
+
+        // dump($make);die;
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'data'=>$data,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+            );
+
+        $this->page=$p->show();
+
+        $this -> assign($assign);
+
+        $this -> display('control_recover');
+
+    }
+
+    public function control_recover_a(){
+
+        $id=I('get.id');
+
+        $where = 'id='.$id;
+
+        $make = M("Patient"); // 实例化User对象
+
+        $make->recycle = 0;
+
+        $make=$make->where($where)->save();
+
+        // dump($make);die;
+
+        if (!empty($make)) {
+
+            $this->success('重启预约成功',U('Admin/Make/control_recover'));
+
+        }else{
+
+            $this->error('重启预约失败');
+
+        }
+
+    }
+
+    //数据导出
+
+    public function control_xls(){
+
+        $where=$_SESSION['where'];
+
+        $m=M("Patient as a");
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.yuyuetime asc')->select();
+
+        $data[]=array('姓名','电话','性别','年龄','家庭住址','预约科室','预约专家','预约病种','别名','第二电话','预约时间','提交时间','到诊类型','是否到诊','初复诊','是否消费','是否住院','患者备注','话务员','渠道','来源');
+
+            foreach ($make as $key => $va) {
+
+                $da=array(
+
+                    $va['name'],
+
+                    $va['phone'],
+
+                    $va['sex'],
+
+                    $va['age'],
+
+                    $va['address'],
+
+                    $va['yuyueks'],
+
+                    $va['yuyuezj'],
+
+                    $va['yuyuebz'],
+
+                    $va['alias'],
+
+                    $va['phones'],
+
+                    date('Y-m-d H:i:s',$va['yuyuetime']),
+
+                    date('Y-m-d H:i:s',$va['time']),
+
+                    $va['type']==0? '预约到诊': '自然到诊',
+
+                    $va['diagnosis']==0? '未到诊': '到诊',
+
+                    $va['again']==0? '初诊': '复诊',
+
+                    $va['consumption']==0? '未消费': '消费',
+
+                    $va['hospital']==0? '不住院': '住院',
+
+                    $va['remark'],
+
+                    $va['username'],
+
+                    $va['channel'],
+
+                    $va['source'],      
+
+                    );
+
+                $data[]=$da;
+
+            }
+
+        create_xls($data,"预约");
+
+    }
+
+    //医院查看
+
+    public function hosp_index(){
+
+        $beginToday = mktime(0,0,0,date('m'),date('d'),date('Y'));
+
+        $endToday = mktime(0,0,0,date('m'),date('d')+1,date('Y'))-1;
+
+        $where='recycle=0 and yuyuetime>'.$beginToday.' and yuyuetime<'.$endToday;
+
+        $m=M("Patient");
+
+        $p=getpage($m,$where,10);
+
+        $data=$m->where($where)->order('yuyuetime asc')->field('id,name,phone,sex,age,address,yuyuezj,yuyueks,yuyuebz,alias,phones,yuyuetime,type,time,diagnosis,consumption,hospital,remark,again,ordernum')->select();
+
+        // foreach ($data as $key => $value) {
+
+        //  $data[$key]['phone'] = preg_replace('/(\d{3})\d{4}(\d{4})/', '$1****$2', $value['phone']);
+
+        // }
+        $result = M('online_order') -> where('recycle=0') -> select();
+        // echo "<pre/>";
+        // var_dump($data);die;
+
+        foreach($data as $k2 =>&$v2) {
+
+            // if($v2['ordernum'] == 'TJ2018101417323200007822'){
+            //  echo $v2['ordernum'];die;
+            // }
+            $v2['money']='';
+
+            foreach($result as $k =>$v) {
+
+            if($v2['ordernum'] == $v['ordernum']) {
+                // echo $v['money'];die;
+                    // echo $v['paystate'];die;
+                if($v['paystate'] == 1)
+                {
+
+                    $v2['money'] = $v['money'];
+                }
+                else
+                {
+                    $v2['money'] = '';
+                }
+            }
+        }
+    }
+        // dump($make);die;
+
+        //时间区间
+
+        // $one=mktime(8,30,0,date('m'),date('d'),date('Y'));
+
+        $one=strtotime(date('Ymd'));
+
+        $two=mktime(9,30,0,date('m'),date('d'),date('Y'));
+
+        $three=mktime(10,30,0,date('m'),date('d'),date('Y'));
+
+        $four=mktime(11,30,0,date('m'),date('d'),date('Y'));
+
+        $five=mktime(12,30,0,date('m'),date('d'),date('Y'));
+
+        $six=mktime(13,30,0,date('m'),date('d'),date('Y'));
+
+        $seven=mktime(14,30,0,date('m'),date('d'),date('Y'));
+
+        $eight=mktime(15,30,0,date('m'),date('d'),date('Y'));
+
+        $nine=mktime(16,30,0,date('m'),date('d'),date('Y'));
+
+        $ten=mktime(17,30,0,date('m'),date('d'),date('Y'));
+
+        $ele=mktime(18,30,0,date('m'),date('d'),date('Y'));
+
+        $twl=mktime(19,30,0,date('m'),date('d'),date('Y'));
+
+        $thr=mktime(20,30,0,date('m'),date('d'),date('Y'));
+
+        $zaro = mktime(24,00,0,date('m'),date('d'),date('Y'));
+
+        foreach ($data as $key => $value) {
+
+            $yuyuetime=$value['yuyuetime'];
+
+            if($one<=$yuyuetime &&  $yuyuetime<$two){
+
+                $data[$key]['yuyuetime'] = '8:30-9:30';
+
+            }
+
+            elseif($two<=$yuyuetime &&  $yuyuetime<$three){
+
+                $data[$key]['yuyuetime'] = '9:30-10:30';
+
+            }
+
+            elseif($three<=$yuyuetime && $yuyuetime<$four){
+
+                $data[$key]['yuyuetime'] = '10:30-11:30';
+
+            }
+
+            elseif($four<=$yuyuetime && $yuyuetime<$five){
+
+                $data[$key]['yuyuetime'] = '11:30-12:30';
+
+            }
+
+            elseif($five<=$yuyuetime && $yuyuetime<$six){
+
+                $data[$key]['yuyuetime'] = '12:30-13:30';
+
+            }
+
+            elseif($six<=$yuyuetime && $yuyuetime<$seven){
+
+                $data[$key]['yuyuetime'] = '13:30-14:30';
+
+            }
+
+            elseif($seven<=$yuyuetime && $yuyuetime<$eight){
+
+                $data[$key]['yuyuetime'] = '14:30-15:30';
+
+            }
+
+            elseif($eight<=$yuyuetime && $yuyuetime<$nine){
+
+                $data[$key]['yuyuetime'] = '15:30-16:30';
+
+            }
+
+            elseif($nine<=$yuyuetime && $yuyuetime<$ten){
+
+                $data[$key]['yuyuetime'] = '16:30-17:30';
+
+            }
+
+            elseif($ten<=$yuyuetime && $yuyuetime<=$ele){
+
+                $data[$key]['yuyuetime'] = '17:30-18:30';
+
+            }
+
+            elseif($ele<=$yuyuetime && $yuyuetime<=$twl){
+
+                $data[$key]['yuyuetime'] = '18:30-19:30';
+
+            }
+
+            elseif($twl<=$yuyuetime && $yuyuetime<=$thr){
+
+                $data[$key]['yuyuetime'] = '19:30-20:30';
+
+            }
+
+            elseif($thr<=$yuyuetime && $yuyuetime<=$zaro){
+
+                $data[$key]['yuyuetime'] = '20:30-24:00';
+
+            }
+
+            else{
+
+                $data[$key]['yuyuetime'] = '非今日到诊';
+
+            }
+
+        }
+
+        $expert = M("Zj") -> field('zjname') -> select();
+
+            // dump()
+
+            $govern = M("Ks") -> field('ksname') -> select();
+
+            $entity = M("Bz") -> field('bzname') -> select();
+
+            $channel = M("Channel") -> field('name') -> select();
+
+            $source = M("Source") -> field('name') -> select();
+
+            $assign=array(
+
+                'data' => $data,
+
+                'expert' => $expert,
+
+                'govern' => $govern,
+
+                'entity' => $entity,
+
+                'channel' => $channel,
+
+                'source' => $source
+
+            );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    //医院修改
+
+    public function hosp_edit(){
+
+        $make = M("Patient"); // 实例化User对象
+
+        if(IS_POST){
+
+            $data=I('post.');
+
+            // dump($data);die;
+
+            // $where="name="."'".$data['name']."' and phone=".$data['phone'];
+
+            // $isname=$make->where($where)->select();
+
+            // dump($isname);die;
+
+            if($data['name'] == ""){
+
+                $this->error('修改失败');
+
+            }
+
+            $verifys=substr(md5("活着"),8,16);
+
+            $as=$data['act'].$verifys;
+
+            $verifys=substr(md5($as),8,16);
+
+            if($data['verify']=$verifys){
+
+                $where='id='.$data['id'];
+
+                if($data['consumption']!=1){
+
+                    $data['consumption']=0;
+
+                }
+
+                if($data['diagnosis']!=1){
+
+                    $data['diagnosis']=0;
+
+                }
+
+                if($data['hospital']!=1){
+
+                    $data['hospital']=0;
+
+                }
+
+                if($data['yuyuezj']==''){
+
+                    $data['yuyuezj']='其他';
+
+                }
+
+                if($data['yuyueks']==''){
+
+                    $data['yuyueks']='综合';
+
+                }
+
+                if($data['channel']==''){
+
+                    $data['channel']='其他';
+
+                }
+
+                // $m=$make->where($where)->getField('consumption');
+
+                // if($m === $data['consumption']){
+
+                //  $data['consumption'] = abs($m-1);
+
+                // }
+
+                // $m=$make->where($where)->getField('diagnosis');
+
+                // if($m === $data['diagnosis']){
+
+                //  $data['diagnosis'] = abs($m-1);
+
+                // }
+
+                // $m=$make->where($where)->getField('hospital');
+
+                // if($m === $data['hospital']){
+
+                //  $data['hospital'] = abs($m-1);
+
+                // }
+
+                // dump($data);die;
+
+                $make->name=$data['name'];
+
+                $make->phone=$data['phone'];
+
+                $make->sex=$data['sex'];
+
+                $make->age=$data['age'];
+
+                $make->address=$data['address'];
+
+                $make->yuyuezj=$data['yuyuezj'];
+
+                $make->yuyueks=$data['yuyueks'];
+
+                $make->yuyuebz=$data['yuyuebz'];
+
+                $make->alias=$data['alias'];
+
+                $make->phones=$data['phones'];
+
+                $make->diagnosis=$data['diagnosis'];
+
+                $make->consumption=$data['consumption'];
+
+                $make->hospital=$data['hospital'];
+
+                $make->remark=$data['remark'];
+
+                $make->again=$data['again'];
+
+                // dump($data);die;
+
+                $make=$make->where($where)->save();
+
+                // dump($make);die;
+
+                if (!empty($make)) {
+
+                    $this->success('修改成功',U('Admin/Make/hosp_index'));die;
+
+                }else{
+
+                $this->error('修改失败');
+
+                }
+
+            }else{
+
+                $this->error('修改失败，参数错误');
+
+            }
+
+        }elseif(IS_GET){
+
+            $data=I('get.');
+
+            $where='recycle=0 and id='.$data['id'];
+
+            $key=array_keys($data);
+
+            if($key[1]=='diagnosis'){
+
+                $m=$make->where($where)->getField('diagnosis');
+
+                if($m === $data['diagnosis']){
+
+                    $data['diagnosis'] = abs($m-1);
+
+                    $make=$make->where($where)->field('diagnosis')->filter('strip_tags')->save($data);
+
+                    if(!empty($make)){
+
+                        $this->success('修改成功');die;
+
+                    }
+
+                }
+
+                $this->error('修改失败');
+
+            }
+
+            elseif($key[1]=='consumption'){
+
+                $m=$make->where($where)->getField('consumption');
+
+                if($m === $data['consumption']){
+
+                    $data['consumption'] = abs($m-1);
+
+                    $make=$make->where($where)->field('consumption')->filter('strip_tags')->save($data);
+
+                    if(!empty($make)){
+
+                        $this->success('修改成功');die;
+
+                    }
+
+                }
+
+                $this->error('修改失败');
+
+            }
+
+            elseif($key[1]=='hospital'){
+
+                $m=$make->where($where)->getField('hospital');
+
+                if($m === $data['hospital']){
+
+                    $data['hospital'] = abs($m-1);
+
+                    $make=$make->where($where)->field('hospital')->filter('strip_tags')->save($data);
+
+                    if(!empty($make)){
+
+                        $this->success('修改成功');die;
+
+                    }
+
+                }
+
+                $this->error('修改失败');
+
+            }
+
+            else{
+
+                $make=$make->where($data)->field('id,name,phone,sex,age,address,yuyuezj,yuyueks,yuyuebz,alias,phones,yuyuetime,type,time,diagnosis,consumption,hospital,remark,again')->find();
+
+                // dump($make);die;
+
+                if(empty($make)){
+
+                    $this->error('修改失败,参数错误');
+
+                }
+
+        
+
+            }
+
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        $this->make=$make;
+
+        $assign=array(
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    //医院添加
+
+    public function hosp_add(){
+
+        if(IS_POST){
+
+            $data=I('post.');
+
+            $make = M("Patient");
+
+            // dump($data);die;
+
+            // $where="recycle=0 and name="."'".$data['name']."' and phone="."'".$data['phone']."' and yuyuezj="."'".$data['yuyuezj']."'";
+
+            // $isname=$make->where($where)->find();
+
+            // dump($isname);die;
+
+            // if(!empty($isname)){
+
+                // echo $isname['id'];die;
+
+                // $id=$isname['id'];
+
+                // $this->redirect('Make/hosp_edit', array('id' => $id), 3, '存在此人信息，跳转中...');die;
+
+            // }
+
+            $verifys=substr(md5("活着"),8,16);
+
+            $as=$data['act'].$verifys;
+
+            $verifys=substr(md5($as),8,16);
+
+            // dump($isname);die;
+
+            if($data['verify']=$verifys){
+
+                if($data['yuyuezj']==''){
+
+                    $adds['yuyuezj']='其他';
+
+                }else{
+
+                    $adds['yuyuezj']=$data['yuyuezj'];
+
+                }
+
+                if($data['yuyueks']==''){
+
+                    $adds['yuyueks']='综合';
+
+                }else{
+
+                    $adds['yuyueks']=$data['yuyueks'];
+
+                }
+
+                if($data['channel']==''){
+
+                    $adds['channel']='其他';
+
+                }else{
+
+                    $adds['channel']=$data['channel'];
+
+                }
+
+                $adds['name']=$data['name'];
+
+                $adds['phone']=$data['phone'];
+
+                $adds['sex']=$data['sex'];
+
+                $adds['age']=$data['age'];
+
+                $adds['alias']=$data['alias'];
+
+                $adds['phones']=$data['phones'];
+
+                $adds['address']=$data['address'];
+
+                $adds['yuyuebz']=$data['yuyuebz'];
+
+                $adds['hospital']=$data['hospital'];
+
+                $adds['consumption']=$data['consumption'];
+
+                $adds['huawu']=$_SESSION['user']['id'];
+
+                $adds['yuyuetime']=time();
+
+                $adds['time']=time();
+
+                $adds['type']=1;
+
+                $adds['diagnosis']=1;
+
+                $adds['again']=$data['again'];
+
+                $make=$make->add($adds);
+
+                if (!empty($make)) {
+
+                    $this->success('添加成功',U('Admin/Make/hosp_index'));die;
+
+                }else{
+
+                    $this->error('添加失败');
+
+                }
+
+            }
+
+          
+
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        $this->make=$make;
+
+        $assign=array(
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    public function hosp_search(){
+
+    if(IS_POST){
+
+            //用户查询数据
+
+            $post = I('post.');
+
+            // p($post);die;
+
+            // dump($post['phone']);die;
+
+            $where = "recycle = '0' and huif<>2";
+
+            // dump($post);die;
+
+            if($post['yuyueks'] != ""){
+
+                $where .= ' and yuyueks = ' . '"' . $post['yuyueks'] . '"';
+
+            }
+
+            if($post['yuyuezj'] != ""){
+
+                $where .= ' and yuyuezj = ' . '"' . $post['yuyuezj'] . '"';
+
+            }
+
+            if($post['yuyuebz'] != ""){
+
+                $where .= ' and yuyuebz = ' . '"' . $post['yuyuebz'] . '"';
+
+            }
+
+            if($post['start']!=""){
+
+                $start = strtotime($post['start']);
+
+            $where .=' and yuyuetime>'.'"'.$start.'"';
+
+            }
+
+            if($post['end']!=""){
+
+                $end = strtotime($post['end']);
+
+            $where .=' and yuyuetime<'.'"'.$end.'"';
+
+            }
+
+            if($post['phone'] != ""){
+
+                $where .= ' and phone like  ' . '"%' . $post['phone'] . '%"';
+
+            }
+
+            if($post['name'] != ""){
+
+                $where .= ' and name  like ' . '"%' . $post['name'] . '%"';
+
+            }
+        if($post['again'] != ""){
+
+            switch($post['again']){
+
+                case '0':
+
+                    $where.=" and again=0";
+
+                break;
+
+                case '1':
+
+                    $where.=" and again=1";
+
+                break;
+
+                case '2':
+
+                    $where.="";
+
+                break;
+
+            }
+
+        }
+            // 获得零点的时间戳
+
+            $time = strtotime(date('Ymd'));
+
+            // 获得今天24点的时间戳
+
+            $timeend = strtotime(date('Ymd')) + 86400;
+
+            $where .= ' and yuyuetime>'.$time.' and yuyuetime<'.$timeend;
+
+            // dump($where);die;
+
+        // session_start();
+
+        $_SESSION['where']=$where;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+        // dump($where);die;
+
+            $make=M("patient");
+
+            $p=getpage($make,$where,10);
+
+            $data=$make -> where($where) -> order('yuyuetime asc') -> select();
+        $result = M('online_order') -> where('recycle=0') -> select();
+        // echo "<pre/>";
+        // var_dump($data);die;
+
+        foreach($data as $k2 =>&$v2) {
+
+            // if($v2['ordernum'] == 'TJ2018101417323200007822'){
+            //  echo $v2['ordernum'];die;
+            // }
+            $v2['money']='';
+
+            foreach($result as $k =>$v) {
+
+            if($v2['ordernum'] == $v['ordernum']) {
+                // echo $v['money'];die;
+                    // echo $v['paystate'];die;
+                if($v['paystate'] == 1)
+                {
+
+                    $v2['money'] = $v['money'];
+                }
+                else
+                {
+                    $v2['money'] = '';
+                }
+            }
+        }
+    }
+        //  foreach ($data as $key => $value) {
+
+        //  $data[$key]['phone'] = preg_replace('/(\d{3})\d{4}(\d{4})/', '$1****$2', $value['phone']);
+
+        // }
+
+        //时间区间
+
+        // $one=mktime(8,30,0,date('m'),date('d'),date('Y'));
+
+        $one=strtotime(date('Ymd'));
+
+        $two=mktime(9,30,0,date('m'),date('d'),date('Y'));
+
+        $three=mktime(10,30,0,date('m'),date('d'),date('Y'));
+
+        $four=mktime(11,30,0,date('m'),date('d'),date('Y'));
+
+        $five=mktime(12,30,0,date('m'),date('d'),date('Y'));
+
+        $six=mktime(13,30,0,date('m'),date('d'),date('Y'));
+
+        $seven=mktime(14,30,0,date('m'),date('d'),date('Y'));
+
+        $eight=mktime(15,30,0,date('m'),date('d'),date('Y'));
+
+        $nine=mktime(16,30,0,date('m'),date('d'),date('Y'));
+
+        $ten=mktime(17,30,0,date('m'),date('d'),date('Y'));
+
+        $ele=mktime(18,30,0,date('m'),date('d'),date('Y'));
+
+        $twl=mktime(19,30,0,date('m'),date('d'),date('Y'));
+
+        $thr=mktime(20,30,0,date('m'),date('d'),date('Y'));
+
+        $zaro=mktime(24,00,0,date('m'),date('d'),date('Y'));
+
+        foreach ($data as $key => $value) {
+
+            $yuyuetime=$value['yuyuetime'];
+
+            if($one<=$yuyuetime &&  $yuyuetime<$two){
+
+                $data[$key]['yuyuetime'] = '8:30-9:30';
+
+            }
+
+            elseif($two<=$yuyuetime &&  $yuyuetime<$three){
+
+                $data[$key]['yuyuetime'] = '9:30-10:30';
+
+            }
+
+            elseif($three<=$yuyuetime && $yuyuetime<$four){
+
+                $data[$key]['yuyuetime'] = '10:30-11:30';
+
+            }
+
+            elseif($four<=$yuyuetime && $yuyuetime<$five){
+
+                $data[$key]['yuyuetime'] = '11:30-12:30';
+
+            }
+
+            elseif($five<=$yuyuetime && $yuyuetime<$six){
+
+                $data[$key]['yuyuetime'] = '12:30-13:30';
+
+            }
+
+            elseif($six<=$yuyuetime && $yuyuetime<$seven){
+
+                $data[$key]['yuyuetime'] = '13:30-14:30';
+
+            }
+
+            elseif($seven<=$yuyuetime && $yuyuetime<$eight){
+
+                $data[$key]['yuyuetime'] = '14:30-15:30';
+
+            }
+
+            elseif($eight<=$yuyuetime && $yuyuetime<$nine){
+
+                $data[$key]['yuyuetime'] = '15:30-16:30';
+
+            }
+
+            elseif($nine<=$yuyuetime && $yuyuetime<$ten){
+
+                $data[$key]['yuyuetime'] = '16:30-17:30';
+
+            }
+
+            elseif($ten<=$yuyuetime && $yuyuetime<=$ele){
+
+                $data[$key]['yuyuetime'] = '17:30-18:30';
+
+            }
+
+            elseif($ele<=$yuyuetime && $yuyuetime<=$twl){
+
+                $data[$key]['yuyuetime'] = '18:30-19:30';
+
+            }
+
+            elseif($twl<=$yuyuetime && $yuyuetime<=$thr){
+
+                $data[$key]['yuyuetime'] = '19:30-20:30';
+
+            }
+
+            elseif($thr<=$yuyuetime && $yuyuetime<=$zaro){
+
+                $data[$key]['yuyuetime'] = '20:30-24:00';
+
+            }
+
+            else{
+
+                $data[$key]['yuyuetime'] = '非今日到诊';
+
+            }
+
+        }
+
+            $expert = M("Zj") -> field('zjname') -> select();
+
+            // dump()
+
+            $govern = M("Ks") -> field('ksname') -> select();
+
+            $entity = M("Bz") -> field('bzname') -> select();
+
+            $channel = M("Channel") -> field('name') -> select();
+
+            $source = M("Source") -> field('name') -> select();
+
+            $assign=array(
+
+                'data' => $data,
+
+                'expert' => $expert,
+
+                'govern' => $govern,
+
+                'entity' => $entity,
+
+                'channel' => $channel,
+
+                'source' => $source
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('hosp_index');
+
+}
+
+/**
+
+ * [dybctz 大医本草堂]
+
+ * @return [type] [description]
+
+ */
+
+    function dybctz(){
+
+        $where = array();
+
+        $s = M('auth_group_access') -> field('uid') -> where("group_id in ('10','11')") -> select();
+
+        foreach ($s as $key => $value) {
+
+            $str .=$value['uid'] . ',';
+
+        }
+
+        $str = substr($str,0,-1);
+
+        // dump($str);die;
+
+        $where['huawu'] = array('in',$str);
+
+        $where['recycle']= ' and recycle=0';
+
+        // p($where);die;
+
+        $make = M('Patient as a');
+
+        $p = getpage($make,$where,10);
+
+        $data = $make -> join('yuyue_auth_group_access as  b  on b.uid = a.huawu') -> join('yuyue_users as  c  on c.id = a.huawu') -> field('a.*,b.group_id,c.username') -> where($where) -> order('a.id desc') -> select();
+
+        // $data['id'] = $this->multi_unique($data['id']);
+
+        // p($data);die;
+
+        // p($data);die;
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        // $this->make=$make;
+
+        $assign=array(
+
+            'data' => $data,
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+    }
+
+    public function dybctz_search(){
+
+        if(IS_POST){
+
+        $post=I('post.');
+
+        // dump($post);die;
+
+        // $huawu=$_SESSION['user']['id'];
+
+        $where="a.recycle=0 and a.huawu in (select uid from yuyue_auth_group_access where group_id in ('10','11') )";
+
+        if($post['yuyueks']!=""){
+
+            $where .=' and a.yuyueks='.'"'.$post['yuyueks'].'"';
+
+        }
+
+        if($post['yuyuezj']!=""){
+
+            $where .=' and a.yuyuezj='.'"'.$post['yuyuezj'].'"';
+
+            // echo $where;die;
+
+        }
+
+        if($post['yuyuebz']!=""){
+
+            $where .=' and a.yuyuebz='.'"'.$post['yuyuebz'].'"';
+
+        }
+
+        if($post['channel']!=""){
+
+            $where .=' and a.channel='.'"'.$post['channel'].'"';
+
+        }
+
+        if($post['source']!=""){
+
+            $where .=' and a.source='.'"'.$post['source'].'"';
+
+        }
+
+        if($post['start']!=""){
+
+            $start=strtotime($post['start']);
+
+            $where .=' and a.yuyuetime>'.'"'.$start.'"';
+
+        }
+
+        if($post['end']!=""){
+
+            $end=strtotime($post['end']);
+
+            $where .=' and a.yuyuetime<'.'"'.$end.'"';
+
+        }
+
+        if($post['name']!=""){
+
+            $where .=' and (a.name='.'"'.$post['name'].'"'.' or a.alias='.'"'.$post['name'].'")';
+
+        }
+
+        if($post['phone']!=""){
+
+            $where .=' and (a.phone='.'"'.$post['phone'].'"'.' or a.phones='.'"'.$post['phone'].'")';
+
+        }
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+        // p($where);die;
+
+        $make = M('Patient as a');
+
+        $p = getpage($make,$where,10);
+
+        $data = $make -> join('yuyue_users as  c  on c.id = a.huawu') -> field('a.*,c.username') -> where($where) -> order('a.id desc') -> select();
+
+        // p($where);die;
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        // $this->make=$make;
+
+        $assign=array(
+
+            'data' => $data,
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('dybctz');
+
+    }
+
+    public function dybctz_edit(){
+
+        $make = M("Patient");
+
+        if(IS_POST){
+
+            $data=I('post.');
+
+            // dump($data);die;
+
+            $data['yuyuetime']=strtotime($data['yuyuetime']);
+
+            // $huawu=$_SESSION['user']['id'];
+
+            // $where="recycle=0 and name="."'".$data['name']."' and phone=".$data['phone']." and yuyuezj="."'".$data['yuyuezj']."'";
+
+            // $isname=$make->where($where)->find();
+
+            // echo $isname['id'];die;
+
+            // dump($isname);die;
+
+            if($data['yuyuezj']==''){
+
+                $data['yuyuezj']='其他';
+
+            }
+
+            if($data['yuyueks']==''){
+
+                $data['yuyueks']='综合';
+
+            }
+
+            if($data['channel']==''){
+
+                $data['channel']='其他';
+
+            }
+
+            if($data['name'] == ""){
+
+                $this->error('修改失败');
+
+            }
+
+            $where='id='.$data['id'];
+
+            $make=$make->where($where)->save($data);
+
+            if ($make) {
+
+                $this->success('修改成功',U('Admin/Make/dybctz'));
+
+            }else{
+
+                $this->error('修改失败');
+
+            }
+
+        }elseif(IS_GET){
+
+            $data=I('get.');
+
+            // dump($data);die;
+
+            $make=$make->where($data)->find();
+
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        $this->make=$make;
+
+        $assign=array(
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    //管理删除
+
+    public function dybctz_delete(){
+
+        $id=I('get.id');
+
+        $where = 'id='.$id;
+
+        $make = M("Patient"); // 实例化User对象
+
+        $make->recycle = 1;
+
+        $make=$make->where($where)->save();
+
+        // dump($make);die;
+
+        if (!empty($make)) {
+
+            $this->success('删除成功',U('Admin/Make/dybctz'));
+
+        }else{
+
+            $this->error('删除失败');
+
+        }
+
+    }
+
+    /**
+
+ * [hosptial_data pc医院数据]
+
+ * @return [无返回值]
+
+ */
+
+    function hospital_data(){
+
+        // dump($post);die;
+
+            //显示默认数据
+
+            $make = M('hdata');
+
+            $p = getpage($make,0,10);
+
+            $data = $make -> select();
+
+        //回显时间日期型
+
+        foreach ($data as $key => $value) {
+
+                $data[$key]['htime'] = date("Y-m-d H:i:s",$value['htime']);
+
+            }
+
+            // p($data);die;
+
+            $expert = M("Zj") -> field('zjname') -> select();
+
+            $govern = M("Ks") -> field('ksname') -> select();
+
+            $entity = M("Bz") -> field('bzname') -> select();
+
+            $channel = M("Channel") -> field('name') -> select();
+
+            $source = M("Source") -> field('name') -> select();
+
+            $assign=array(
+
+                'data' => $data,
+
+                'expert' => $expert,
+
+                'govern' => $govern,
+
+                'entity' => $entity,
+
+                'channel' => $channel,
+
+                'source' => $source
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+        // $data=M('hdata') -> select();
+
+        // $this -> assign('data',$data);
+
+    }
+
+    function hospital_data_search(){
+
+        if(IS_POST){
+
+            //用户查询数据
+
+            $post = I('post.');
+
+            $where = "recycle = '0'";
+
+            // dump($post);die;
+
+            if($post['yuyueks'] != ""){
+
+                $where .= ' and department = ' . '"' . $post['yuyueks'] . '"';
+
+            }
+
+            if($post['yuyuezj'] != ""){
+
+                $where .= ' and expert = ' . '"' . $post['yuyuezj'] . '"';
+
+            }
+
+            if($post['yuyuebz'] != ""){
+
+                $where .= ' and illness = ' . '"' . $post['yuyuebz'] . '"';
+
+            }
+
+            if($post['again'] != ""){
+
+                $post['again']  = (int)($post['again']);
+
+                $where .= 'and again = ' . $post['again'];
+
+            }
+
+            if($post['start']!=""){
+
+                $start = strtotime($post['start']);
+
+            $where .=' and htime>'.'"'.$start.'"';
+
+            }
+
+            if($post['end']!=""){
+
+                $end = strtotime($post['end']);
+
+            $where .=' and htime<'.'"'.$end.'"';
+
+            }
+
+            if($post['name'] != ""){
+
+                $where = 'name = ' . '"' . $post['name'] . '"';
+
+            }
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+            $make=M("hdata");
+
+            $p=getpage($make,$where,10);
+
+            $data=$make -> where($where) -> select();
+
+        foreach ($data as $key => $value) {
+
+                $data[$key]['htime'] = date("Y-m-d H:i:s",$value['htime']);
+
+            }
+
+            // p($data);die;
+
+            $expert = M("Zj") -> field('zjname') -> select();
+
+            $govern = M("Ks") -> field('ksname') -> select();
+
+            $entity = M("Bz") -> field('bzname') -> select();
+
+            $channel = M("Channel") -> field('name') -> select();
+
+            $source = M("Source") -> field('name') -> select();
+
+            $assign=array(
+
+                'data' => $data,
+
+                'expert' => $expert,
+
+                'govern' => $govern,
+
+                'entity' => $entity,
+
+                'channel' => $channel,
+
+                'source' => $source
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('hospital_data');
+
+    }
+
+    function hospital_data_edit(){
+
+        if(IS_POST){
+
+            dump(I('post.'));die;
+
+        }else{
+
+        $id = I('get.id');
+
+        // dump($id);die;
+
+        $where = 'id=' . $id;
+
+        $data = M('hdata') ->  where($where) -> select();
+
+        // dump($data);die;
+
+        foreach ($data as $key => $value) {
+
+                $data[$key]['htime'] = date("Y-m-d H:i:s",$value['htime']);
+
+            }
+
+            // dump($data);die;
+
+            // $govern = M("Ks") -> field('ksname') -> select();
+
+            // $entity = M("Bz") -> field('bzname') -> select();
+
+            // $channel = M("Channel") -> field('name') -> select();
+
+            // $source = M("Source") -> field('name') -> select();
+
+            // $assign=array(
+
+   //           'data' => $data,
+
+   //           'expert' => $expert,
+
+   //           'govern' => $govern,
+
+   //           'entity' => $entity,
+
+   //           'channel' => $channel,
+
+   //           'source' => $source
+
+   //       );
+
+            // dump($govern);die;
+
+        $this -> assign('data',$data);
+
+        $this -> display();
+
+        }
+
+    }
+
+    function hospital_data_delete(){
+
+        $id=I('get.id');
+
+        $where = 'id='.$id;
+
+        $make = M("hdata"); // 实例化User对象
+
+        $make->recycle = 1;
+
+        $make=$make->where($where)->save();
+
+        // dump($make);die;
+
+        if (!empty($make)) {
+
+            $this->success('删除成功',U('Admin/Make/hospital_data'));
+
+        }else{
+
+            $this->error('删除失败');
+
+        }
+
+    }
+
+    /**
+
+ * [Pyy pc专家转诊所属专家患者]
+
+ * @return [无返回值]
+
+ */
+
+    function Pyy(){
+
+        $id = $_SESSION['user']['id'];
+
+        $name = M('users') -> field('username') -> where("id = {$id}") -> select();
+
+        $name = $name[0]['username'];
+
+        $time = time();
+
+        $where = "recycle=0 and yuyuezj = '$name' and type = 0 and yuyuetime>='$time'";
+
+        $make = M('patient as a');
+
+        $p=getpage($make,$where,10);
+
+        $data = $make -> join('yuyue_users as  c  on c.id = a.huawu') -> field('a.*,c.username') -> where($where) -> order('a.yuyuetime asc') -> select();
+
+        // echo "<pre>";
+
+        // var_dump($data);die;
+
+        //电话号码中间四位显示*
+
+        // foreach ($data as $key => $value) {
+
+        //  $data[$key]['phone'] = preg_replace('/(\d{3})\d{4}(\d{4})/', '$1****$2', $value['phone']);
+
+        // }
+
+        $arr = array('199','211','212','213','214','215','216','217','218','219','220','221','222','223');//林洪生学生用户的id
+
+        if($id == '198'){
+
+            $zhuanj = array(array('zjname' => '李勇'),array('zjname' => '张英'),array('zjname' => '刘杰'),array('zjname' => '刘硕'),array('zjname' => '李道睿'),array('zjname' => '刘义涛'),array('zjname' => '关念波'),array('zjname' => '董倩'),array('zjname' => '樊慧婷'),array('zjname' => '赵志正'),array('zjname' => '张玉人'),array('zjname' => '王学谦'),array('zjname' => '王硕'),array('zjname' => '吕丽媛'));
+
+        }elseif(in_array($id,$arr)){
+
+            $zhuanj = array(array('zjname' => '林洪生'));
+
+        }else{
+
+            $zhuanj = M('zj') -> field('zjname') -> select();
+
+        }
+
+            $expert = M("Zj") -> field('zjname') -> select();
+
+            $govern = M("Ks") -> field('ksname') -> select();
+
+            $entity = M("Bz") -> field('bzname') -> select();
+
+            $channel = M("Channel") -> field('name') -> select();
+
+            $source = M("Source") -> field('name') -> select();
+
+            $assign=array(
+
+                'data' => $data,
+
+                'zhuanj' => $zhuanj,
+
+                'expert' => $expert,
+
+                'govern' => $govern,
+
+                'entity' => $entity,
+
+                'channel' => $channel,
+
+                'source' => $source
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+    }
+
+/**
+
+ * [referral_search 患者所属登录专家的搜索]
+
+ * @return [type] [description]
+
+ */
+
+    function referral_search(){
+
+        $uid = $_SESSION['user']['id']; //用户登录id
+
+        if(IS_POST){
+
+        $post=I('post.');
+
+        $id = $_SESSION['user']['id'];
+
+        $name = M('users') -> field('username') -> where("id = {$id}") -> select();
+
+        $name = $name[0]['username'];
+
+        $time = time();
+
+        $where = "recycle=0 and yuyuezj = '$name' and yuyuetime>='$time'";
+
+        if($post['start']!=""){
+
+            $start=strtotime($post['start']);
+
+            $where .=' and a.yuyuetime>'.'"'.$start.'"';
+
+        }
+
+        if($post['end']!=""){
+
+            $end=strtotime($post['end']);
+
+            $where .=' and a.yuyuetime<'.'"'.$end.'"';
+
+        }
+
+        if($post['name']!=""){
+
+            $where .=' and (a.name='.'"'.$post['name'].'"'.' or a.alias='.'"'.$post['name'].'")';
+
+        }
+
+        if($post['phone']!=""){
+
+            $where .=' and (a.phone='.'"'.$post['phone'].'"'.' or a.phones='.'"'.$post['phone'].'")';
+
+        }
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+        $make = M('Patient as a');
+
+        $p = getpage($make,$where,10);
+
+        $data = $make -> join('yuyue_users as  c  on c.id = a.huawu') -> field('a.*,c.username') -> where($where) -> order('a.id desc') -> select();
+
+        // foreach ($data as $key => $value) {
+
+        //  $data[$key]['phone'] = preg_replace('/(\d{3})\d{4}(\d{4})/', '$1****$2', $value['phone']);
+
+        // }
+
+        $arr = array('199','211','212','213','214','215','216','217','218','219','220','221','222','223');//林洪生学生用户的id
+
+        if($uid == '198'){
+
+            $zhuanj = array(array('zjname' => '李勇'),array('zjname' => '张英'),array('zjname' => '刘杰'),array('zjname' => '刘硕'),array('zjname' => '李道睿'),array('zjname' => '刘义涛'),array('zjname' => '关念波'),array('zjname' => '董倩'),array('zjname' => '樊慧婷'),array('zjname' => '赵志正'),array('zjname' => '张玉人'),array('zjname' => '王学谦'),array('王硕'),array('zjname' => '吕丽媛'));
+
+        }elseif(in_array($uid,$arr)){
+
+            $zhuanj = array(array('林洪生'));
+
+        }else{
+
+            $zhuanj = M('zj') -> field('zjname') -> select();
+
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'data' => $data,
+
+            'zhuanj' => $zhuanj,
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('Pyy');
+
+    }
+
+/**
+
+ * [Preferral 转诊患者]
+
+ */
+
+    function Preferral(){
+
+        $uid = $_SESSION['user']['id']; //用户登录id
+
+        if(IS_POST){
+
+            $post = I('post.');
+
+            $id = $post['id'];  //患者id
+
+            $name = $post['name'];      //用户填写的专家姓名
+
+            $dialogue = $post['dialogue'];
+
+            $refetime = strtotime($post['refetime']);
+
+            $data = M('zj') -> where("zjname = " . "'" . $name . "'") -> select();
+
+            $aid = $data[0]['id'];
+
+            // echo "<pre>";
+
+            // var_dump($data);die;
+
+            // $zid = $data[0]['id'];
+
+            $res = M('users') -> field('id')-> where("username = '$name'") -> select();
+
+            // var_dump($zres);die;
+
+            $zid = $res[0]['id'];
+
+            $result = M('patient') -> where("id = {$id}") -> select();
+
+            $time = $result[0]['yuyuetime'];
+
+            $nowtime = time();
+
+            $arr = array('199','211','212','213','214','215','216','217','218','219','220','221','222','223');//林洪生学生用户的id
+
+            if($uid == '198'){ //林洪生的用户表id
+
+                if(!in_array($zid,$arr)){
+
+                $response = array('code' => 10007,'msg' => '请填写指定专家！(您团队成员)');
+
+                $this->ajaxReturn($response,'JSON');
+
+                exit;
+
+                }
+
+            }
+
+            if(in_array($uid,$arr)){
+
+                if($aid != '36'){//林洪生专家表的id
+
+                    $response = array('code' => 10008,'msg' => '请填写指定专家');
+
+                $this->ajaxReturn($response,'JSON');
+
+                exit;
+
+                }
+
+            }
+
+            if(empty($data)){
+
+                $response = array('code' => 10001,'msg' => '所输入专家名不存在！');
+
+                $this->ajaxReturn($response,'JSON');
+
+                exit;
+
+            }else{
+
+                if($nowtime > $time){
+
+                    $response = array('code' => 10006,'msg' => '患者已就诊无法转诊');
+
+                    $this -> ajaxReturn($response,'JSON');
+
+                    exit;
+
+                }else{
+
+                if($result[0]['yuyuezj'] == $name){
+
+                    $response = array('code' => 10002,'msg' => '不能将患者转给自己！');
+
+                    $this -> ajaxReturn($response,'JSON');
+
+                    exit;
+
+                }else{
+
+                if($result[0]['referral_state'] ==1){
+
+                    $response = array('code' => 10004,'msg' => '该患者处于转诊状态！');
+
+                    $this -> ajaxReturn($response,'JSON');
+
+                    exit;
+
+                }
+
+                if($result[0]['referral_num'] <=3){
+
+                $patient['referral_zj'] = $name;
+
+                $patient['referral_state'] = 1;
+
+                $patient['refetime'] = $refetime;
+
+                $patient['dialogue'] = $dialogue;
+
+                $res = M('patient') -> where("id = {$id}") -> save($patient);
+
+                if(flase !== $res){
+
+                    $response = array('code' => 10000,'msg' => '患者已转诊等待确认！');
+
+                    $this -> ajaxReturn($response,'JSON');
+
+                    exit;
+
+                }else{
+
+                    $response = array('code' => 10003,'msg' => '未知错误！');
+
+                    $this -> ajaxReturn($response,'JSON');
+
+                    exit;
+
+                }
+
+                }else{
+
+                    $response = array('code' => 10005,'msg' => '改患者已超过转诊次数！');
+
+                    $this -> ajaxReturn($response,'JSON');
+
+                    exit;
+
+                }
+
+            }
+
+        }
+
+            }
+
+        }
+
+    }
+
+/**
+
+ * [referral_info 待确认转诊的信息]
+
+ * @return [type] [description]
+
+ */
+
+    function referral_info(){
+
+        $id = $_SESSION['user']['id'];  //用户登录id
+
+        $name = M('users') -> field('username') -> where("id = {$id}") -> select();
+
+        $name = $name[0]['username'];
+
+        $where = "recycle=0 and referral_zj = '$name' and referral_state = 1";
+
+        $make = M('patient as a');
+
+        $p=getpage($make,$where,10);
+
+        $data = $make -> join('yuyue_users as  c  on c.id = a.huawu') -> field('a.*,c.username') -> where($where) -> select();
+
+        //电话号码中间四位显示*
+
+        foreach ($data as $key => $value) {
+
+            $data[$key]['phone'] = preg_replace('/(\d{3})\d{4}(\d{4})/', '$1****$2', $value['phone']);
+
+        }
+
+            $expert = M("Zj") -> field('zjname') -> select();
+
+            $govern = M("Ks") -> field('ksname') -> select();
+
+            $entity = M("Bz") -> field('bzname') -> select();
+
+            $channel = M("Channel") -> field('name') -> select();
+
+            $source = M("Source") -> field('name') -> select();
+
+            $assign=array(
+
+                'data' => $data,
+
+                'expert' => $expert,
+
+                'govern' => $govern,
+
+                'entity' => $entity,
+
+                'channel' => $channel,
+
+                'source' => $source
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+    }
+
+/**
+
+ * [referral_sure 转诊确认]
+
+ * @return [type] [description]
+
+ */
+
+    function referral_sure(){
+
+        // echo 1;
+
+        $id = I('get.id');
+
+        $result = M('patient') -> where("id = {$id}") -> select();
+
+        $patient['recycle'] = 1;
+
+        $res = M('patient') -> where("id = {$id}") -> save($patient);
+
+        //新增一条数据
+
+        foreach ($result as $key => $value) {
+
+            $info = $value;
+
+        }
+
+        $info['id'] = null;
+
+        $info['referral_state'] = 2;
+
+        $info['referral_bezj'] = $info['yuyuezj'];
+
+        $info['yuyuezj'] = $info['referral_zj'];
+
+        $info['referral_num'] += 1;
+
+        $res = M('patient') -> add($info);
+
+        $data = M('patient') -> where("id='$res'") -> select();
+
+        // var_dump($data);die;
+
+        $name = $data[0]['name'];
+
+        $mtime = date("m月d日",$data[0]['refetime']);
+
+        // $mobile = '15986621466';
+
+        $mobile = $data[0]['phone'];
+
+        // $name = '测试';
+
+        $referral_bezj = $data[0]['referral_bezj'];
+
+        $referral_zj = $data[0]['referral_zj'];
+
+        $nexttime = $mtime;
+
+        // echo $res;
+
+        if($res){
+
+        $this -> success('确认成功','referral_info');
+
+/**************************************************************/
+
+if(empty($mobile)) return json_encode(array('Message'=>'缺少参数','Code'=>'Error'));
+
+    if(!preg_match("/^1[34578]{1}\d{9}$/",$mobile)) return array('Message'=>'无效的手机号');
+
+    require_once '/ThinkPHP/Library/Vendor/dysms/vendor/autoload.php';
+
+    // echo 1;die;
+
+    // var_dump($mobile);die;
+
+    // echo APP_ROOT;die;
+
+    Config::load();             //加载区域结点配置
+
+    $config = C('dysms');       //取出参数配置
+
+    $accessKeyId = 'LTAIXQBET5tRo5VB';
+
+    $accessKeySecret = 'i0WxMfl7K6SKOksWVFTgTIrXKJjw8I';
+
+    // $templateParam = array("code" =>$name);
+
+    $templateParam = array("name"=>$name,"referralbezj"=>$referral_bezj,"referralzj"=>$referral_zj,"nexttime"=>$nexttime);           //模板变量替换
+
+    $signName = '林洪生工作室';
+
+    $templateCode = 'SMS_122283811';   //短信模板ID
+
+    //短信API产品名（短信产品名固定，无需修改）
+
+    $product = "Dysmsapi";
+
+    //短信API产品域名（接口地址固定，无需修改）
+
+    $domain = "dysmsapi.aliyuncs.com";
+
+    //暂时不支持多Region（目前仅支持cn-hangzhou请勿修改）
+
+    $region = "cn-hangzhou";
+
+    // 初始化用户Profile实例
+
+    $profile = DefaultProfile::getProfile($region, $accessKeyId, $accessKeySecret);
+
+    // 增加服务结点
+
+    DefaultProfile::addEndpoint("cn-hangzhou", "cn-hangzhou", $product, $domain);
+
+    // 初始化AcsClient用于发起请求
+
+    $acsClient= new DefaultAcsClient($profile);
+
+    // 初始化SendSmsRequest实例用于设置发送短信的参数
+
+    $request = new SendSmsRequest();
+
+    // 必填，设置雉短信接收号码
+
+    $request->setPhoneNumbers($mobile);
+
+    // 必填，设置签名名称
+
+    $request->setSignName($signName);
+
+    // 必填，设置模板CODE
+
+    $request->setTemplateCode($templateCode);
+
+    // 可选，设置模板参数
+
+    if($templateParam) {
+
+        $request->setTemplateParam(json_encode($templateParam));
+
+    }
+
+    //发起访问请求
+
+    $acsResponse = $acsClient->getAcsResponse($request);
+
+    var_dump($acsResponse);
+
+    //返回请求结果
+
+    $result = json_encode($acsResponse);
+
+    // var_dump($result);die;
+
+    return $result;
+
+/**************************************************************/
+
+        }
+
+    }
+
+/**
+
+ * [referral_mine 我的转诊]
+
+ * @return [type] [description]
+
+ */
+
+    function referral_mine(){
+
+        $id = $_SESSION['user']['id'];  //用户登录id
+
+        $name = M('users') -> field('username') -> where("id = {$id}") -> select();
+
+        $name = $name[0]['username'];
+
+        $where = "(referral_bezj = '$name' or referral_zj = '$name') and recycle=0  and type =0";
+
+        $make = M('patient as a');
+
+        $p=getpage($make,$where,10);
+
+        $data = $make -> join('yuyue_users as  c  on c.id = a.huawu') -> field('a.*,c.username') -> where($where) -> select();
+
+        // var_dump($data);die;
+
+        //电话号码中间四位显示*
+
+        foreach ($data as $key => $value) {
+
+            $data[$key]['phone'] = preg_replace('/(\d{3})\d{4}(\d{4})/', '$1****$2', $value['phone']);
+
+        }
+
+            $expert = M("Zj") -> field('zjname') -> select();
+
+            $govern = M("Ks") -> field('ksname') -> select();
+
+            $entity = M("Bz") -> field('bzname') -> select();
+
+            $channel = M("Channel") -> field('name') -> select();
+
+            $source = M("Source") -> field('name') -> select();
+
+            $assign=array(
+
+                'data' => $data,
+
+                'expert' => $expert,
+
+                'govern' => $govern,
+
+                'entity' => $entity,
+
+                'channel' => $channel,
+
+                'source' => $source
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+    }
+
+/**
+
+ * [referral_mine 今日转诊]
+
+ * @return [type] [description]
+
+ */
+
+    function referral_mine_today(){
+
+        $year = date("Y");
+
+        $month = date("m");
+
+        $day = date("d");
+
+        $start = mktime(0,0,0,$month,$day,$year);//当天开始时间戳
+
+        $end= mktime(23,59,59,$month,$day,$year);//当天结束时间戳
+
+        $id = $_SESSION['user']['id'];
+
+        $name = M('users') -> field('username') -> where("id = {$id}") -> select();
+
+        $name = $name[0]['username'];
+
+        $time = time();
+
+        $where = "recycle=0 and yuyuezj = '$name' and type = 0 and yuyuetime>='$time' and yuyuetime>'$start' and yuyuetime<'$end'";
+
+        $make = M('patient as a');
+
+        $p=getpage($make,$where,10);
+
+        $data = $make -> join('yuyue_users as  c  on c.id = a.huawu') -> field('a.*,c.username') -> where($where) -> order('a.yuyuetime asc') -> select();
+
+        // echo "<pre>";
+
+        // var_dump($data);die;
+
+        //电话号码中间四位显示*
+
+        foreach ($data as $key => $value) {
+
+            $data[$key]['phone'] = preg_replace('/(\d{3})\d{4}(\d{4})/', '$1****$2', $value['phone']);
+
+        }
+
+            $expert = M("Zj") -> field('zjname') -> select();
+
+            $govern = M("Ks") -> field('ksname') -> select();
+
+            $entity = M("Bz") -> field('bzname') -> select();
+
+            $channel = M("Channel") -> field('name') -> select();
+
+            $source = M("Source") -> field('name') -> select();
+
+            $assign=array(
+
+                'data' => $data,
+
+                'expert' => $expert,
+
+                'govern' => $govern,
+
+                'entity' => $entity,
+
+                'channel' => $channel,
+
+                'source' => $source
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('pyy');
+
+    }
+
+    /**
+
+     * [zyfx 住院分析]
+
+     * @return [type] [description]
+
+     */
+
+    public function zyfx(){
+
+        $where = "";
+
+        $m = M("zynum");
+
+        $p = getpage($m,$where,10);
+
+        $data = $m -> select();
+
+        // var_dump($data);die;
+
+        // foreach ($data as $key => $value) {
+
+        //  var_dump($value);die;
+
+        // }
+
+        // echo "<pre/>";
+
+        // var_dump($data);die;
+
+        $assign=array(
+
+            'data'=>$data,
+
+        );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+/**
+
+ * [zyfx_search 住院搜索]
+
+ * @return [type] [description]
+
+ */
+
+    public function zyfx_search(){
+
+        if(IS_POST){
+
+        $post=I('post.');
+
+        $start = strtotime(trim($post['start']));
+
+        $end = strtotime(trim($post['end']));
+
+        $expert = $post['expert'];
+
+        $zycs = $post['zycs'];
+
+        $where = "recycle=0";
+
+        if(!empty($start)){
+
+            if(empty($end)){
+
+                $end = time();
+
+                $where.=" and ryrq > '$start' and ryrq < '$end'";
+
+            }else{
+
+                $where.=" and ryrq > '$start' and ryrq < '$end'";
+
+            }
+
+        }
+
+        if(!empty($expert)){
+
+            $where.=" and mzys='$expert'";
+
+        }
+
+        if(!empty($zycs)){
+
+            switch($zycs){
+
+                case '1':
+
+                    $where.=" and num=1";
+
+                break;
+
+                case '2':
+
+                    $where.=" and num=2";
+
+                break;
+
+                case '3':
+
+                    $where.=" and num>=3";
+
+                break;
+
+            }
+
+        }
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+        // echo $where;die;
+
+        $m = M('zynum');
+
+        $p = getpage($m,$where,10);
+
+        $data = $m -> where($where) -> select();
+
+        $assign=array(
+
+            'data' => $data,
+
+        );
+
+        // echo "<pre>";
+
+        // var_dump($data);die;
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('zyfx');
+
+    }
+
+/**
+
+ * [zyfxinfo 住院详情]
+
+ * @return [type] [description]
+
+ */
+
+    function zyfxinfo(){
+
+        $get = I('get.');
+
+        $blh = $get['blh'];
+
+        $res = M('zyfx') -> field('name,age') -> where("blh='$blh'") -> select();
+
+        // var_dump($res);die;
+
+        $name = $res[0]['name'];
+
+        $age = $res[0]['age'];
+
+        $where = "name='$name' and age='$age'";
+
+        // echo $name;die;
+
+        $m = M('zyfx');
+
+        $p = getpage($m,$where,10);
+
+        $data = $m -> where($where) -> select();
+
+        $assign=array(
+
+            'data' => $data,
+
+        );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('');
+
+    }
+
+    public function online(){
+
+        $module = M('users');
+
+        $wh = "u.id=g.uid and g.group_id=o.id and o.id=7";
+
+        $huawu = $module -> table(array('yuyue_users' => 'u','yuyue_auth_group_access' => 'g','yuyue_auth_group' =>'o')) -> field("u.id,u.username") -> where($wh) -> order('u.id asc') -> select();
+
+        $where = "recycle=0 and ordernum is not null";
+
+        $m = M('patient');
+
+        $p = getpage($m,$where,10);
+
+        $data = $m -> table(array('yuyue_patient' => 'p','yuyue_online_order' => 'o','yuyue_users' => 'u')) -> field("p.*,o.paystate,o.money,u.username") -> where("p.recycle=0 and p.ordernum=o.ordernum and p.ordernum is not null and p.huawu=u.id") -> order('p.time desc') -> select();
+
+        foreach ($data as $key => $value) {
+
+            if($value['source'] === '看大医' && $value['paystate'] === '0'){
+
+                $data[$key]['money'] = '';
+
+                // echo $value['money'];die;
+
+            }
+
+            if($value['paystate'] == '2'){
+
+                $data[$key]['money'] = '';
+
+            }
+
+        }
+
+        /*消息未读状态*/
+
+        $read = D('OnlineRead') -> getState();
+
+        foreach ($data as $key => $value)
+
+        {
+
+            if(in_array($value['id'],$read))
+
+            {
+
+                $data[$key]['state'] = 1;
+
+            }
+
+        }
+
+        // echo "<pre/>";
+
+        // var_dump($data);die;
+
+        /*消息未读状态*/
+
+        // echo "<pre/>";
+
+        // var_dump($data);die;
+
+        $assign = array(
+
+            'huawu' => $huawu,
+
+            'data' => $data
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+    }
+
+    public function online_edit(){
+
+        // $id = I('get.id');
+
+        if(IS_POST){
+
+            $data = I('post.');
+
+            // echo "<pre/>";
+
+            // var_dump($data);die;
+
+            $ordernum = $data['ordernum'];
+
+            $pay['paystate'] = $data['paystate'];
+
+            unset($data['paystate']);
+
+            $id = $data['id'];
+            // $order = M('patient') -> where("id='$id'") -> find();
+            // $data['time'] = $order['time'];
+            $data['yuyuetime'] = strtotime($data['yuyuetime']);
+
+            $res = M('patient') -> where("id='$id'") -> save($data);
+
+            $result = M('online_order') -> where("ordernum='$ordernum'") -> save($pay);
+
+            if($res || $result){
+
+                $this -> success('修改成功！',U('online'));
+
+            }else{
+
+                $this -> error('修改失败',U('online'));
+
+            }
+
+        }else{
+
+            $id = I('get.id');
+
+            $m = M('patient');
+
+            $where = "p.id = '$id' and p.ordernum=o.ordernum";
+
+            // $p = getpage($m,$where,10);
+
+            $data = $m -> table(array('yuyue_patient' => 'p','yuyue_online_order' => 'o')) -> field("p.*,o.paystate,o.money") -> where($where) -> order('p.time desc') -> select();
+
+            foreach ($data as $key => $value) {
+
+                if($value['paystate'] == '1'){
+
+                    $data[$key]['paystates'] = '已支付';
+
+                    $pay[0]['paystate'] = '未支付';
+
+                    $pay[1]['paystate'] = '已退款';
+
+                    $pay[0]['paystates'] = '0';
+
+                    $pay[1]['paystates'] = '2';
+
+                }elseif($value['paystate'] == '2'){
+
+                    // echo 2;die;
+
+                    $data[$key]['paystates'] = '已退款';
+
+                    $data[$key]['money'] = '';
+
+                    $pay[0]['paystate'] = '未支付';
+
+                    $pay[1]['paystate'] = '已支付';
+
+                    $pay[0]['paystates'] = '0';
+
+                    $pay[1]['paystates'] = '1';
+
+                }else{
+
+                    $data[$key]['paystates'] = '未支付';
+
+                    $pay[0]['paystate'] = '已支付';
+
+                    $pay[1]['paystate'] = '已退款';
+
+                    $pay[0]['paystates'] = '1';
+
+                    $pay[1]['paystates'] = '2';
+
+                }
+
+            }
+
+            $govern=M("Ks")->field('ksname')->select();
+
+            $expert=M("Zj")->field('zjname')->select();
+
+            // D('OnlineRead') -> changeState(,$huawu);
+
+            $assign = array(
+
+                'data' => $data,
+
+                'govern' => $govern,
+
+                'expert' => $expert,
+
+                'pay' => $pay,
+
+                );
+
+            // echo "<pre/>";
+
+            // var_dump($assign);die;
+
+            $this -> assign($assign);
+
+            $this -> display();
+
+        }
+
+    }
+
+    public function online_pedit(){
+
+        // $id = I('get.id');
+
+        if(IS_POST){
+
+            $data = I('post.');
+
+            // echo "<pre/>";
+
+            // var_dump($data);die;
+
+            unset($data['paystate']);
+
+            $id = $data['id'];
+            // echo $data['yuyuetime'];
+            // echo "<br/>";
+            $data['yuyuetime'] = strtotime($data['yuyuetime']);
+            // echo $data['yuyuetime'];
+
+            $res = M('patient') -> where("id='$id'") -> save($data);
+
+            if($res){
+
+                $this -> success('修改成功！',U('online_huawu_view'));
+
+            }else{
+
+                $this -> error('修改失败',U('online_huawu_view'));
+
+            }
+
+        }else{
+
+            $id = I('get.id');
+
+            $m = M('patient');
+
+            $where = "p.id = '$id' and p.ordernum=o.ordernum";
+
+            // $p = getpage($m,$where,10);
+
+            $data = $m -> table(array('yuyue_patient' => 'p','yuyue_online_order' => 'o')) -> field("p.*,o.paystate") -> where($where) -> order('p.time desc') -> select();
+
+            $govern=M("Ks")->field('ksname')->select();
+
+            $expert=M("Zj")->field('zjname')->select();
+
+            D('OnlineRead') -> changesState($id);
+
+            $assign = array(
+
+                'data' => $data,
+
+                'govern' => $govern,
+
+                'expert' => $expert
+
+                );
+
+            // echo "<pre/>";
+
+            // var_dump($assign);die;
+
+            $this -> assign($assign);
+
+            $this -> display();
+
+        }
+
+    }
+
+    public function online_delete(){
+
+        $id = I('get.id');
+
+        $module = M('patient');
+
+        $module -> recycle=1;
+
+        $res = $module -> where("id='$id'") -> save();
+
+        if($res){
+
+            $this -> success('修改成功！',U('online'));
+
+            }else{
+
+                $this -> error('修改失败',U('online'));
+
+            }
+
+    }
+
+    public function online_fenpei(){
+
+        $post = I('post.');
+
+        $huawu = $post['huawu'];
+
+        if(isset($post['fp'])){
+
+            if(empty($post['id'])){
+
+            $this->error('请选择患者');die;
+
+            }elseif (empty($post['huawu'])) {
+
+            $this->error('请选择话务员');die;
+
+            }else{
+
+                $res = $post['id'];
+
+                $res = "(" . implode(',',$res) . ")";
+
+                // echo $res;die;
+
+                $where = 'id IN' . $res;
+
+                //处理未读消息
+
+                D('OnlineRead') -> changeState($postid,$huawu);
+
+                $make = M("online_patient"); // 实例化对象
+
+                $make->traffic = $huawu;
+
+                $make=$make->where($where)->save();
+
+                // dump($make);die;
+
+                if (!empty($make)) {
+
+                    $this->success('分配成功',U('online',array('sign'=>2)));die;
+
+                }else{
+
+                    $this->error('分配失败');die;
+
+                }
+
+            }
+
+        }
+
+        if(isset($post['qxfp'])){
+
+                if(empty($post['id'])){
+
+                $this -> error('请选择患者');
+
+                }else{
+
+                $res = $post['id'];
+
+                $res = "(" . implode(',',$res) . ")";
+
+                // echo $res;die;
+
+                $where = 'id IN' . $res;
+
+                $make = M("online_patient"); // 实例化对象
+
+                $make->traffic = '';
+
+                $result = $make->where($where)->save();
+
+                if($result){
+
+                    $this -> success('修改成功',U('online',array('sign'=>2)));
+
+                }else{
+
+                    $this -> error('修改失败');
+
+                }
+
+            }
+
+        }
+
+    }
+
+    public function online_qxfenpei(){
+
+    }
+
+    public function online_search(){
+
+        if(IS_POST){
+
+        $post = I('post.');
+
+        $start = strtotime(trim($post['start']));
+
+        $end = strtotime(trim($post['end']));
+
+        $name = $post['name'];
+
+        $phone = $post['phone'];
+
+        $where = "recycle=0";
+
+        $sql = "p.recycle=0 ";
+
+        if(!empty($start)){
+
+            if(empty($end)){
+
+                $end = time();
+
+                $where.=" and yuyuetime >= '$start' and yuyuetime <= '$end'";
+
+                $sql .= " and p.yuyuetime >= '$start' and p.yuyuetime <= '$end'";
+
+            }else{
+
+                $where.=" and yuyuetime >= '$start' and yuyuetime <= '$end'";
+
+                $sql .= " and p.yuyuetime >= '$start' and p.yuyuetime <= '$end'";
+
+            }
+
+        }
+
+        if(!empty($name)){
+
+            $where .= " and name='$name'";
+
+            $sql .= " and p.name='$name'";
+
+        }
+
+        if(!empty($phone)){
+
+            $where .= " and phone='$phone'";
+
+            $sql .= " and p.phone='$phone'";
+
+        }
+
+        $module = M('users');
+
+        $wh = "u.id=g.uid and g.group_id=o.id and o.id=7";
+
+        $huawu = $module -> table(array('yuyue_users' => 'u','yuyue_auth_group_access' => 'g','yuyue_auth_group' =>'o')) -> field("u.id,u.username") -> where($wh) -> order('u.id asc') -> select();
+
+        // $where = "";
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        $_SESSION['sql']=$sql;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+            $sql=$_SESSION['sql'];
+
+        }
+
+        $m = M('patient');
+
+        $p = getpage($m,$where,10);
+
+        $data = $m -> table(array('yuyue_patient' => 'p','yuyue_online_order' => 'o','yuyue_users' => 'u')) -> field("p.*,o.paystate,o.money,u.username") -> where($sql . "and p.ordernum=o.ordernum and u.id=p.huawu") -> order('p.yuyuetime desc') -> select();
+
+        // echo "<pre/>";
+
+        // var_dump($data);die;
+
+        $assign = array(
+
+            'huawu' => $huawu,
+
+            'data' => $data
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('online');
+
+    }
+
+    public function online_excel(){
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $assign = array(
+
+                'expert' => $expert,
+
+            );
+
+        $this->assign($assign);
+
+        $this -> display();
+
+    }
+
+    public function online_export(){
+
+        $post = I('post.');
+
+        $start = strtotime($post['start']);
+
+        $end = strtotime($post['end']);
+
+        $expert = $post['expert'];
+
+        if(empty($end)){
+
+            $end = time();
+
+        }
+
+        $namestart = date('Y年m月d日',$start);
+
+        $nameend = date('Y年m月d日',$end);
+
+        $where = "expert='$expert' and p.time >= '$start' and p.time <= '$end'";
+
+        if(empty($expert)){
+
+            $where = "p.time >= '$start' and p.time <= '$end'";
+
+        }elseif(empty($start)){
+
+            $where = "p.expert='$expert'";
+
+        }
+
+        $m = M("online_patient");
+
+        $result=$m -> table(array('yuyue_online_patient' => 'p','yuyue_online_order' => 'o')) -> field("p.*,o.paystate,o.money")  -> where($where . " and p.recycle=0 and p.ordernum=o.ordernum") -> order('time asc')->select();
+
+        $data[]=array('患者id','姓名','性别','年龄','身份证号','电话','预约专家','预约科室','预约时间','提交时间','订单号','来源','患者备注','话务员','是否到诊','是否消费','是否住院','类型','是否回访','支付状态','实际支付金额');
+
+        // echo "<pre/>";
+
+        // var_dump($result);die;
+
+            foreach ($result as $key => $va) {
+
+                $da=array(
+
+                    $va['id'],
+
+                    $va['name'],
+
+                    $va['sex']==0? '男': '女',
+
+                    $va['age'],
+
+                    $va['identify'],
+
+                    $va['phone'],
+
+                    $va['expert'],
+
+                    $va['department'],
+
+                    date('Y年m月d日',$va['time']),
+
+                    date('Y年m月d日',$va['addtime']),
+
+                    $va['ordernum'],
+
+                    $va['source'],
+
+                    $va['info'],
+
+                    $va['traffic'],
+
+                    $va['arrive']==0? '未到诊': '到诊',
+
+                    $va['consumption']==0? '未消费': '消费',
+
+                    $va['hospital']==0? '未住院': '已住院',
+
+                    $va['type']==0? '初诊': '复诊',
+
+                    $va['huif']==0? '未回访': '已回访',
+
+                    $va['paystate']==1? '已支付': $va['paystate']=($va['paystate']==2?'已退款':'未支付'),
+
+                    $va['money'],
+
+                    );
+
+                $data[]=$da;
+
+            }
+
+        if(empty($expert)){
+
+            create_xls($data,$namestart . "至" . $nameend . "网约信息");
+
+        }elseif(empty($start)){
+
+            create_xls($data,$expert . "网约信息");
+
+        }else{
+
+            create_xls($data,$expert . $namestart . "至" . $nameend . "网约信息");
+
+        }
+
+    }
+
+    public function online_huawu_view(){
+
+        $hwid=$_SESSION['user']['id'];
+
+        $res = M('users') -> field('username') -> where("id='$hwid'") -> select();
+
+        $huawu = $res[0]['username'];
+
+        $where = "huawu='$hwid' and recycle=0 and channel='网约'";
+
+        $m = M('patient');
+
+        $p = getpage($m,$where,10);
+
+        $data = $m -> table(array('yuyue_patient' => 'p','yuyue_online_order' => 'o')) -> field("p.*,o.paystate") -> where("p.huawu='$hwid' and p.ordernum=o.ordernum and p.recycle=0") -> order('p.time desc') -> select();
+        // echo $hwid;
+        // echo "<pre/>";
+        // var_dump($data);die;
+        foreach ($data as $key => $value) {
+            $data[$key]['huawu']=$huawu;
+            // echo $value['huawu'];
+            // echo $huawu;die;
+            if($value['source'] === '看大医' && $value['paystate'] === '0'){
+
+                $data[$key]['nom'] = 1;
+
+                // echo $value['money'];die;
+
+            }
+
+            if($value['paystate'] == '2'){
+
+                $data[$key]['money'] = '';
+
+            }
+
+        }
+
+        // echo "<pre/>";
+
+        // var_dump($data);die;
+
+        $assign = array(
+
+            // 'huawu' => $huawu,
+
+            'data' => $data
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+    }
+
+
+        public function online_huawu_today(){
+
+        $hwid=$_SESSION['user']['id'];
+        $beginToday = mktime(0,0,0,date('m'),date('d'),date('Y'));
+
+        $endToday = mktime(0,0,0,date('m'),date('d')+1,date('Y'))-1;
+        $res = M('users') -> field('username') -> where("id='$hwid'") -> select();
+
+        $huawu = $res[0]['username'];
+
+        $where = "huawu='$hwid' and recycle=0 and ordernum is not null and yuyuetime>'$beginToday' and yuyuetime<'$endToday'";
+
+        $m = M('patient');
+
+        $p = getpage($m,$where,10);
+
+        $data = $m -> table(array('yuyue_patient' => 'p','yuyue_online_order' => 'o')) -> field("p.*,o.paystate") -> where("p.huawu='$hwid' and p.ordernum=o.ordernum and p.recycle=0 and p.yuyuetime>'$beginToday' and p.yuyuetime<'$endToday'") -> order('p.time desc') -> select();
+        // echo $hwid;
+        // echo "<pre/>";
+        // var_dump($data);die;
+        foreach ($data as $key => $value) {
+            $data[$key]['huawu']=$huawu;
+            // echo $value['huawu'];
+            // echo $huawu;die;
+            if($value['source'] === '看大医' && $value['paystate'] === '0'){
+
+                $data[$key]['nom'] = 1;
+
+                // echo $value['money'];die;
+
+            }
+
+            if($value['paystate'] == '2'){
+
+                $data[$key]['money'] = '';
+
+            }
+
+        }
+
+        // echo "<pre/>";
+
+        // var_dump($data);die;
+
+        $assign = array(
+
+            // 'huawu' => $huawu,
+
+            'data' => $data
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('online_huawu_view');
+
+    }
+
+    public function online_huawu_search(){
+        $hwid=$_SESSION['user']['id'];
+        if(IS_POST){
+
+        $post = I('post.');
+
+        $start = strtotime(trim($post['start']));
+
+        $end = strtotime(trim($post['end']));
+
+        $name = $post['name'];
+
+        $phone = $post['phone'];
+
+        $where = "recycle=0 and huawu='$hwid'";
+
+        $sql = "p.recycle=0 and p.huawu='$hwid'";
+
+        if(!empty($start)){
+
+            if(empty($end)){
+
+                $end = time();
+
+                $where.=" and yuyuetime >= '$start' and yuyuetime <= '$end'";
+
+                $sql .= " and p.yuyuetime >= '$start' and p.yuyuetime <= '$end'";
+
+            }else{
+
+                $where.=" and yuyuetime >= '$start' and yuyuetime <= '$end'";
+
+                $sql .= " and p.yuyuetime >= '$start' and p.yuyuetime <= '$end'";
+
+            }
+
+        }
+
+        if(!empty($name)){
+
+            $where .= " and name='$name'";
+
+            $sql .= " and p.name='$name'";
+
+        }
+
+        if(!empty($phone)){
+
+            $where .= " and phone='$phone'";
+
+            $sql .= " and p.phone='$phone'";
+
+        }
+
+        $module = M('users');
+
+        $wh = "u.id=g.uid and g.group_id=o.id and o.id=7";
+
+        $huawu = $module -> table(array('yuyue_users' => 'u','yuyue_auth_group_access' => 'g','yuyue_auth_group' =>'o')) -> field("u.id,u.username") -> where($wh) -> order('u.id asc') -> select();
+
+        // $where = "";
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        $_SESSION['sql']=$sql;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+            $sql=$_SESSION['sql'];
+
+        }
+
+        $m = M('patient');
+
+        $p = getpage($m,$where,10);
+
+        $data = $m -> table(array('yuyue_patient' => 'p','yuyue_online_order' => 'o','yuyue_users' => 'u')) -> field("p.*,o.paystate,o.money,u.username") -> where($sql . "and p.ordernum=o.ordernum and u.id=p.huawu") -> order('p.yuyuetime desc') -> select();
+
+        // echo "<pre/>";
+
+        // var_dump($data);die;
+
+        $assign = array(
+
+            'huawu' => $huawu,
+
+            'data' => $data
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display('online_huawu_view');
+
+    }
+
+    public function online_huawu_edit(){
+
+        $get = I('get.');
+
+        // echo "<pre/>";
+
+        // var_dump($get);die;
+
+        $id = $get['id'];
+
+        $where = "id='$id'";
+
+        $m = M('online_patient');
+
+        if($get['huif'] == 1){
+
+            $m -> huif = 0;
+
+        }elseif($get['huif'] ==0){
+
+            $m -> huif = 1;
+
+        }else{
+
+            $this -> error('修改失败');die;
+
+        }
+
+        $result = $m -> where($where) -> save();
+
+        if($result){
+
+            $this -> success('修改成功');
+
+        }
+
+    }
+
+    public function online_hos_view(){
+
+        $time = strtotime(date('Y-m-d',time())) + 1;
+
+        $stime = strtotime(date('Y-m-d',time())) + 86399;
+
+        // echo $time;die;
+
+        $where = "time>='$time' and time <= '$stime' and huif=1 and recycle=0";
+
+        $m = M('online_patient as p');
+
+        $p = getpage($m,$where,10);
+
+        $data = $m -> table(array('yuyue_online_patient' => 'p','yuyue_online_order' => 'o')) -> field("p.*,o.paystate,o.money") -> where("p.time>='$time' and p.time <= '$stime' and p.huif=1  and p.recycle=0 and o.recycle=0 and p.ordernum=o.ordernum") -> order('p.addtime desc') -> select();
+
+        foreach ($data as $key => $value) {
+
+            if($value['source'] === '看大医' && $value['paystate'] === '0'){
+
+                $data[$key]['nom'] = 1;
+
+                // echo $value['money'];die;
+
+            }
+
+            if($value['paystate'] == '2'){
+
+                $data[$key]['money'] = '';
+
+            }
+
+        }
+
+        // $data = $m -> where($where) -> select();
+
+        // echo $time;
+
+        // echo "<pre/>";
+
+        // var_dump($data);die;
+
+        $assign = array(
+
+            // 'huawu' => $huawu,
+
+            'data' => $data
+
+            );
+
+        $this -> page = $p -> show();
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+    }
+
+    public function online_hos_edit(){
+
+        $get = I('get.');
+
+        $id = $get['id'];
+
+        $where = "id='$id'";
+
+        $m = M('patient');
+
+        if(isset($get['diagnosis'])){
+
+            switch ($get['diagnosis']) {
+
+                case '0':
+
+                    $m -> diagnosis=1;
+
+                    break;
+
+                case '1':
+
+                    $m -> diagnosis=0;
+
+                    break;
+
+            }
+
+        }elseif(isset($get['consumption'])){
+
+            switch ($get['consumption']) {
+
+                case '0':
+
+                    $m -> consumption=1;
+
+                    break;
+
+                case '1':
+
+                    $m -> consumption=0;
+
+                    break;
+
+            }
+
+        }elseif(isset($get['hospital'])){
+
+            switch ($get['hospital']) {
+
+                case '0':
+
+                    $m -> hospital=1;
+
+                    break;
+
+                case '1':
+
+                    $m -> hospital=0;
+
+                    break;
+
+            }
+
+        }else{
+
+            $this -> error('修改失败');
+
+        }
+
+        $result = $m -> where($where) -> save();
+
+        if($result){
+
+            $this -> success('修改成功');
+
+        }
+
+    }
+
+    public function inpatient(){
+
+        $where='a.recycle=0 and a.hospital=1';
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        // dump($where);die;
+
+        $m=M("Patient as a");
+
+        $p=getpage($m,$where,10);
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.yuyuetime asc') -> order('a.yuyuetime desc') ->select();
+
+        //$make=M("Patient")->where($where)->select();
+
+        // dump($make);die;
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    public function inpatient_edit(){
+
+        // dump($_REQUEST);die;
+
+        $module = M("Patient");
+
+        if(IS_POST){
+
+            $post = I('post.');
+
+            $pid = $post['id'];
+
+            $update['gwbs'] = $post['gwbs'];
+
+            $update['gwzl'] = implode(',',$post['gwzl']);
+
+            $update['rysj'] = strtotime($post['rysj']);
+
+            $update['rycs'] = $post['zycs'];
+
+            $update['zlfs'] = implode(',',$post['zlfs']);
+
+            // dump($update['gwzl']);die;
+
+            $update['zlxg'] = $post['zlxg'];
+
+            $update['cyjy'] = implode(',',$post['cyjy']);
+
+            $update['uptime'] = time();
+
+            $res = M('inpatient') -> where("pid='$pid'") -> save($update);
+
+            if($res){
+
+                $this -> success('修改成功',U('inpatient',array('sign'=>2)));die;
+
+            }else{
+
+                $this -> error('修改失败',U('inpatient',array('sign'=>2)));die;
+
+            }
+
+            // dump($res);die;
+
+        }
+
+        $id = I('get.id');
+
+        $data = $module -> field('id,name,age,sex,yuyuebz') -> where("id=$id") -> select();
+
+        $resul = M('inpatient') -> where("pid='$id'") -> select();
+
+        // dump($resul)
+
+        if(empty($resul)){
+
+            $add['pid'] = $id;
+
+            // $add['gwbs'] = '';
+
+            // $add['gwzl'] = '';
+
+            // $add['rysj'] = '';
+
+            // $add['rycs'] = '';
+
+            // $add['zlfs'] = '';
+
+            // $add['zlxg'] = '';
+
+            // $add['cyjy'] = '';
+
+            $add['addtime'] = time();
+
+            $add['uptime'] = time();
+
+            $jg = M('inpatient') -> data($add) -> add();
+
+            if($jg){
+
+                $result = M('inpatient') -> where("pid='$id'") -> select();
+
+            }
+
+        }else{
+
+            $result = $resul;
+
+            $gwzl = explode(',',$result[0]['gwzl']);
+
+            $zlfs = explode(',',$result[0]['zlfs']);
+
+            $cyjy = explode(',',$result[0]['cyjy']);
+
+            // dump($gwzl);die;
+
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($data);die;
+
+        // $this->make=$make;
+
+        $assign=array(
+
+            'data' => $data,
+
+            'result' => $result,
+
+            'gwzl' => $gwzl,
+
+            'zlfs' => $zlfs,
+
+            'cyjy' => $cyjy,
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    public function inpatient_search(){
+
+        if(IS_POST){
+
+        $data=I('post.');
+
+        // dump($data);die;
+
+        // $huawu=$_SESSION['user']['id'];
+
+        $where='a.recycle=0 and a.hospital=1';
+
+        if($data['yuyueks']!=""){
+
+            $where .=' and a.yuyueks='.'"'.$data['yuyueks'].'"';
+
+        }
+
+        if($data['yuyuezj']!=""){
+
+            $where .=' and a.yuyuezj='.'"'.$data['yuyuezj'].'"';
+
+            // echo $where;die;
+
+        }
+
+        if($data['yuyuebz']!=""){
+
+            $where .=' and a.yuyuebz='.'"'.$data['yuyuebz'].'"';
+
+        }
+
+        if($data['gwzl']!=""){
+
+            // $sql =' and i.gwzl like '.'"'.$data['gwzl'].'"';
+
+            $sql .=" and i.gwzl like "."'%".$data['gwzl']."%'";
+
+        }
+
+        if($data['zlfs']!=""){
+
+            // $sql =' and i.zlfs like '.'"'.$data['zlfs'].'"';
+
+            $sql .=" and i.zlfs like "."'%".$data['zlfs']."%'";
+
+        }
+
+        if($data['cyjy']!=""){
+
+            // $sql =' and i.cyjy like '.'"'.$data['cyjy'].'"';
+
+            $sql .=" and i.cyjy like "."'%".$data['cyjy']."%'";
+
+        }
+
+        if($data['rycs']!=""){
+
+            // $sql =' and i.rycs like '.'"'.$data['rycs'].'"';
+
+            $sql .=" and i.rycs="."'".$data['rycs']."'";
+
+        }
+
+        // if($data['source']!=""){
+
+        //  $where .=' and a.source='.'"'.$data['source'].'"';
+
+        // }
+
+        if($data['start']!=""){
+
+            $start=strtotime($data['start']);
+
+            $where .=' and a.yuyuetime>'.'"'.$start.'"';
+
+        }
+
+        if($data['end']!=""){
+
+            $end=strtotime($data['end']);
+
+            $where .=' and a.yuyuetime<'.'"'.$end.'"';
+
+        }
+
+        if($data['name']!=""){
+
+            $where .=' and (a.name='.'"'.$data['name'].'"'.' or a.alias='.'"'.$data['name'].'")';
+
+        }
+
+        if($data['phone']!=""){
+
+            $where .=' and (a.phone='.'"'.$data['phone'].'"'.' or a.phones='.'"'.$data['phone'].'")';
+
+        }
+
+        if($data['again'] != ""){
+
+            switch($data['again']){
+
+                case '0':
+
+                    $where.=" and again=0";
+
+                break;
+
+                case '1':
+
+                    $where.=" and again=1";
+
+                break;
+
+                case '2':
+
+                    $where.="";
+
+                break;
+
+            }
+
+        }
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+        $m=M("Patient as a");
+
+        $p=getpages($m,$where,10,$sql);
+
+// echo $sql;die;
+
+        if(!empty($sql)){
+
+        $make=$m -> join('yuyue_users as  b  on b.id = a.huawu') -> join('yuyue_inpatient as i on a.id=i.pid') ->field('a.*,b.username')->where($where . $sql)->order('a.id desc')->select();
+
+    }else{
+
+        $make=$m -> join('yuyue_users as  b  on b.id = a.huawu') ->field('a.*,b.username')->where($where)->order('a.id desc')->select();
+
+    }
+
+        // dump($make);die;
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+            );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display('inpatient');
+
+    }
+
+    public function assistant(){
+
+        $result = M('assistant as a') -> join('yuyue_users as u on a.userid=u.id') -> where("a.recycle=0") -> select();
+
+        foreach ($result as $key => $value) {
+
+            $result[$key]['zj'] = explode(',', $value['expert']);
+
+        }
+
+        // echo "<pre/>";
+
+        // var_dump($result);die;
+
+        $expert = M('zj') -> field('id,zjname') -> where("recycle=0") -> select();
+
+        // var_dump($result);die;
+
+        $assign = array('result' => $result,'expert' => $expert,'experts' => $experts,'zj' => $zj);
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+    }
+
+    public function assistant_add(){
+
+        $post = I('post.');
+
+        $data['username'] = $name = $post['username'];
+
+        $data['password']= md5($post['password']);
+
+        $data['avatar'] = '/Public/statics/aceadmin/avatars/user.jpg';
+
+        $data['phone'] = $post['phone'];
+
+        $data['status'] = 1;
+
+        $data['register_time'] = time();
+
+        if(empty($data['username'])){
+
+            $this -> error('用户名不能为空');die;
+
+        }
+
+        if(empty($data['password'])){
+
+            $this -> error('密码不能为空');die;
+
+        }
+
+        if(empty($data['phone'])){
+
+            $this -> error('手机号不能为空');die;
+
+        }
+
+        $select = M('users') -> where("username='$name'") -> find();
+
+        if(!empty($select)){
+
+            $this -> error('该用户已存在联系网络部解决',U('assistant'));die;
+
+            $userid = $select['id'];
+
+        }else{
+
+            $userid = M('users') -> data($data) -> add();
+
+        }
+
+        if($userid){
+
+            $ass['userid'] = $yz['uid'] = $userid;
+
+            $ass['expert'] = implode(',',$post['expert']);
+
+            $result = M('assistant') -> data($ass) -> add();
+
+            $yz['group_id'] = '18';
+
+            $resu = M('auth_group_access') -> data($yz) -> add();
+
+            if($result){
+
+                $this -> success('添加成功',U('assistant'));die;
+
+            }
+
+        }else{
+
+            $this -> error('添加失败',U('assistant'));die;
+
+        }
+
+        // dump($post);die;
+
+        // $res = M('users') -> data($data) -> add();
+
+    }
+
+    public function assistant_see(){
+
+        $make = M("Patient");
+
+        $id = I('get.id');
+
+        if(IS_GET){
+
+            $data=I('get.');
+
+            // dump($data);die;
+
+            $make=$make->where($data)->find();
+
+        }
+
+        $xp = M('imagexp') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $ct = M('imagect') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $jcd = M('imagejcd') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $sh = M('imagesh') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $zl = M('imagezl') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $hc = M('imagehc') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+        $qt = M('imageqt') -> where("patient='$id'") -> order('addtime desc') -> limit(1) -> select();
+
+                if(!empty($xp)){
+
+            foreach ($xp as $key => $value) {
+
+                $xp[$key]['xp'] = "http://yuyue.tianjianh.cn" . ltrim($value['xp'],".");
+
+            }
+
+            // $assign['xp'] = $xp;
+
+        }
+
+        if(!empty($ct)){
+
+            foreach ($ct as $key => $value) {
+
+                $ct[$key]['ct'] = "http://yuyue.tianjianh.cn" . ltrim($value['ct'],".");
+
+            }
+
+            // $assign['ct'] = $ct;
+
+        }
+
+        if(!empty($jcd)){
+
+            foreach ($jcd as $key => $value) {
+
+                $jcd[$key]['jcd'] = "http://yuyue.tianjianh.cn" . ltrim($value['jcd'],".");
+
+            }
+
+            // $assign['jcd'] = $jcd;
+
+        }
+
+        if(!empty($sh)){
+
+            foreach ($sh as $key => $value) {
+
+                $sh[$key]['sh'] = "http://yuyue.tianjianh.cn" . ltrim($value['sh'],".");
+
+            }
+
+            // $assign['sh'] = $sh;
+
+        }
+
+        if(!empty($zl)){
+
+            foreach ($zl as $key => $value) {
+
+                $zl[$key]['zl'] = "http://yuyue.tianjianh.cn" . ltrim($value['zl'],".");
+
+            }
+
+            // $assign['zl'] = $zl;
+
+        }
+
+        if(!empty($hc)){
+
+            foreach ($hc as $key => $value) {
+
+                $hc[$key]['hc'] = "http://yuyue.tianjianh.cn" . ltrim($value['hc'],".");
+
+            }
+
+            // $assign['hc'] = $hc;
+
+        }
+
+        if(!empty($qt)){
+
+            foreach ($qt as $key => $value) {
+
+                $qt[$key]['qt'] = "http://yuyue.tianjianh.cn" . ltrim($value['qt'],".");
+
+            }
+
+            // $assign['qt'] = $qt;
+
+        }
+
+    
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        $this->make=$make;
+
+        $assign=array(
+
+            'xp' => $xp,
+
+            'ct' => $ct,
+
+            'jcd' => $jcd,
+
+            'sh' => $sh,
+
+            'zl' => $zl,
+
+            'hc' => $hc,
+
+            'qt' => $qt,
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    public function assistant_edit(){
+
+        $post = I('post.');
+
+        $get = I('get.');
+
+        $id = $get['id'];
+
+        if(IS_POST){
+
+            // var_dump($post);die;
+
+            $userid = $post['userid'];
+
+            $data['expert'] = implode(',',$post['expert']);
+
+            $update = M('assistant') -> where("userid='$userid'") -> save($data);
+
+            if($update){
+
+                $this -> success('修改成功',U('assistant'));
+
+            }else{
+
+                $this -> error('修改失败',U('assistant'));
+
+            }
+
+        }else{
+
+        $expert = M('zj') -> field('id,zjname') -> where("recycle=0") -> select();
+
+        $result = M('assistant as a') -> join('yuyue_users as u on a.userid=u.id') -> where("a.recycle=0 and a.userid='$id'") -> select();
+
+        $zj = explode(',',$result[0]['expert']);
+
+        // var_dump($zj);die;
+
+        $assign = array('result' => $result,'expert' => $expert,'zj' => $zj);
+
+        $this -> assign($assign);
+
+        $this -> display();
+
+        }
+
+        // foreach ($result as $key => $value) {
+
+        //  $result[$key]['zj'] = explode(',', $value['expert']);
+
+        // }
+
+        // var_dump($result);die;
+
+    }
+
+    public function assistant_delete(){
+
+        $request = I('request.');
+
+        $id = $request['id'];
+
+        // var_dump($request);die;
+
+        $module = M('assistant');
+
+        $module -> recycle = 1;
+
+        $result = $module -> where("userid='$id'") -> save();
+
+        if($result){
+
+            $this -> success('删除成功',U('assistant'));
+
+        }else{
+
+            $this -> error('删除失败',U('assistant'));
+
+        }
+
+        // var_dump($post);die;
+
+    }
+
+    public function yzck(){
+
+        $yz = $_SESSION['user']['id'];
+
+        $result = M('assistant') -> where("userid='$yz'") -> find();
+
+        $expert = $result['expert'];
+
+        $expert = explode(',',$expert);
+
+        foreach ($expert as $key => $value) {
+
+            $aa[$key] = "'" . $value . "'";
+
+        }
+
+        $aa = implode(',',$aa);
+
+        $where="a.recycle=0 and a.yuyuezj in ($aa)";
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        // dump($where);die;
+
+        $m=M("Patient as a");
+
+        $p=getpage($m,$where,10);
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.yuyuetime asc') -> order('a.yuyuetime desc') ->select();
+
+        //$make=M("Patient")->where($where)->select();
+
+        foreach ($expert as $key => $value) {
+
+            $epxert[$key] = $value;
+
+        }
+
+        // $expert = array($expert);
+
+        // $expert=M("Zj")->field('zjname')->select();
+
+        // dump($expert);die;
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        // dump($make);die;
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+        // dump($aa);die;
+
+        // echo '正在紧张开发中！';die;
+
+        // $this -> display();
+
+    }
+
+    public function yzck_search(){
+
+        if(IS_POST){
+
+        $data=I('post.');
+
+        // dump($data);die;
+
+        // $huawu=$_SESSION['user']['id'];
+
+        $yz = $_SESSION['user']['id'];
+
+        $result = M('assistant') -> where("userid='$yz'") -> find();
+
+        $expert = $result['expert'];
+
+        $expert = explode(',',$expert);
+
+        foreach ($expert as $key => $value) {
+
+            $aa[$key] = "'" . $value . "'";
+
+        }
+
+        $aa = implode(',',$aa);
+
+        $where="a.recycle=0 and a.yuyuezj in ($aa)";
+
+        if($data['yuyueks']!=""){
+
+            $where .=' and a.yuyueks='.'"'.$data['yuyueks'].'"';
+
+        }
+
+        // if($data['yuyuezj']!=""){
+
+        //  $where .=' and a.yuyuezj='.'"'.$data['yuyuezj'].'"';
+
+        //  // echo $where;die;
+
+        // }
+
+        if($data['yuyuebz']!=""){
+
+            $where .=' and a.yuyuebz='.'"'.$data['yuyuebz'].'"';
+
+        }
+
+        if($data['channel']!=""){
+
+            $where .=' and a.channel='.'"'.$data['channel'].'"';
+
+        }
+
+        if($data['source']!=""){
+
+            $where .=' and a.source='.'"'.$data['source'].'"';
+
+        }
+
+        if($data['start']!=""){
+
+            $start=strtotime($data['start']);
+
+            $where .=' and a.yuyuetime>'.'"'.$start.'"';
+
+        }
+
+        if($data['end']!=""){
+
+            $end=strtotime($data['end']);
+
+            $where .=' and a.yuyuetime<'.'"'.$end.'"';
+
+        }
+
+        if($data['name']!=""){
+
+            $where .=' and (a.name='.'"'.$data['name'].'"'.' or a.alias='.'"'.$data['name'].'")';
+
+        }
+
+        if($data['phone']!=""){
+
+            $where .=' and (a.phone='.'"'.$data['phone'].'"'.' or a.phones='.'"'.$data['phone'].'")';
+
+        }
+
+        if($data['again'] != ""){
+
+            switch($data['again']){
+
+                case '0':
+
+                    $where.=" and again=0";
+
+                break;
+
+                case '1':
+
+                    $where.=" and again=1";
+
+                break;
+
+                case '2':
+
+                    $where.="";
+
+                break;
+
+            }
+
+        }
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+        $m=M("Patient as a");
+
+        $p=getpage($m,$where,10);
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.huawu')->field('a.*,b.username')->where($where)->order('a.id desc')->select();
+
+        // dump($make);die;
+
+        // $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+            );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    public function casesView()
+
+    {
+
+        if(!empty($_SESSION['wheresql']))
+
+        {
+
+            $wheresql = $_SESSION['wheresql'];
+
+            // echo $where;die;
+
+        }
+
+        else
+
+        {
+
+            $wheresql = "recycle=0";
+
+        }
+
+        session_start();
+
+        $_SESSION['wheresql']=$wheresql;
+
+        $m=M("cases as a");
+
+        $p=getpage($m,$wheresql,10);
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.traffic')->field('a.*,b.username')->where($wheresql)->order('a.yyrq asc')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=
+
+        array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    public function casesEdit()
+
+    {
+
+        $make = M("cases");
+
+        if(IS_POST){
+
+            $data=I('post.');
+
+            $data['yyrq']=strtotime($data['yyrq']);
+
+            if($data['expert']==''){
+
+                $data['expert']='其他';
+
+            }
+
+            if($data['department']==''){
+
+                $data['department']='综合';
+
+            }
+
+            if($data['qd']==''){
+
+                $data['qd']='其他';
+
+            }
+
+            if($data['name'] == ""){
+
+                $this->error('修改失败');
+
+            }
+
+            $where='id='.$data['id'];
+
+            $make=$make->where($where)->save($data);
+
+            if ($make) {
+
+                $this->success('修改成功',U('Admin/Make/casesView'));
+
+            }else{
+
+                $this->error('修改失败');
+
+            }
+
+        }elseif(IS_GET){
+
+            $data=I('get.');
+
+            $make=$make->where($data)->find();
+
+        }
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $this->make=$make;
+
+        $assign=array(
+
+            'govern'=>$govern,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+        );
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    public function casesDelete()
+
+    {
+
+        $id=I('get.id');
+
+        $where = 'id='.$id;
+
+        $make = M("cases"); // 实例化User对象
+
+        $make->recycle = 1;
+
+        $make=$make->where($where)->save();
+
+        if (!empty($make)) {
+
+            $this->success('删除成功',U('Admin/Make/casesView'));
+
+        }else{
+
+            $this->error('删除失败');
+
+        }
+
+    }
+
+    public function casesSearch()
+
+    {
+
+        if(IS_POST){
+
+        $data=I('post.');
+
+        $where='a.recycle=0';
+
+        if($data['department']!=""){
+
+            $where .=' and a.department='.'"'.$data['department'].'"';
+
+        }
+
+        if($data['expert']!=""){
+
+            $where .=' and a.expert='.'"'.$data['expert'].'"';
+
+        }
+
+        if($data['illness']!=""){
+
+            $where .=' and a.illness='.'"'.$data['illness'].'"';
+
+        }
+
+        if($data['qd']!=""){
+
+            $where .=' and a.qd='.'"'.$data['qd'].'"';
+
+        }
+
+        if($data['source']!=""){
+
+            $where .=' and a.source='.'"'.$data['source'].'"';
+
+        }
+
+        if($data['start']!=""){
+
+            $start=strtotime($data['start']);
+
+            $where .=' and a.yyrq>'.'"'.$start.'"';
+
+        }
+
+        if($data['end']!=""){
+
+            $end=strtotime($data['end']);
+
+            $where .=' and a.yyrq<'.'"'.$end.'"';
+
+        }
+
+        if($data['name']!=""){
+
+            $where .=' and (a.name='.'"'.$data['name'].'"'.' or a.alias='.'"'.$data['name'].'")';
+
+        }
+
+        if($data['phone']!=""){
+
+            $where .=' and (a.phone='.'"'.$data['phone'].'"'.' or a.phones='.'"'.$data['phone'].'")';
+
+        }
+
+        if($data['type'] != ""){
+
+            switch($data['type']){
+
+                case '0':
+
+                    $where.=" and type=0";
+
+                break;
+
+                case '1':
+
+                    $where.=" and type=1";
+
+                break;
+
+                case '2':
+
+                    $where.="";
+
+                break;
+
+            }
+
+        }
+
+        session_start();
+
+        $_SESSION['where']=$where;
+
+        }else{
+
+            $where=$_SESSION['where'];
+
+        }
+
+        $m=M("cases as a");
+
+        $p=getpage($m,$where,10);
+
+        $make=$m->join('yuyue_users as  b  on b.id = a.traffic')->field('a.*,b.username')->where($where)->order('a.id desc')->select();
+
+        $expert=M("Zj")->field('zjname')->select();
+
+        $govern=M("Ks")->field('ksname')->select();
+
+        $entity=M("Bz")->field('bzname')->select();
+
+        $channel=M("Channel")->field('name')->select();
+
+        $source=M("Source")->field('name')->select();
+
+        $assign=array(
+
+            'make'=>$make,
+
+            'expert'=>$expert,
+
+            'govern'=>$govern,
+
+            'entity'=>$entity,
+
+            'channel'=>$channel,
+
+            'source'=>$source
+
+            );
+
+        $this->page=$p->show();
+
+        $this->assign($assign);
+
+        $this->display();
+
+    }
+
+    public function mode()
+    {
+        $mode = $modes = M('mode') -> where("recycle=0") -> select();
+        $sources = M("sources") -> where("recycle=0") -> select();
+        $data =  getTree($sources,0,0);
+        // foreach($data as $value)
+        // {
+        // $a[] .= str_repeat('--', $value['level']), $value['name'].'<br />';
+        // }
+
+         //echo "<pre/>";
+         //var_dump($data);die;
+        $assign = array('mode' => $mode,'data' => $data,'modes' => $modes);
+        $this -> assign($assign);
+        $this -> display();
+    }
+
+
+    public function sourcesAdd()
+    {
+        $post = I('request.');
+        $data['name'] = $sources['name'] = $post['mca'];
+        $data['pid'] = $post['pid'];
+        $data['sid'] = $sources['sid'] = $post['mode'];
+        if(empty($post['mode']))
+        {
+            $this -> success('请填写预约方式',U('mode'));
+        }
+        $result = M('sources') -> add($data);
+        $sources['pid'] = $result;
+        $source = M('sources') -> add($sources);
+        if($source)
+        {
+            $this -> success('添加媒体来源成功',U('mode'));
+        }
+        else
+        {
+            $this -> success('添加媒体来源失败',U('mode'));
+        }
+        // echo "<pre/>";
+        // var_dump($post);die;
+    }
+
+    public function sourcesEdit()
+    {
+        $post = I('request.');
+        $id = $post['id'];
+        $name = $post['name'];
+        $m = M('sources');
+        $m -> name = $name;
+        $result = $m -> where("id='$id'") -> save();
+        if($result)
+        {
+            $this -> success('修改媒体来源成功',U('mode'));
+        }
+        else
+        {
+            $this -> success('修改媒体来源失败',U('mode'));
+        }
+        // echo "<pre/>";
+        // var_dump($post);die;
+    }
+
+
+    public function sourcesDelete()
+    {
+        $post = I('request.');
+        $id = $post['id'];
+        $m = M('sources');
+        $m -> recycle = 1;
+        $where  = "id='$id'";
+        $result = $m -> where($where) -> save();
+        // echo "<pre/>";
+        // var_dump($result);die;
+        if($result)
+        {
+            $this -> success('删除媒体来源成功',U('mode'));
+        }
+        else
+        {
+            $this -> success('删除媒体来源失败',U('mode'));
+        }
+    }
+
+
+    public function modeAdd()
+    {
+        $post = I('request');
+        // echo "<pre/>";
+        // var_dump($post);die;
+        $data['name'] = $post['mca'];
+        // $data['pid'] = $post['pid'];
+        // $data['sid'] = $sources['sid'] = $post['mode'];
+        // if(empty($post['mode']))
+        // {
+        //  $this -> success('请填写预约方式',U('mode'));
+        // }
+        $result = M('sources') -> add($data);
+        if($result)
+        {
+            $this -> success('添加预约方式成功',U('mode'));
+        }
+        else
+        {
+            $this -> success('添加预约方式失败',U('mode'));
+        }
+    }
+
+    public function modeEdit()
+    {
+        $post = I('request.');
+        // echo "<pre/>";
+        // var_dump($post);die;
+        $id = $post['id'];
+        $name = $post['name'];
+        $m = M('mode');
+        $m -> name = $name;
+        $result = $m -> where("id='$id'") -> save();
+        if($result)
+        {
+            $this -> success('修改预约方式成功',U('mode'));
+        }
+        else
+        {
+            $this -> success('修改预约方式失败',U('mode'));
+        }
+    }
+
+    public function modeDelete()
+    {
+        $post = I('request.');
+        // echo "<pre/>";
+        // var_dump($post);die;
+        $id = $post['id'];
+        $m = M('mode');
+        $m -> recycle = 1;
+        $where  = "id='$id'";
+        $result = $m -> where($where) -> save();
+        if($result)
+        {
+            $this -> success('删除预约方式成功',U('mode'));
+        }
+        else
+        {
+            $this -> success('删除预约方式失败',U('mode'));
+        }
+    }
+
+    public function areaChange()
+    {
+        $post = I('request.');
+        $area = $post['address'];
+        $city = $post['city'];
+        $m = M('area');
+        if(!empty($area))
+        {
+            $where = "area_name='$area'  and area_parent_id=0";
+        }
+        if(!empty($city))
+        {
+            $where = "area_name='$city' and area_parent_id<>0";
+        }
+        $areaid = $m -> field('id') -> where($where) -> find();
+        $areaid = $areaid['id'];
+        $result = M('area') -> where("area_parent_id='$areaid'") -> select();
+        // echo $area;die;
+        if(!empty($area))
+        {
+            $return .= "<select name=\"city\" id=\"city\" style=\"margin-left:10px\"><option value=\"\">请选择...</option>";
+        }
+        if(!empty($city))
+        {
+            $return .= "<select name=\"zone\" id=\"zone\" style=\"margin-left:10px\"><option value=\"\">请选择...</option>";
+        }
+        foreach ($result as $key => $value)
+        {
+            $return .= "<option value=\"{$value['area_name']}\">{$value['area_name']}</option>";
+        }
+        $return .= "</select>";
+        $this -> ajaxReturn($return);
+        // echo $area;
+        // echo "<pre/>";
+        // var_dump($areaid);
+        // echo "<pre/>";
+        // var_dump($city);
+    }
+
+
+    public function lineChart()
+    {
+        $sources = M('sources') -> where("pid=0 and recycle=0") -> order('id asc') -> select();
+        foreach ($sources as $k => $v)
+        {
+            $name[] = $v['name'];
+        }
+        $a = M('patient') ->field('time') -> where("channel='商务通' and recycle=0 and time>'1533052800' and time<'1535644800'") -> order("time") -> select();
+        foreach ($a as $key => $value)
+        {
+            $time[] = date('Y-m-d',$value['time']);
+
+        }
+        $start = date('Y-m-01', strtotime(date("Y-m-d")));
+        $end = date('Y-m-d', strtotime("$start +1 month -1 day"));
+        $month = getDateFromRange($start,$end);
+
+        // $b = date('Y-m-d','1535644800');
+        $result = M('patient') -> field('count(*)') -> where("channel='商务通' and recycle=0 and time>'1533052800' and time<'1535644800'") -> group("time") -> select();
+        foreach($month as $k2 =>&$v2)
+        {
+            $v2['count'] = 0;
+            foreach($time as $k =>$v)
+            {
+                if($v2 == $k)
+                {
+                    $v2['count'] = $v;
+                }
+            }
+        }
+        $sources = json_encode($name);
+        $c = array_count_values($time);
+        echo "<pre/>";
+        var_dump($time);die;
+        $this -> display();
+    }
+
+}

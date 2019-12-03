@@ -1,0 +1,23 @@
+@charset "utf-8";
+
+/*again*/
+.commonTit  h2 span{display:inline-block;border-bottom:1px solid #438eb9;padding:0 10px;}
+.again form{font-size:14px;color:#353535;width:880px;}
+.again form li{overflow:hidden;}
+.again form dl{overflow:hidden;margin-bottom:16px;float:left;width:400px;}
+.again form dt{width:120px;float:left;line-height:36px;height:36px; text-align:right;}
+.again form dd{width:280px;float:left;}
+.again form dd input,.again form dd select{width:240px;height:34px;line-height:34px; border:1px solid #c2c2c2;border-radius:4px;}
+.again form dd select{height:36px;line-height:36px; width:245px;}
+.again form dd textarea{width:260px;height:118px; border:1px solid #c2c2c2;border-radius:4px;}
+.again form dd label{line-height:36px;margin-right:20px;}
+.again form dd label input{width:12px;height:12px;}
+.again form p{font-size:12px;color:#438eb9;line-height:20px;}
+.again .datepicker{background:url(../img/date.jpg) 250px center no-repeat;}
+.again .btns dl,.again .address dl{width:100%;}
+.again .btns dl dd,.again .address dl dd{width:760px;}
+.again .btns input{display:inline-block; width:120px;height:45px;background-color:#438eb9;font-size:16px;color:#fff;line-height:45px;border:none;margin-right:45px;cursor:pointer;}
+.again .btns input.reset{background-color:#fd6637;}
+.again .address dd select{margin-right:45px;margin-bottom:20px;}
+.again .address dd input{width:534px;}
+.again .date{background:url(../img/date.jpg) 210px center no-repeat;}

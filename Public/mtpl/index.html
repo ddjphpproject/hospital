@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>医院编号</title>
+    <script type="text/javascript">
+    	
+   		document.addEventListener('plusready', function(){
+   			//console.log("所有plus api都应该在此事件发生后调用，否则会出现plus is undefined。"
+   			
+   		});
+   		
+    </script>
+    <style>
+    	body{
+    		background: url(./mtpl/Public/images/back.jpg);
+    		background-size:cover ;
+    	}
+    	h1{
+    		color:white;
+    		width: 200px;
+    		height: 50px;
+    		margin: 100px auto;
+    		margin-bottom: 0;
+    	}
+    	.number{
+    		outline: none;
+    		width: 90%;
+    		margin-left: 5%;
+    		border: none;
+    		background: transparent;
+    		color: rgba(255,255,255,0.4);
+    		height: 40px;
+    		font-size: 18px;
+    		line-height: 40px;
+    		border-bottom: 1px solid rgba(255,255,255,0.5);
+    		margin-top: 150px;
+    		
+    	}
+    	:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+		    color: #ffffff; opacity:0.5; 
+		}
+		
+		::-moz-placeholder { /* Mozilla Firefox 19+ */
+		    color: #ffffff; opacity:0.5; 
+		}
+		
+		input:-ms-input-placeholder{
+		    color: #ffffff; opacity:0.5; 
+		}
+		
+		input::-webkit-input-placeholder{
+		    color: #ffffff; opacity:0.5; 
+		}
+		.confirm{
+			border: none;
+			background: #0a4484;
+			width: 90%;
+    		margin-left: 5%;
+    		height: 50px;
+    		border-radius: 8px;
+    		color: white;
+    		margin-top: 50px;
+    		font-size: 20px;
+		}
+    </style>
+</head>
+<body>
+	<h1>预约系统登录</h1>
+	<form action="ksfj.html" method="get" id="formup">
+		<input type="text" required="required" placeholder="请输入医院编号" name="number" id="number" class='number'/>
+		<input type="submit" value="下一步" id="confirm"class="confirm"/>
+	</form>
+	
+</body>
+</html>

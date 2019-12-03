@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>活动列表</title>
+    <link href="__ADMIN_ACEADMIN__/css/global.css" rel="stylesheet" type="text/css">
+    <link href="__ADMIN_ACEADMIN__/css/hd-list.css" rel="stylesheet" type="text/css">
+    <script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+    <script src="__ADMIN_ACEADMIN__/js/common.js"></script>
+    <!--[if lt IE 9]>
+    <script src="__ADMIN_ACEADMIN__/js/html5shiv.min.js"></script>
+    <script src="__ADMIN_ACEADMIN__/js/hd-list.js"></script>
+
+    <![endif]-->
+</head>
+<style>
+    .hd-list .search .t {
+        width: 149px;
+        padding: 0 60px 0 20px;
+        height: 40px;
+        border: 1px solid #dcdcdc;
+        display: block;
+        color: #a8a7a4;
+        font-size: 12px;
+        line-height: 40px;
+        border-radius: 4px;
+    }
+
+    .hd-list .search .subBtn {
+        height: 40px;
+        width: 60px;
+        background: url(http://yuyuecs.tianjianh.cn/Public/statics/aceadmin/img/search.png) center center no-repeat;
+        position: absolute;
+        right: 122px;
+        top: 0;
+        border: none;
+    }
+
+    <style>
+     .pages a,
+     .pages span {
+         display: inline-block;
+         padding: 2px 5px;
+         margin: 0 1px;
+         border: 1px solid #f0f0f0;
+         -webkit-border-radius: 3px;
+         -moz-border-radius: 3px;
+         border-radius: 3px;
+     }
+
+    .pages a,
+    .pages li {
+        display: inline-block;
+        list-style: none;
+        text-decoration: none;
+        color: #58A0D3;
+    }
+
+    .pages a.first,
+    .pages a.prev,
+    .pages a.next,
+    .pages a.end {
+        margin: 0;
+    }
+    .pages a:hover {
+        border-color: #50A8E6;
+    }
+
+    .pages span.current {
+        background: #50A8E6;
+        color: #FFF;
+        font-weight: 700;
+        border-color: #50A8E6;
+    }
+</style>
+
+<body>
+<div class="warp">
+
+    <section class="container clearfix">
+        <div class="item">
+
+            <div class="content-right" style="margin-left: 0">
+                <h2>活动列表</h2>
+                <div class="hd-tab">
+                    <span class="active">活动列表<i></i></span>
+                    <span><a href="{:U('Admin/Activity/add_activity')}">添加活动</a><i></i></span>
+                </div>
+                <div class="conBox hd-list">
+                    <div class="search">
+                        <form action="{:U('Admin/Activity/list_activity')}"  name="searchForm" method="post">
+                            <input type="text" class="t" name="title" value="" placeholder="请输入活动标题">
+                            <input type="submit" class="subBtn" value="">
+                        </form>
+                    </div>
+                    <table id="all">
+                        <tr>
+                            <th>标题</th>
+                            <th>活动状态</th>
+                            <th>活动开始时间</th>
+                            <th>活动结束时间</th>
+                            <th>活动类别</th>
+                            <th>活动是否开启</th>
+                            <th>操作</th>
+                        </tr>
+                        <foreach name="data" item="list">
+                            <tr>
+                                <td >{$list['name']}</td>
+                                <if condition="$list['state'] eq 1">
+                                    <td ><span style="color:gray">已过期</span></td>
+                                    <elseif condition="$list['state'] eq 2"/>
+                                    <td ><span style="color:green">进行中</span></td>
+                                    <else/>
+                                    <td><span style="color:red">未开始</span></td>
+                                </if>
+                                <td ><?php echo (date("Y-m-d H:i:s",$list['start_time'])); ?></td>
+                                <td><?php echo (date("Y-m-d H:i:s",$list['end_time'])); ?></td>
+                                <td>{$list['class']}</td>
+                                <if condition="$list['open'] eq 1">
+                                    <td ><img src="/Public/statics/aceadmin/avatars/0.gif"></td>
+                                    <else/>
+                                    <td ><img src="/Public/statics/aceadmin/avatars/1.gif"></td>
+                                </if>
+                                <td><a href="{:U('Admin/Activity/edit_activity',array('id'=>$list['id']))}"
+                                       id="{$list['id']}" name="{$list['name']}" ks_id="{$list['ks_id']}">修改</a> | <a
+                                        href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Activity/delete_activity',array('id'=>$list['id']))}'">删除</a>
+                                </td>
+                            </tr>
+                        </foreach>
+
+                    </table>
+
+                    <!-- 分页 -->
+                    <!--<div class="pages">
+                        {$page}
+                    </div>-->
+                    <!--<div class="page">-->
+                        <!--<ul>-->
+                            <!--<li>显示行数：</li>-->
+                            <!--<li>-->
+                                <!--<select>-->
+                                    <!--<option value="10">10</option>-->
+                                    <!--<option value="20">20</option>-->
+                                    <!--<option value="30">30</option>-->
+                                <!--</select>-->
+                            <!--</li>-->
+                            <!--<li>1/135</li>-->
+                            <!--<li><a href="#" class="btn1"></a></li>-->
+                            <!--<li><input type="text"></li>-->
+                            <!--<li><a href="#" class="btn2">跳转</a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                     <div class="page">
+                            <ul>
+                                <li>显示行数：</li>
+                                <li>
+                                    <select id="status">
+                                        <option value="10" selected="selected">10</option>
+                                        <option value="20">20</option>
+                                        <option value="30">30</option>
+                                    </select>
+                                </li>
+                                <li>{$dangqian_page}/{$Pages}</li>
+                                <li><a href="#" class="btn1"></a></li>
+                                <li><input type="text" id="page_shu" value=""></li>
+                                <li><a href="" class="btn2" id="tiaozhuan">跳转</a></li>
+                            </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+</body>
+<script>
+    //    $(".subBtn").click(function () {
+    //        var title = $('.t').val();
+    //
+    //        var data = {};
+    //        data.title = title;
+    //
+    //        $.ajax({
+    //            type: "post",
+    //            url: "{:U('Admin/Activity/list_activity')}",
+    //            data: data,
+    //            dataType: "json",
+    //            success: function(data){
+    //                var dataObj = eval("("+data+")");
+    ////                console.log(dataObj);
+    //                for(var i=0;i<=dataObj.length;i++){
+    //                    var datas = dataObj[i];
+    //                    $("#name").append("<td>"+datas.name+"</td>")
+    //                }
+    //
+    //                //在这里做些事情，假设返回的json数据里有name这个属性
+    //                //有时候可以直接data.name或者data['name']去访问
+    //                //但有时候，却要通过var jsonData = eval("("+data.responseText+")");才可以通过jsonData.name访问，而且这种情况下，需要是complete而不是success
+    //            }
+    //        });
+    //    });
+     $('#tiaozhuan').click(function () {
+       var xianshi = $("#status  option:selected").text();
+        var page_shu = $('#page_shu').val();
+
+        data = {};
+        data.page_shu = page_shu;
+        data.xianshi = xianshi;
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Admin/Activity/list_activity')}",
+            data: data,
+            success:function (msg) {
+                alert(msg);
+               console.log(msg);
+            }
+        });
+</script>
+
+</html>

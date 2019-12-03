@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>预约系统</title>
+<bootstrapcss/> 
+<link rel="stylesheet" href="/tpl/Public/css/page.css">
+</head>
+<body>
+<div class="bjy-admin-nav"><a href="{:U('Admin/Index/welcome')}"><i class="fa fa-home"></i> 首页</a> &gt; 专家管理</div>
+<ul id="myTab" class="nav nav-tabs">
+<li class="active"> <a href="#home" data-toggle="tab">专家列表</a></li>
+<li> <a href="javascript:;" onclick="add()">添加专家</a>
+</li></ul>
+<form action="{:U('Admin/Expert/add_expert')}" method="post">
+<div id="myTabContent" class="tab-content">
+<div class="tab-pane fade in active" id="home">
+<table class="table table-striped table-bordered table-hover table-condensed">
+<tr>
+<th>专家名</th>
+<th>科室</th>
+<th>操作</th>
+</tr><foreach name="expert" item="zj">
+<tr>
+<td>{$zj['zjname']}</td>
+<td>{$zj['ksname']}</td>
+<td> <a href="javascript:;" id="{$zj['id']}" name="{$zj['zjname']}" ks_id="{$zj['ks_id']}" onclick="edit(this)">修改</a> | <a href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Expert/delete_expert',array('id'=>$zj['id']))}'">删除</a>
+</td>
+</tr>
+</foreach>
+
+</table>
+<div class="pagination">
+　　{$page}
+</div>
+</div>
+
+</div>
+</form>
+
+<div class="modal fade" id="bjy-add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header"> 
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+<h4 class="modal-title" id="myModalLabel"> 添加专家</h4>
+</div>
+<div class="modal-body">
+<form id="bjy-form" class="form-inline" action="{:U('Admin/Expert/add_expert')}" method="post"> 
+<input type="hidden" name="time" value="">
+<table class="table table-striped table-bordered table-hover table-condensed">
+<tr>
+<th width="12%">专家名：</th>
+<td> <input class="form-control" type="text" name="zjname"></td>
+</tr>
+<tr>
+<th width="12%">科室：</th>
+<td> 
+  <select name="ks_id">
+    <option value="">请选择...</option>
+    <foreach name="govern" item="ks">
+    <option value="{$ks['id']}">{$ks['ksname']}</option>
+    </foreach>
+  </select>
+</td>
+</tr>
+<td> <input class="btn btn-success" type="submit" value="添加"></td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade" id="bjy-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog"><div class="modal-content">
+<div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+<h4 class="modal-title" id="myModalLabel"> 修改专家</h4>
+</div>
+<div class="modal-body">
+<form id="bjy-form" class="form-inline" action="{:U('Admin/Expert/edit_expert')}" method="post"> 
+<input type="hidden" name="id">
+<table class="table table-striped table-bordered table-hover table-condensed">
+<tr>
+<th width="12%">专家名：</th>
+<td> <input class="form-control" type="text" name="zjname"></td>
+</tr>
+<th width="12%">科室：</th>
+<td> 
+  <select name="ks_id">
+    <option value="">请选择...</option>
+    <foreach name="govern" item="ks">
+    <option value="{$ks['id']}">{$ks['ksname']}</option>
+    </foreach>
+  </select>
+</td>
+</tr>
+<tr>
+<th></th>
+<td> 
+<input class="btn btn-success" type="submit" value="修改">
+</td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+</div>
+</div><bootstrapjs/><script>
+// 添加菜单
+function add(){
+  $("input[name='zjname']").val();
+  $("select[name='ks_id']").val();
+  $('#bjy-add').modal('show');
+}
+
+
+// 修改菜单
+function edit(obj){
+  var id=$(obj).attr('id');
+  var zjname=$(obj).attr('name');
+  var ks_id=$(obj).attr('ks_id');
+  $("input[name='id']").val(id);
+  $("input[name='zjname']").val(zjname);
+  $("select[name='ks_id']").val(ks_id);
+  $('#bjy-edit').modal('show');
+}
+
+</script></body></html>

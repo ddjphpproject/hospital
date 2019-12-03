@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="en">
+
+<head>
+
+<meta charset="UTF-8"/>
+
+<title>预约系统</title>
+
+<bootstrapcss/>
+
+</head>
+
+<body>
+
+<div class="bjy-admin-nav"><a href="{:U('Admin/Index/welcome')}"><i class="fa fa-home"></i> 首页</a> &gt; 医助管理</div>
+
+<ul id="myTab" class="nav nav-tabs">
+
+<li class="active"> <a href="#home" data-toggle="tab">修改医助</a></li>
+</ul>
+
+<form action="{:U('Admin/Make/assistant_edit')}" method="post">
+
+<div id="myTabContent" class="tab-content">
+
+<div class="tab-pane fade in active" id="home">
+
+<table class="table table-striped table-bordered table-hover table-condensed">
+
+<tr>
+
+<th>医助</th>
+
+<th>负责专家</th>
+
+<!-- <th>操作</th> -->
+
+</tr>
+<foreach name="result" item="result">
+
+<tr>
+<input type="hidden" name="userid" value="{$result.id}"/>
+<td>{$result.username}</td>
+
+<td>
+<input type="checkbox" name="expert[]" value="李春生" <if condition="in_array(李春生, $zj)">checked=checked</if>/>李春生&nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="李佩文" <if condition="in_array(李佩文, $zj)">checked=checked</if>/>李佩文&nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="刘兴志" <if condition="in_array(刘兴志, $zj)">checked=checked</if>/>刘兴志&nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="张文彭" <if condition="in_array(张文彭, $zj)">checked=checked</if>/>张文彭&nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="刘洋" <if condition="in_array(刘洋, $zj)">checked=checked</if>/>刘洋&nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="赵曼晓 " <if condition="in_array(赵曼晓 , $zj)">checked=checked</if>/>赵曼晓 &nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="郭玉琴" <if condition="in_array(郭玉琴, $zj)">checked=checked</if>/>郭玉琴&nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="杨春华" <if condition="in_array(杨春华, $zj)">checked=checked</if>/>杨春华&nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="陈淑艳" <if condition="in_array(陈淑艳, $zj)">checked=checked</if>/>陈淑艳&nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="钟伟" <if condition="in_array(钟伟, $zj)">checked=checked</if>/>钟伟&nbsp&nbsp&nbsp&nbsp
+<input type="checkbox" name="expert[]" value="董峰" <if condition="in_array(董峰, $zj)">checked=checked</if>/>董峰&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="王晓丽" <if condition="in_array(王晓丽, $zj)">checked=checked</if>/>王晓丽&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="朱平然" <if condition="in_array(朱平然, $zj)">checked=checked</if>/>朱平然&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="许润三" <if condition="in_array(许润三, $zj)">checked=checked</if>/>许润三&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="张雪亮" <if condition="in_array(张雪亮, $zj)">checked=checked</if>/>张雪亮&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="宋军" <if condition="in_array(宋军, $zj)">checked=checked</if>/>宋军&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="朱世杰 " <if condition="in_array(朱世杰 , $zj)">checked=checked</if>/>朱世杰 &nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="王泽民" <if condition="in_array(王泽民, $zj)">checked=checked</if>/>王泽民&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="杨中" <if condition="in_array(杨中, $zj)">checked=checked</if>/>杨中&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="刘义涛" <if condition="in_array(刘义涛, $zj)">checked=checked</if>/>刘义涛&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="李勇" <if condition="in_array(李勇, $zj)">checked=checked</if>/>李勇&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="董倩" <if condition="in_array(董倩, $zj)">checked=checked</if>/>董倩&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="王路飞" <if condition="in_array(王路飞, $zj)">checked=checked</if>/>王路飞&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="张英" <if condition="in_array(张英, $zj)">checked=checked</if>/>张英&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="刘杰" <if condition="in_array(刘杰, $zj)">checked=checked</if>/>刘杰&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="刘硕" <if condition="in_array(刘硕, $zj)">checked=checked</if>/>刘硕&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="关念波" <if condition="in_array(关念波, $zj)">checked=checked</if>/>关念波&nbsp&nbsp&nbsp&nbsp
+
+
+<input type="checkbox" name="expert[]" value="李道睿" <if condition="in_array(李道睿, $zj)">checked=checked</if>/>李道睿&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="樊慧婷" <if condition="in_array(樊慧婷, $zj)">checked=checked</if>/>樊慧婷&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="张玉人" <if condition="in_array(张玉人, $zj)">checked=checked</if>/>张玉人&nbsp&nbsp&nbsp&nbsp
+
+<input type="checkbox" name="expert[]" value="赵志正" <if condition="in_array(赵志正, $zj)">checked=checked</if>/>赵志正&nbsp&nbsp&nbsp&nbsp
+
+<!-- <foreach name="expert" item="expert">
+  <input type="checkbox" name="expert[]" value="{$expert.zjname}" <if condition="in_array($expert.zjname,$zj)">checked=checked</if>/>{$expert.zjname}&nbsp&nbsp&nbsp&nbsp
+</foreach> -->
+</td>
+
+<td> <!-- <a href="javascript:;" id="{$result['id']}" name="{$result['username']}" onclick="edit(this)">修改</a> | <a href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Make/assistant_delete',array('id'=>$result['id']))}'">删除</a> -->
+<input type="submit" value="修改" />
+</td>
+
+</tr>
+
+</foreach>
+
+</table>
+
+</div>
+
+</div>
+
+</form>
+
+<bootstrapjs/>
+</body>
+</html>

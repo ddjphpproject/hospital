@@ -1,0 +1,150 @@
+<!-- $Id: goods_info.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<title>预约系统 - 修改预约 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css">
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css">
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+
+<!-- <h1>
+<span class="action-span"><a href="{:U('Admin/Make/hospital_data')}">医院患者信息查看</a></span>
+<span class="action-span1"><a href="{:U('Admin/Index/hospital_data')}">医院患者信息查看</a> </span><span id="search_id" class="action-span1"> - 查看患者信息</span>
+<div style="clear:both"></div>
+</h1> -->
+
+
+<!-- start goods form -->
+<div class="tab-div">
+    <!-- tab bar -->
+    <div id="tabbar-div">
+      <p>
+        <span class="tab-front" id="general-tab">查看患者信息</span>
+      </p>
+    </div>
+
+    <!-- tab body -->
+    <div id="tabbody-div">
+<!--       <form enctype="multipart/form-data" action="{:U('Admin/Make/hospital_data_edit')}" method="post" onSubmit="return checkbaoming();" name="theForm"> -->
+      <foreach name='data' item='msg'>
+        <table id="general-table" width="90%" align="center">
+          <tbody>
+      <tr>
+            <td class="label">患者病历号：</td>
+            <td><input pnum="pnum" id="pnum" style="float:left;color:;" size="30" type="text" value="{$msg['pnum']}"  disabled="disabled">
+            <span class="require-field">*</span></td>
+      </tr>
+      <tr>
+            <td class="label">患者到院时间：</td>
+            <td>
+              <input type="text" id="htime" name="htime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px" value="{$msg['htime']}"  disabled="disabled"/>
+          <span class="require-field">*</span>   
+        </td>
+      </tr>
+      <tr>
+            <td class="label">专家姓名：</td>
+            <td><input expert="expert" id="expert" style="float:left;color:;" size="30" type="text" value="{$msg['expert']}"  disabled="disabled">
+            <span class="require-field">*</span></td>
+      </tr>
+      <tr>
+            <td class="label">患者姓名：</td>
+            <td><input name="name" id="name" style="float:left;color:;" size="30" type="text" value="{$msg['name']}"  disabled="disabled">
+            <span class="require-field">*</span></td>
+      </tr>
+      <tr>
+            <td class="label">患者性别：</td>
+            <td>
+        <input class="radio" id="radio" type="radio" name="gender" value="男" <?php if($msg['gender']=='1') echo("checked");?>  disabled="disabled"/> 男 
+        <input class="radio" id="radio" type="radio" name="gender" value="女" <?php if($msg['gender']=='2') echo("checked");?>  disabled="disabled"/> 女
+        <span class="require-field">*</span>
+      </td>
+      </tr>
+      <tr>
+            <td class="label">患者年龄：</td>
+            <td><input name="age" id="age" style="float:left;color:;" size="30" type="text" value="{$msg['age']}"  disabled="disabled"></td>
+      </tr>
+      <tr>
+            <td class="label">患者病症：</td>
+            <td><input illness="illness" id="illness" style="float:left;color:;" size="30" type="text" value="{$msg['illness']}"  disabled="disabled">
+            <span class="require-field">*</span></td>
+      </tr>
+      <tr>
+            <td class="label">所属科室：</td>
+            <td><input department="department" id="department" style="float:left;color:;" size="30" type="text" value="{$msg['department']}"  disabled="disabled">
+            <span class="require-field">*</span></td>
+      </tr>
+      <tr>
+            <td class="label">初/复诊：</td>
+            <td>
+        <input class="radio2" type="radio" name="again" value="0" <?php if($msg['again']=='1') echo("checked");?> disabled="disabled"/> 初诊
+        <input class="radio2" type="radio" name="again" value="1" <?php if($msg['again']=='2') echo("checked");?> disabled="disabled"/> 复诊
+        <span class="require-field">*</span>
+      </td>
+      </tr>
+<!--<script>  
+  $("#yuyuezj").val("<?php echo $make['yuyuezj']; ?>"); 
+    $("#yuyueks").val("<?php echo $make['yuyueks']; ?>"); 
+      $("#yuyuebz").val("<?php echo $make['yuyuebz']; ?>"); 
+        $("#channel").val("<?php echo $make['channel']; ?>"); 
+          $("#source").val("<?php echo $make['source']; ?>"); 
+
+</script> -->
+        </tbody>
+  </table>
+        <div class="button-div">
+          <input name="id" value="{$msg['id']}" type="hidden" class="id">
+          <input value="返回上一页" class="button" onclick="window.history.back();" type="submit">
+        </div>
+      </foreach>
+<!--       </form> -->
+    </div>
+</div>
+<!--<script type="text/javascript">
+  var id = $('.id').val();
+  console.log(id);
+  $.ajax({ url: "{:U('Admin/Make/hospital_data')}", id: id, success: function(){
+        $(this).addClass("done");
+      }});
+</script>
+<script language="javascript">
+    function checkbaoming(){
+        var name = $("#name").val().trim();
+        var phone = $("#phone").val().trim();
+        var yuyuetime = $("#yuyuetime").val().trim();
+        var sex=$('input:radio[name="sex"]:checked').val();
+        var zj=$("#yuyuezj").val();    
+        if(name=="")
+        {
+                alert("未添加姓名！");
+                return false;
+        }
+        else if(phone=="")
+        {
+                alert("电话号码不能为空！");
+                return false;
+        }
+        else if(sex==null)
+        {
+            alert('性别未选择！');                   
+            return false;
+        }
+        else if(yuyuetime=="")
+        {
+            alert('预约时间未选择！');                   
+            return false;
+        }
+        else if(zj=="")
+        {
+            alert('预约专家未选择！');                   
+            return false;
+        }
+    }
+</script>-->
+
+</body>
+</html>

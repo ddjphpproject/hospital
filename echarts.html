@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+   <head>
+       <meta charset="utf-8">
+   </head>
+   <body style="height: 100%; margin: 0">
+       <div id="container" style="height: 100%"></div>
+       <script type="text/javascript" src="echarts.min.js"></script>
+  <script type="text/javascript">
+    var nowmonth = '';
+    function getCountDays(){
+        var curDate = new Date(); /* 获取当前月份 */
+        var curMonth = curDate.getMonth();
+        curDate.setMonth(curMonth + 1); /* 将日期设置为0 */
+        curDate.setDate(0); /* 返回当月的天数 */
+        return curDate.getDate();
+    }
+    var day=getCountDays();
+
+    function getEvryDay(){
+        var dayArry=[];
+        for (var k = 1; k <= day; k++) {
+            dayArry.push(k);
+        }
+        return dayArry;
+    };
+    nowmonth = getEvryDay();
+    // alert(nowmonth);
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        var app = {};
+        option = null;
+        option = {
+            title: {
+                text: '折线图堆叠'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: nowmonth
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name:'邮件营销',
+                    type:'line',
+                    stack: '总量',
+                    data:[12, 13, 10, 13, 9, 23, 21]
+                },
+                {
+                    name:'联盟广告',
+                    type:'line',
+                    stack: '总量',
+                    data:[22, 18, 19, 23, 29, 33, 31]
+                },
+                {
+                    name:'视频广告',
+                    type:'line',
+                    stack: '总量',
+                    data:[15, 23, 20, 15, 19, 33, 41]
+                },
+                {
+                    name:'直接访问',
+                    type:'line',
+                    stack: '总量',
+                    data:[32, 33, 30, 33, 39, 33, 32]
+                },
+                {
+                    name:'搜索引擎',
+                    type:'line',
+                    stack: '总量',
+                    data:[82, 93, 90, 93, 129, 133, 13]
+                }
+            ]
+        };
+            // window.onload = myChart.resize;
+            // window.onresize = myChart.resize;
+            // myChart.setOption(option, true);
+            if (option && typeof option === "object") {
+    myChart.setOption(option, true);
+}
+
+  </script>
+
+
+   </body>
+</html>

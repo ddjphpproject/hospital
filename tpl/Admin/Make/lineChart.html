@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+   <head>
+        <meta charset="utf-8">
+        <script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+        <style>
+            table
+            {
+                width:100%;
+                border-collapse: collapse;
+            }
+            th,td
+            {
+                border :1px solid black;
+                font-size:12px;
+                text-align :center;
+            }
+        </style>
+   </head>
+   <body style="height: 100%; margin: 0">
+    <div id="loading">
+    加载中...
+    <!-- <img src="http://yuyuecs.tianjianh.cn/tpl/Public/images/timg.gif"> -->
+    </div>
+    <div id="container" style="height: 100%"></div>
+    <div style="text-align:center;margin-top:50px;font-size: 30px;"><font id="year"></font>各媒体预约明细表</div>
+    <?php echo $source_table;?>
+    <div id="modecontainer" style="height: 100%;margin-top:50px;"></div>
+    <div id="arrivecontainer" style="height: 100%;margin-top:50px;"></div>
+    <div style="text-align:center;margin-top:50px;font-size: 30px;"><font id="yearn"></font>各媒体到诊明细表</div>
+    <?php echo $arrive_table;?>
+    <div id="depart" style="height: 100%;margin-top:50px;"></div>
+    <div style="text-align:center;margin-top:50px;font-size: 30px;"><font id="yeare"></font>各科室预约明细表</div>
+    <?php echo $depart_table;?>
+    <div id="departarrive" style="height: 100%;margin-top:50px;"></div>
+    <div style="text-align:center;margin-top:50px;font-size: 30px;"><font id="yearx"></font>各科室到诊明细表</div>
+    <?php echo $depart_arrive_table;?>
+    <!-- <div id="expert" style="height: 100%;margin-top:50px;"></div> -->
+    <div style="text-align:center;margin-top:50px;font-size: 30px;"><font id="yeart"></font>各专家预约明细表</div>
+    <?php echo $expert_table;?>
+    <!-- <div id="expertarrive" style="height: 100%;margin-top:50px;"></div> -->
+    <div style="text-align:center;margin-top:50px;font-size: 30px;"><font id="years"></font>各专家到诊明细表</div>
+    <?php echo $expert_arrive_table;?>
+    <div id="expertbar" style="height: 100%;margin-top:50px;"></div>
+    <div id="sourcebar" style="height: 100%;margin-top:50px;"></div>
+<!-- <div id="pay" style="height: 100%;margin-top:50px;"></div>
+       <p style="text-align:center;margin-top:50px;font-size: 30px;">各支付方式到诊明细表</p>
+<?php echo $pay_table;?> -->
+    <div style="height:50px;"></div>
+    <script type="text/javascript" src="__ADMIN_ACEADMIN__/js/echarts.min.js"></script>
+    <script type="text/javascript">
+        var date = new Date();
+        var year = date .getFullYear();
+        var month = date .getMonth() + 1;
+        var nowdate = year + '年' + month + '月';
+        $('#year').html(nowdate);
+        $('#yearn').html(nowdate);
+        $('#yeare').html(nowdate);
+        $('#yearx').html(nowdate);
+        $('#yeart').html(nowdate);
+        $('#years').html(nowdate);
+        var nowmonth = '';
+        function getCountDays(){
+            var curDate = new Date(); /* 获取当前月份 */
+            var curMonth = curDate.getMonth();
+            curDate.setMonth(curMonth + 1); /* 将日期设置为0 */
+            curDate.setDate(0); /* 返回当月的天数 */
+            return curDate.getDate();
+        }
+        var day=getCountDays();
+
+        function getEvryDay(){
+            var dayArry=[];
+            for (var k = 1; k <= day; k++) {
+                dayArry.push(k  + '号');
+            }
+            return dayArry;
+        };
+        nowmonth = getEvryDay();
+        // alert(nowmonth);
+            var dom = document.getElementById("container");
+            var myChart = echarts.init(dom);
+            var app = {};
+            option = null;
+            option = {
+                title: {
+                    // x:'center',
+                    // y:'center',
+                    text: nowdate + '各媒体预约明细折线图'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    type: 'scroll',
+                    // orient: 'vertical',
+                    right: 10,
+                    top: 20,
+                    bottom: 20,
+                    data:<?php echo $source_name;?>
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: nowmonth
+                    
+                },
+                series: <?php echo $source_data;?>
+            };
+                // window.onload = myChart.resize;
+                // window.onresize = myChart.resize;
+                // myChart.setOption(option, true);
+            if (option && typeof option === "object")
+            {
+                myChart.setOption(option, true);
+            }
+
+        var mode_dom = document.getElementById("modecontainer");
+        var modeChart = echarts.init(mode_dom);
+        // var app = {};
+        modeOption = null;
+        modeOption = {
+            title: {
+            text: nowdate + '各渠道来源预约明细折线图'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:<?php echo $mode_name;?>
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+                },
+            toolbox: {
+                feature: {
+                saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: nowmonth
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: <?php echo $mode_data;?>
+            };
+                // window.onload = myChart.resize;
+                // window.onresize = myChart.resize;
+                // myChart.setOption(option, true);
+            if (modeOption && typeof modeOption === "object")
+            {
+                modeChart.setOption(modeOption, true);
+            }
+
+
+        var arrive_dom = document.getElementById("arrivecontainer");
+        var arriveChart = echarts.init(arrive_dom);
+        // var app = {};
+        arriveOption = null;
+        arriveOption = {
+            title: {
+            text: nowdate + '各媒体到诊明细折线图'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                type: 'scroll',
+                right: 10,
+                top: 20,
+                bottom: 20,
+                data:<?php echo $arrive_name;?>
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+                },
+            toolbox: {
+                feature: {
+                saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: nowmonth
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: <?php echo $arrive_data;?>
+            };
+            if (arriveOption && typeof arriveOption === "object")
+            {
+                arriveChart.setOption(arriveOption, true);
+            }
+
+
+        var depart_dom = document.getElementById("depart");
+        var departChart = echarts.init(depart_dom);
+        // var app = {};
+        departOption = null;
+        departOption = {
+            title: {
+            text: nowdate + '各科室预约明细折线图'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                // type: 'scroll',
+                    // orient: 'vertical',
+                right: 10,
+                top: 20,
+                bottom: 20,
+                data:<?php echo $depart_name;?>
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+                },
+            toolbox: {
+                feature: {
+                saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: nowmonth
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: <?php echo $depart_data;?>
+            };
+            if (departOption && typeof departOption === "object")
+            {
+                departChart.setOption(departOption, true);
+            }
+
+
+
+        var depart_arrive_dom = document.getElementById("departarrive");
+        var departArriveChart = echarts.init(depart_arrive_dom);
+        // var app = {};
+        departArriveOption = null;
+        departArriveOption = {
+            title: {
+            text: nowdate + '各科室到诊明细折线图'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                // type: 'scroll',
+                    // orient: 'vertical',
+                right: 10,
+                top: 20,
+                bottom: 20,
+                data:<?php echo $depart_arrive_name;?>
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+                },
+            toolbox: {
+                feature: {
+                saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: nowmonth
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: <?php echo $depart_arrive_data;?>
+            };
+            if (departArriveOption && typeof departArriveOption === "object")
+            {
+                departArriveChart.setOption(departArriveOption, true);
+            }
+
+
+
+        // var expert_dom = document.getElementById("expert");
+     //    var expertChart = echarts.init(expert_dom);
+     //    // var app = {};
+     //    expertOption = null;
+     //    expertOption = {
+     //        title: {
+     //        text: '各专家预约明细折线图'
+     //        },
+     //        tooltip: {
+     //            trigger: 'axis'
+     //        },
+     //        legend: {
+     //         type: 'scroll',
+        //          // orient: 'vertical',
+        //      right: 10,
+        //      top: 20,
+        //      bottom: 20,
+     //            data:<?php echo $expert_name;?>
+     //        },
+     //        grid: {
+     //            left: '3%',
+     //            right: '4%',
+     //            bottom: '3%',
+     //            containLabel: true
+     //            },
+     //        toolbox: {
+     //            feature: {
+     //            saveAsImage: {}
+     //            }
+     //        },
+     //        xAxis: {
+     //            type: 'category',
+     //            boundaryGap: false,
+     //            data: nowmonth
+     //        },
+     //        yAxis: {
+     //            type: 'value'
+     //        },
+     //        series: <?php echo $expert_data;?>
+     //        };
+     //        if (expertOption && typeof expertOption === "object")
+     //        {
+     //         expertChart.setOption(expertOption, true);
+        //  }
+
+
+        // var expert_arrive_dom = document.getElementById("expertarrive");
+     //    var expertArriveChart = echarts.init(expert_arrive_dom);
+     //    // var app = {};
+     //    expertArriveOption = null;
+     //    expertArriveOption = {
+     //        title: {
+     //        text: '各专家到诊明细折线图'
+     //        },
+     //        tooltip: {
+     //            trigger: 'axis'
+     //        },
+     //        legend: {
+     //         type: 'scroll',
+        //          // orient: 'vertical',
+        //      right: 10,
+        //      top: 20,
+        //      bottom: 20,
+     //            data:<?php echo $expert_arrive_name;?>
+     //        },
+     //        grid: {
+     //            left: '3%',
+     //            right: '4%',
+     //            bottom: '3%',
+     //            containLabel: true
+     //            },
+     //        toolbox: {
+     //            feature: {
+     //            saveAsImage: {}
+     //            }
+     //        },
+     //        xAxis: {
+     //            type: 'category',
+     //            boundaryGap: false,
+     //            data: nowmonth
+     //        },
+     //        yAxis: {
+     //            type: 'value'
+     //        },
+     //        series: <?php echo $expert_arrive_data;?>
+     //        };
+     //        if (expertArriveOption && typeof expertArriveOption === "object")
+     //        {
+     //         expertArriveChart.setOption(expertArriveOption, true);
+        //  }
+
+
+            var bardom = document.getElementById("expertbar");
+            var barChart = echarts.init(bardom);
+            var app = {};
+            baroption = null;
+            baroption = {
+                title: {
+                    text: nowdate + '各专家到诊明细柱状图'
+                },
+                            // color: ['#ffdf25', '#36a9ce'],
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'shadow'
+                                }
+                            },
+                            legend: {
+                    data:['预约','到诊']
+                },
+                            grid: {
+                                left: '0%',
+                                right: '0%',
+                                bottom: '10%',
+                                top:'10%',
+                                containLabel: true
+                            },
+
+                            calculable: true,
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    axisTick: {show: false},
+                                    axisLabel:
+                                    {
+                                        interval:0,
+                                        formatter:function(value)
+                                            {
+                                            return value.split("").join("\n");
+                                            }
+                                    },
+                                    data: <?php echo $expert_bar_name?>
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value'
+                                }
+                            ],
+                            series:<?php echo $expert_bar_data?>
+                        };
+
+                // window.onload = barChart.resize;
+                // window.onresize = barChart.resize;
+                // barChart.setOption(option, true);
+                if (baroption && typeof baroption === "object")
+                {
+                    barChart.setOption(baroption, true);
+                }
+
+
+
+            var sourcebardom = document.getElementById("sourcebar");
+            var sourcebarChart = echarts.init(sourcebardom);
+            var app = {};
+            sourcebaroption = null;
+            sourcebaroption = {
+                title: {
+                    text: nowdate + '各预约方式到诊明细柱状图'
+                },
+                            // color: ['#ffdf25', '#36a9ce'],
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'shadow'
+                                }
+                            },
+                            legend: {
+                    data:['预约','到诊']
+                },
+                            grid: {
+                                left: '0%',
+                                right: '0%',
+                                bottom: '10%',
+                                top:'10%',
+                                containLabel: true
+                            },
+
+                            calculable: true,
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    axisTick: {show: false},
+                                    axisLabel:
+                                    {
+                                        interval:0,
+                                        formatter:function(value)
+                                        {
+                                            return value.split("").join("\n");
+                                        }
+                                    },
+                                    data: <?php echo $source_bar_name?>
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value'
+                                }
+                            ],
+                            series:<?php echo $source_bar_data?>
+                        };
+
+                // window.onload = barChart.resize;
+                // window.onresize = barChart.resize;
+                // barChart.setOption(option, true);
+                if (sourcebaroption && typeof sourcebaroption === "object")
+                {
+                    sourcebarChart.setOption(sourcebaroption, true);
+                }
+
+
+
+        /*var pay_dom = document.getElementById("pay");
+        var payChart = echarts.init(pay_dom);
+        // var app = {};
+        payOption = null;
+        payOption = {
+            title: {
+            text: '各支付方式到诊明细折线图'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                type: 'scroll',
+                    // orient: 'vertical',
+                right: 10,
+                top: 20,
+                bottom: 20,
+                data:<?php echo $pay_name;?>
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+                },
+            toolbox: {
+                feature: {
+                saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: nowmonth
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: <?php echo $pay_data;?>
+            };
+            if (payOption && typeof payOption === "object")
+            {
+                payChart.setOption(payOption, true);
+            }*/
+
+
+    // //获取浏览器页面可见高度和宽度
+    // var _PageHeight = document.documentElement.clientHeight,
+    //   _PageWidth = document.documentElement.clientWidth;
+    // //计算loading框距离顶部和左部的距离（loading框的宽度为215px，高度为61px）
+    // var _LoadingTop = _PageHeight > 61 ? (_PageHeight - 61) / 2 : 0,
+    //   _LoadingLeft = _PageWidth > 215 ? (_PageWidth - 215) / 2 : 0;
+    // //在页面未加载完毕之前显示的loading Html自定义内容
+    // var _LoadingHtml = '<div id="loadingDiv" style="position:absolute;left:0;width:100%;height:' + _PageHeight + 'px;top:0;background:#f3f8ff;opacity:0.8;filter:alpha(opacity=80);z-index:10000;"><div style="position: absolute; cursor1: wait; left: ' + _LoadingLeft + 'px; top:' + _LoadingTop + 'px; width: auto; height: 57px; line-height: 57px; padding-left: 50px; padding-right: 5px; background: #fff url(/Content/loading.gif) no-repeat scroll 5px 10px; border: 2px solid #95B8E7; color: #696969; font-family:\'Microsoft YaHei\';">页面加载中，请等待...</div></div>';
+    // //呈现loading效果
+    // document.write(_LoadingHtml);
+    // //window.onload = function () {
+    // //  var loadingMask = document.getElementById('loadingDiv');
+    // //  loadingMask.parentNode.removeChild(loadingMask);
+    // //};
+    // //监听加载状态改变
+    // document.onreadystatechange = completeLoading;
+    // //加载状态为complete时移除loading效果
+    // function completeLoading() {
+    //   if (document.readyState == "complete") {
+    //  var loadingMask = document.getElementById('loadingDiv');
+    //  loadingMask.parentNode.removeChild(loadingMask);
+    //   }
+    // }
+        window.onload = function()
+        {
+            $('#loading').css('display','none');
+        }
+    </script>
+   </body>
+</html>

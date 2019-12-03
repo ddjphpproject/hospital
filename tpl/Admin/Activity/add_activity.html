@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>活动添加2</title>
+    <link href="__ADMIN_ACEADMIN__/css/global.css" rel="stylesheet" type="text/css">
+    <link href="__ADMIN_ACEADMIN__/css/hd-add2.css" rel="stylesheet" type="text/css">
+    <script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+    <script src="__ADMIN_ACEADMIN__/js/common.js"></script>
+    <script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script>
+    <script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="warp">
+
+    <section class="container clearfix">
+        <div class="item">
+            <div class="content-right" style="margin-left: 0">
+                <h2>活动列表</h2>
+                <div class="hd-tab">
+                    <span><a href="{:U('Admin/Activity/list_activity')}">活动列表</a><i></i></span>
+                    <span class="active">添加活动<i></i></span>
+                </div>
+                <div class="conBox hd-add2">
+                    <form action="{:U('Admin/Activity/add_activity')}" method="post">
+                        <dl>
+                            <dt>标题：</dt>
+                            <dd><input type="text" name="name"></dd>
+                        </dl>
+                        <dl>
+                            <dt>链接：</dt>
+                            <dd><input type="text" name="a_url"></dd>
+                        </dl>
+                        <dl>
+                            <dt>模板标识：</dt>
+                            <dd><input type="text" name="url"></dd>
+                        </dl>
+                        <dl>
+                            <dt>开始时间：</dt>
+                            <dd><input type="text" name="start_time" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"></dd>
+                        </dl>
+                        <dl>
+                            <dt>结束时间：</dt>
+                            <dd><input type="text" name="end_time" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" ></dd>
+                        </dl>
+                        <dl>
+                            <dt>活动类别：</dt>
+                            <dd>
+                                <select name="class" id="">
+                                    <foreach name="class_list" item="v">
+                                        <option value="{$v['name']}">{$v['name']}</option>
+                                    </foreach>
+                                </select>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>活动状态：</dt>
+                            <dd>
+                                <label><input type="radio" name="state" value="3" checked="checked">未开始</label>
+                                <label><input type="radio" name="state" value="2">进行中</label>
+                                <label><input type="radio" name="state" value="1">已过期</label>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>活动是否开始：</dt>
+                            <dd>
+                                <label ca><input type="radio" name="open" value="0" checked="checked" >开始</label>
+                                <label><input type="radio" name="open" value="1">关闭</label>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>简介：</dt>
+                            <dd>
+                                <textarea class="yidong" name="jianjie" id="jianjie" cols="40" rows="15" title="简介"></textarea>
+                            </dd>
+                        </dl>
+                        <div class="btns">
+                            <input type="submit" value="确定" class="submit">
+                            <input type="reset" value="重置" class="reset">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

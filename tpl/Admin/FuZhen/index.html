@@ -1,0 +1,127 @@
+<!-- $Id: goods_list.htm 17126 2010-04-23 10:30:26Z liuhui $ -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>预约系统 - 预约列表 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css" />
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css" />
+<link href="/tpl/Public/css/page.css" rel="stylesheet" type="text/css" />
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script> 
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+
+<h1>
+<span class="action-span1"><a href="{:U('Admin/FuZhen/index')}">复诊信息</a></span>
+<span class="action-span"><a href="{:U('Admin/FuZhen/insert')}">添加复诊信息</a> </span>
+<span class="action-span"><a href="{:U('Admin/FuZhen/eximport')}">复诊信息导入</a> </span>
+<span class="action-span"><a href="{:U('Admin/FuZhen/excel')}">复诊信息导出</a> </span>
+<!-- <span class="action-span1">-----<a href="{:U('Admin/Make/index',array('sign'=>1))}">今日预约信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/index',array('sign'=>2))}">今日添加信息列表</a> </span>
+<span class="action-span1">-----<a href="{:U('Admin/Make/index',array('sign'=>3))}">全部信息列表</a> </span> -->
+<div style="clear:both"></div>
+</h1>
+<!-- 预约搜索 -->
+<!-- $Id: goods_search.htm 16790 2009-11-10 08:56:15Z wangleisvn $ -->
+<div class="form-div">
+  <form action="{:U('Admin/FuZhen/search')}" name="searchForm" method="post" onsubmit="return required()">
+    <img src="__ADMIN_ACEADMIN__/avatars/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" />
+        <!-- 科室 -->
+    <!--  -->
+        <!-- 关键字 -->
+    <!-- 预约时间   <input type="text" id="yuyuetime" name="start" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/>
+        <input type="text" id="yuyuetime" name="end" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:200px"/> -->
+    姓名 <input type="text" name="name" id="name" size="15" autocomplete="off"/>
+    电话 <input type="text" name="phone" id="phone" size="15" autocomplete="off"/>
+    <input type="submit" value=" 搜索 " class="button" /><span style="color:red;">(*可选填*)</span>
+  </form>
+</div>
+
+<!-- 商品列表 -->
+<!-- <form method="post" action="" name="listForm" onsubmit="return confirmSubmit(this)"> -->
+  <!-- start goods list -->
+  <div class="list-div" id="listDiv">
+<table cellpadding="3" cellspacing="1">
+  <tr>
+    <th><span>序号</span></th>
+    <th><span>来源</span></th>
+  <th><span>姓名</span></th>
+    <th><span>性别</span></th>
+    <th><span>年龄</span></th>
+    <th><span>专家</span></th>
+    <th><span>看诊日期</span></th>
+    <th><span>地址</span></th>
+    <th><span>电话</span></th>
+    <th><span>病症</span></th>
+    <th><span>检查费</span></th>
+    <th><span>挂号费</span></th>
+    <th><span>总计</span></th>
+    <th><span>回访日期</span></th>
+    <th>操作</th>
+  </tr>
+    <foreach name="data" item="data">
+  <tr>
+    <td align="center"><?php echo ++$i ?></td>
+    <td align="center"><span>{$data.source}</span></td>
+    <td align="center" class="first-cell" style=""><span>{$data.name}</span></td>
+    <td align="center"><span>{$data.gender}</span></td>
+    <td align="center"><span>{$data.age}</span></td>
+	  <td align="center" class="first-cell" style=""><span>{$data.expert}</span></td>
+    <td align="center"><span>{$data.kzrq|date="Y-m-d",###}</span></td>
+	  <td align="center"> <span>{$data.address}</span></td>
+    <td align="center"><span>{$data.phone}</span></td>
+    <td align="center"><span>{$data.illness}</span></td>
+    <td align="center"><span>{$data.jcf}</span></td>
+    <td align="center"><span>{$data.ghf}</span></td>
+    <td align="center"><span>{$data.all}</span></td>
+    <td align="center"><span>{$data.hfrq|date="Y-m-d",###}</span></td>
+    <td align="center">
+<!--       <a href="{:U('Admin/Make/edit_make',array('id'=>$va['id']))}" title="查看">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_view.gif" width="16" height="16" border="0" />
+      </a> -->
+      <a href="{:U('Admin/FuZhen/edit',array('id'=>$data['id']))}" title="编辑">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_edit.gif" width="16" height="16" border="0" />
+      </a>
+      <a href="javascript:if(confirm('您确实要把该商品放入回收站吗？'))location='{:U('Admin/FuZhen/delete',array('id'=>$data['id']))}'" title="回收站">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_trash.gif" width="16" height="16" border="0" />
+      </a>
+      <img src="__ADMIN_ACEADMIN__/avatars/empty.gif" width="16" height="16" border="0" /> 
+    </td>
+  </tr>
+  </foreach>
+  </table>
+<!-- end goods list -->
+
+<!-- 分页 -->
+<table id="page-table" cellspacing="0">
+  <tr>
+    <td align="center" nowrap="true" >
+<!--           $Id: page.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+    <div class="pagination">
+　　    {$page}
+    </div>
+    </td>
+  </tr>
+</table>
+
+</div>
+<!-- </form> -->
+
+</body>
+<script>
+//  表单验证
+  function required(){
+    if(document.getElementById("name").value==""||document.getElementById("phone").value==null){
+      alert("请填写搜索条件！")
+      return false;
+    }
+    else{
+      return true
+    }
+  }
+  </script>
+</html>

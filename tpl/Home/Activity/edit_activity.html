@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>活动编辑</title>
+    <link rel="stylesheet" href="/Public/statics/acehome/css/reset.css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/common.css">
+    <link rel="stylesheet" href="/Public/statics/acehome/css/hd-add2.css">
+    <script src="/Public/statics/acehome/js/jquery-1.8.3.min.js"></script>
+    <script src="/Public/statics/acehome/js/rem.js"></script>
+    <script src="/Public/statics/acehome/js/hd-add2.js"></script>
+    <script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script>
+    <script language="javascript" type="text/javascript"
+            src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+<div id="warmp" class="warmp">
+    <header class="header">
+        <h2><a href="/index.php/Home/Activity/list_activity"></a>活动添加
+            <em id="edit">编辑</em>
+        </h2>
+    </header>
+    <section class="container">
+        <form  id="form1" url="{:U('Home/Activity/edit_activity')}" method="post">
+            <div class="hd-add">
+                <ul>
+                    <li>
+                        <dl>
+                            <dt>活动标题</dt>
+                            <dd><input type="text" placeholder="请填写活动标题" name="name" value="{$data[0]['name']}"></dd>
+                        </dl>
+                        <dl>
+                            <dt>活动介绍</dt>
+                            <dd><textarea placeholder="请填写活动介绍" name="jianjie">{$data[0]['jianjie']}</textarea></dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl>
+                            <dt>活动网址</dt>
+                            <dd><input type="text" placeholder="请填写活动网址" name="a_url" value="{$data[0]['a_url']}"></dd>
+                        </dl>
+                        <dl>
+                            <dt>模板标识</dt>
+                            <dd><input type="text" placeholder="请填写模板标识"  name="url" value="{$data[0]['url']}"></dd>
+                        </dl>
+                        <dl>
+                            <dt>开始时间</dt>
+                            <dd><input type="text" name="start_time"  value="<?php echo (date(" Y-m-d H:i:s",$data[0]['start_time'])); ?>"
+                                onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'}) ">
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>结束时间</dt>
+                            <dd><input type="text" name="end_time" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'}) "
+                                       value="<?php echo (date(" Y-m-d H:i:s",$data[0]['end_time'])); ?>" >
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>活动类别</dt>
+                            <dd>
+                                <select name="class" id="class" title="活动类别">
+                                    <foreach name="class" item="list">
+                                        <option value="{$list['name']}"
+                                        <if condition="$data[0]['class'] eq $list['name']">selected="selected"</if>
+                                        >{$list['name']}</option>
+                                    </foreach>
+                                </select>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>活动状态</dt>
+                            <dd>
+                                <input type="hidden" id="status" value="{$data[0]['state']}"/>
+                                <label id="weikaishi"><em><i></i></em><input type="radio" value="3" name="state"
+                                                                             checked="checked">未开始</label>
+                                <label id="jinxing"><em><i></i></em><input type="radio" value="2"
+                                                                           name="state">进行中</label>
+                                <label id="guoqi"><em><i></i></em><input type="radio" value="1" name="state">已过期</label>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt>活动是否开始</dt>
+                            <dd>
+                                <input type="hidden" id="kaiguan" value="{$data[0]['open']}"/>
+                                <label id="yichu"><em><i></i></em><input type="radio" value="0" name="open">开始</label>
+                                <label id="guanbi"><em><i></i></em><input type="radio" name="open" value="1">关闭</label>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li>
+                        <dl>
+                            <dt>活动banner</dt>
+                            <dd>
+                                <div class="upPic">
+                                    <img src="{$data[0]['image_url']}" alt="" id="ImgPr">
+                                    <a href="#" class="choose"><input type="file" accept="image/*" id="up"/></a>
+                                    <input type="hidden" name="image_url" value="{$data[0]['image_url']}" id="hidden">
+                                </div>
+                            </dd>
+                        </dl>
+                    </li>
+                </ul>
+                <!--<input type="submit" value="保存" class="btn1">-->
+                <a href="javascript:;" class="btn1" id="btn1" onclick="baocun()">保存</a>
+            </div>
+        </form>
+    </section>
+</div>
+</body>
+<script>
+    $(function () {
+        var open = $('#kaiguan').val();
+        var status = $('#status').val();
+
+        if (open == 1) {
+            $('#guanbi').addClass('active');
+        } else {
+            $('#yichu').addClass('active');
+        }
+
+        if (status == 1) {
+            $('#guoqi').addClass('active');
+        } else if (status == 2) {
+            $('#jinxing').addClass('active');
+        } else if (status == 3) {
+            $('#weikaishi').addClass('active');
+        }
+    });
+
+
+    function baocun() {
+        $('#form1').submit();
+    }
+
+
+    $(function(){
+        $("#up").change(function () {
+            uploadImage();
+
+        })
+    });
+
+
+    function uploadImage() {
+        //formdata储存异步上传数据
+        var formData = new FormData($('form')[0]);
+        formData.append('file',$(':file')[0].files[0]);
+        //坑点: 无论怎么传数据,console.log(formData)都会显示为空,但其实值是存在的,f12查看Net tab可以看到数据被上传了
+        $.ajax({
+            url: "{:U('Home/Activity/upload')}",
+            type: 'POST',
+            data: formData,
+            //这两个设置项必填
+            contentType: false,
+            processData: false,
+            success:function(data){
+                var data = eval('(' + data + ')');
+                console.log(data.url);
+
+                $('#imag1').attr("src", data.url);
+                $('#hidden').val(data.url);
+            }
+        })
+    }
+
+
+
+
+
+
+
+</script>
+
+</html>

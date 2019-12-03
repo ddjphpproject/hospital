@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>预约系统 - 数据筛选 </title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="__ADMIN_ACEADMIN__/css/general.css" rel="stylesheet" type="text/css" />
+<link href="__ADMIN_ACEADMIN__/css/main.css" rel="stylesheet" type="text/css" />
+<link href="/tpl/Public/css/page.css" rel="stylesheet" type="text/css" />
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="__ADMIN_ACEADMIN__/js/datepicker.js"></script>
+<script language="javascript" type="text/javascript" src="__ADMIN_ACEADMIN__/js/My97DatePicker/WdatePicker.js"></script>
+</head>
+<body>
+<!-- 预约搜索 -->
+<!-- $Id: goods_search.htm 16790 2009-11-10 08:56:15Z wangleisvn $ -->
+<div class="form-div">
+  <form action="{:U('Admin/Analyze/search')}" name="searchForm" method="post">
+    <!-- <img src="__ADMIN_ACEADMIN__/avatars/icon_search.gif" width="26" height="22" border="0" alt="SEARCH" /> -->
+
+        <!-- 关键字 -->
+        <p>预约时间：<input type="text" id="yuyuetime" name="start" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:30%;margin-left: 3%"/><span style="margin-left:3%;">至</span>
+        <input type="text" id="yuyuetime" name="end" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:30%;margin-left: 3%"/>
+    </p>
+    <p>年龄区间：<input type="text" id="age_start" name="age_start" style="width:5%;margin-left:3%;"/><span style="margin-left:3%;">到</span>
+    <input type="text" id="age_end" name="age_end" style="width:5%;margin-left:3%;"/>(年龄较小在前)</p>
+    <!-- 籍贯:
+    <select name="area">
+      <option value="">请选择</option>
+      <foreach name="area" item="area">
+        <option value="{$area['id']}">{$area['area_name']}</option>
+      </foreach>
+    </select> -->
+    <p>
+        所有科室：<select name="yuyueks">
+          <option value="">请选择科室</option>
+          <foreach name="govern" item="g">
+            <option value="{$g['ksname']}">{$g['ksname']}</option>
+          </foreach>
+        </select>
+        <!-- 专家 -->
+        <span style="margin-left:3%;">所有专家：</span><select name="yuyuezj">
+          <option value="">请选择专家</option>
+          <foreach name="expert" item="e">
+            <option value="{$e['zjname']}">{$e['zjname']}</option>
+          </foreach>
+        </select>
+        <!-- 病种 -->
+        <span style="margin-left:3%;">所有病种：</span><select name="yuyuebz">
+          <option value="">请选择病种</option>
+          <foreach name="entity" item="e">
+            <option value="{$e['bzname']}">{$e['bzname']}</option>
+          </foreach>
+      </select>
+    </p>
+    <p>
+    <!-- 渠道 -->
+    渠道：<select name="channel" id="channel">
+      <option value=''>请选择渠道</option>
+      <foreach name="channel" item="c">
+        <option value="{$c['name']}">{$c['name']}</option>
+      </foreach>
+    </select>
+    <!-- 来源 -->
+    <span style="margin-left:3%;">来源：</span><select name="source" id="sources">
+      <option value=''>请选择来源</option>
+
+    </select>
+    <span style="margin-left:3%;">初复诊：</span><select name="again">
+      <option value="">请选择初复诊</option>
+        <option value="3">全部</option>
+        <option value="1">初诊</option>
+        <option value="2">复诊</option>
+    </select>
+    </p>
+    <p>
+       到诊情况：<select name="diagnosis">
+      <option value="">请选择到诊情况</option>
+        <option value="2">到诊</option>
+        <option value="1">未到诊</option>
+    </select>
+    <span style="margin-left:3%;">消费情况：</span><select name="consumption">
+      <option value="">请选择消费情况</option>
+        <option value="2">消费</option>
+        <option value="1">未消费</option>
+    </select>
+    <span style="margin-left:3%;">住院情况：</span><select name="hospital">
+      <option value="">请选择住院情况</option>
+        <option value="2">住院</option>
+        <option value="1">未住院</option>
+    </select>
+    <span style="margin-left:3%;">到诊类型：</span><select name="type">
+      <option value="">请选择到诊类型</option>
+        <option value="1">预约到诊</option>
+        <option value="2">自然到诊</option>
+    </select>
+    </p>
+    <p>
+    提交时间：<input type="text" id="time" name="start_time" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:30%;margin-left: 3%"/><span style="margin-left:3%;">至</span>
+        <input type="text" id="time" name="end_time" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" class="Wdate" style="width:30%;margin-left: 3%"/>
+    </p>
+    <input type="submit" value=" 搜索 " class="button" />
+  </form>
+</div>
+
+<!-- 商品列表 -->
+<form method="post" action="" name="listForm" onsubmit="return confirmSubmit(this)">
+  <!-- start goods list -->
+  <div class="list-div" id="listDiv">
+<table cellpadding="3" cellspacing="1">
+  <tr>
+    <th><span><input id="sel_1" onchange="selectAll()" type="checkbox" value="1"/>全选</span></th>
+    <th><span>话务员</span></th>
+      <th><span>患者编号</span></th>
+    <th><span>患者姓名</span></th>
+    <th><span>电话</span></th>
+    <th><span>到诊时间</span></th>
+    <th><span>预约专家</span></th>
+    <th><span>病种类型</span></th>
+    <th><span>是否到诊</span></th>
+    <th><span>到诊类型</span></th>
+    <th><span>是否消费</span></th>
+    <th><span>是否住院</span></th>
+    <th><span>初/复诊</span></th>
+    <th><span>提交时间</span></th>
+    <th>操作</th>
+  </tr>
+    <?php foreach ($data as $key => $va): ?>
+  <tr>
+    <td align="center"><input type="checkbox" name="id[]" value="{$data.id}"/></td>
+    <td align="center" class="first-cell" style=""><span><?php echo $va['username']; ?></span></td>
+    <td align="center"><span><?php echo $va['id']; ?></span></td>
+    <td align="center"><span><?php echo $va['name']; ?></span></td>
+      <td align="center" class="first-cell" style=""><span><?php echo $va['phone']; ?></span></td>
+    <td align="center"><span><?php echo date('Y-m-d H:i:s',$va['yuyuetime']); ?></span></td>
+      <td align="center"> <span><?php echo $va['yuyuezj']; ?></span></td>
+    <td align="center"><span><?php echo $va['yuyuebz']; ?></span></td>
+    <td align="center"><img src="__ADMIN_ACEADMIN__/avatars/<?php echo $va['diagnosis']; ?>.gif" /></td>
+    <td align="center"><span><?php if($va['type']==0){ echo '预约到诊'; }else{ echo '自然到诊'; }  ?></span></td>
+    <td align="center"><img src="__ADMIN_ACEADMIN__/avatars/<?php echo $va['consumption']; ?>.gif" /></td>
+    <td align="center"><img src="__ADMIN_ACEADMIN__/avatars/<?php echo $va['hospital']; ?>.gif" /></td>
+    <td align="center"><span><?php if($va['again']==0){ echo '初诊'; }else{ echo '复诊'; }  ?></span></td>
+    <td align="center"><span><?php echo date('Y-m-d H:i:s',$va['time']); ?></span></td>
+    <td align="center">
+      <a href="{:U('Admin/Analyze/edit',array('id'=>$va['id']))}" title="编辑">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_edit.gif" width="16" height="16" border="0" />
+      </a>
+      <a href="javascript:if(confirm('您确实要把该信息放入回收站吗？'))location='{:U('Admin/Analyze/delete',array('id'=>$va['id']))}'" title="回收站">
+        <img src="__ADMIN_ACEADMIN__/avatars/icon_trash.gif" width="16" height="16" border="0" />
+      </a>
+      <img src="__ADMIN_ACEADMIN__/avatars/empty.gif" width="16" height="16" border="0" /> 
+    </td>
+  </tr>
+<?php endforeach ?>
+  </table>
+<!-- end goods list -->
+<input type="hidden" name="condition" id="condition" value="<?php echo $condition;?>"/>
+<!-- 分页 -->
+<table id="page-table" cellspacing="0">
+  <tr>
+    <td align="center" nowrap="true" >
+          <!-- $Id: page.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+        <div class="pagination">
+　　      {$page}
+        </div>
+    </td>
+  </tr>
+  <!-- <form action="{:U('sendMessage')}" method="post"> -->
+  <tr>
+    <td align="center" nowrap="true" >
+          <!-- $Id: page.htm 14216 2008-03-10 02:27:21Z testyang $ -->
+        <div style="margin-top:30px;margin-bottom:30px;">
+            <span>为以上患者推送消息:</span>
+            <select name="activity" id="activity" style="margin-left:10px;height: 30px;width: 200px;">
+                <option value="">选择活动内容</option>
+                <foreach name="activity" item="activity">
+                    <option value="{$activity.id}">{$activity.name}</option>
+                </foreach>
+            </select>
+            <select name="send_way" id="send_way" style="margin-left:10px;height: 30px;width: 200px;">
+                <option value="">选择推送消息的方式</option>
+                <option value="1">微信推送</option>
+                <option value="2">短信推送</option>
+                <option value="3">站内推送</option>
+                <!-- <option value="4">邮箱推送</option> -->
+            </select>
+            <input type="button" id="sendmsg" style="border-radius:5px;font-size: 16px;" value="点击推送" />
+            <span id="success" style="display:none;"><img src="__ADMIN_ACEADMIN__/avatars/1.gif"><span id="successson"></span></span>
+            <span id="fail" style="display:none;"><img src="__ADMIN_ACEADMIN__/avatars/0.gif"><span id="failson" style="color:red;"></span></span>
+        </div>
+    </td>
+  </tr>
+  <!-- </form> -->
+</table>
+
+</div>
+</form>
+
+</body>
+<script type="text/javascript">  
+function selectAll(){
+    var isCheck=$("#sel_1").is(':checked');  //获得全选复选框是否选中
+    $("input[type='checkbox']").each(function() {  
+        this.checked = isCheck;       //循环赋值给每个复选框是否选中
+    });
+}
+  $(function(){
+        $('#channel').change(function(){
+         $.ajax({
+             type: "POST",
+             url: "{:U('Admin/Make/sourceGet')}",
+             data: {mode:$("#channel").val()},
+             dataType: "json",
+             success: function(data){
+
+                $('#sources').empty();
+                $('#sources').prepend(data);
+                }
+          });
+      });
+
+        $('#sendmsg').click(function(){
+            $.ajax({
+                type: "POST",
+                url: "{:U('sendMessage')}",
+                data: {activity:$("#activity").val(),send_way:$("#send_way").val(),condition:$("#condition").val(),},
+                dataType: "json",
+                beforeSend:function(XMLHttpRequest)
+                {
+                    //此处可添加等待状态
+                },
+                success: function(data)
+                {
+                    if(data.code == 100)
+                    {
+                        $('#successson').html('');
+                        $('#failson').html('');
+                        $('#success').css("display","none");
+                        $('#fail').css("display","none");
+                        $('#success').css("display","block");
+                        $('#successson').html(data.msg);
+                    }
+                    else if(data.code == 200)
+                    {
+                        $('#successson').html('');
+                        $('#failson').html('');
+                        $('#success').css("display","none");
+                        $('#fail').css("display","none");
+                        $('#fail').css("display","block");
+                        $('#failson').html(data.msg);
+                    }
+                }
+            });
+        });
+  });
+</script>
+</html>

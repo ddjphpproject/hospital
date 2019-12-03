@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="UTF-8">
+<title>数据检索</title>
+<link href="__ADMIN_ACEADMIN__/css/global.css" rel="stylesheet" type="text/css">
+<link href="__ADMIN_ACEADMIN__/css/booking.css" rel="stylesheet" type="text/css">
+<link href="__ADMIN_ACEADMIN__/css/control_show.css" rel="stylesheet" type="text/css">
+<script src="__ADMIN_ACEADMIN__/js/jquery-1.8.3.min.js"></script>
+<script src="__ADMIN_ACEADMIN__/js/laydate/laydate.js"></script>
+<script src="__ADMIN_ACEADMIN__/js/common.js"></script>
+<script src="__ADMIN_ACEADMIN__/js/booking.js"></script>
+<!--[if lt IE 9]>
+    <script src="js/html5shiv.min.js"></script>
+<![endif]-->
+</head>
+<body>
+<script>
+ $(function () {
+        table1();
+    });
+    //弹窗
+    function sPopup(num){   
+        //模拟数据
+        var data = {:($data)};
+        console.log(data)
+        // var data=[['初诊','复诊'],['中医肿瘤科','妇科','中医消化科','中老年病','中医神经科','中医呼吸科','中医皮肤科'],['张文彭','王医生','李主任','赵医生'],['种植牙','烤瓷牙','补牙','祛斑'],['报纸','其他','91160'],['网络','电话','微信']];
+        var name = '';
+        if (num == 0) {
+            name = 'cf';//again
+        } else if (num == 1) {
+            name = 'ks';//yuyueks
+        } else if (num == 2) {
+            name = 'zj';//yuyuezj
+        } else if (num == 3) {
+            name = 'bz';//yuyuebz
+        } else if (num == 4) {
+            name = 'ly';//channel
+        } else if (num == 5) {
+            name = 'fs';//source
+        }  
+        var str='';
+        for (var i = 0; i < data[num].length; i++) {
+            str+='<li><label><em><i></i></em><input class="quzhi" name="' + name + '" type="checkbox"value="' + data[num][i] + '"/>' + data[num][i] + '</label></li>';
+        }
+        $('.sPopup-list').html(str);
+        $('.searchPopup').fadeIn(200);
+        textInputFocus('.searchPopup .searchText .t','请选择',null,null,null);
+        $('.searchText .t').focus();
+        searchList();
+
+        $('.searchPopup-con ul input').click(function(){
+            console.log($(this));
+            if($(this).is(':checked')){
+                $(this).parent().find('i').css('display','block');
+                 $(this).attr("checked", "checked");
+            }else{
+                $(this).parent().find('i').css('display','none');
+                 $(this).attr("checked", "checked");
+            }
+        })
+
+        $('.searchPopup .close').click(function(){
+            $('.searchPopup').fadeOut(200,function(){
+                $('.sPopup-list').empty();
+            });
+            
+        })
+        $('.searchPopup .close-btn').click(function(){
+            $('.searchPopup').fadeOut(200,function(){
+                $('.sPopup-list').empty();
+            });
+        })
+    } 
+    //表格
+    function table1(){
+        //模拟数据
+        var data=[];
+        var data ={:($make)};   
+        console.log(data) 
+        var str="";
+        $('#table1 tr:gt(0)').remove();
+        for(var i=0;i<data.length;i++){
+            str+='<tr><td>'+data[i].huawu+'</td><td>'+data[i].id+'</td><td>'+data[i].name+'</td><td>'+data[i].phone+'</td><td>'+data[i].yuyuetime+'</td><td>'+data[i].yuyuezj+'</td><td>'+data[i].yuyuebz+'</td><td><b>'+data[i].diagnosis+'</b></td><td>'+data[i].again+'</td><td><em>'+data[i].consumption+'</em></td><td><em>'+data[i].hospital+'</em></td><td>'+data[i].again+'</td><td>'+data[i].time+'</td><td><a href="javascript:;" class="revise"></a><a href="javascript:;" class="del"></a></td></tr>';
+        }
+        $('#table1').append(str);
+        $('#table1 tr:odd').css('backgroundColor','#fff');
+    }
+ /**
+  * 公共处理表格
+  * @param data
+  */
+ function commonTable(data){
+     $('#table1 tr:gt(0)').remove();
+    var str='';
+    for(var i=0;i<data.length;i++){
+        str+='<tr><td>'+data[i].huawu+'</td><td>'+data[i].id+'</td><td>'+data[i].name+'</td><td>'+data[i].phone+'</td><td>'+data[i].yuyuetime+'</td><td>'+data[i].yuyuezj+'</td><td>'+data[i].yuyuebz+'</td><td><b>'+data[i].diagnosis+'</b></td><td>'+data[i].again+'</td><td><em>'+data[i].consumption+'</em></td><td><em>'+data[i].hospital+'</em></td><td>'+data[i].again+'</td><td>'+data[i].time+'</td><td><a href="javascript:;" class="revise"></a><a href="javascript:;" class="del"></a></td></tr>';
+    }
+    $('#table1').append(str);
+    $('#table1 tr:odd').css('backgroundColor','#fff');
+}
+
+</script>
+<div class="commonTit"><h2><span>预约系统</span></h2></div>
+<div class="conBox booking">
+    <form action="{:U('Admin/Make/control_show')}" method="post" id="form1" name="searchForm">
+        <div class="booking-top">
+            <dl>
+                <dt>姓名</dt>
+                <dd><input type="text" id='name' name="name" value="{$where['name']}" placeholder="请输入姓名"> </dd>
+            </dl>
+            <dl>
+                <dt>电话</dt>
+                <dd><input type="text" id="phone" name="phone" value="{$where['phone']}" placeholder="请输入电话" ></dd>
+            </dl>
+            <dl class="yyTime">
+                <dt>预约时间</dt>
+                <dd>
+                    <input type="text" class="datepicker1" id='starttime' name="starttime" value="{$where['starttime']}"> 至 <input type="text" class="datepicker2" id ='endtime' name="endtime" value="{$where['endtime']}">
+                    <span><b class="shijian">今天</b> | <b class="shijian">昨天</b> | <b
+                            class="shijian">最近七天</b> | <b class="shijian">本周</b> | <b class="shijian">本月</b></span>
+                </dd>
+            </dl>
+        </div>
+        <ul>
+            <!-- <?php print_r($govern)?> -->
+            <li><input type="text" placeholder="初复诊" id='again' name="again" value="{$where['again']}"></li>
+            <li><input type="text" placeholder="所有科室" id='yuyueks' name="yuyueks" value="{$where['yuyueks']}"></li>
+            <li><input type="text" placeholder="所有专家" id='yuyuezj' name="yuyuezj" value="{$where['yuyuezj']}"></li>
+            <li><input type="text" placeholder="所有病种" id='yuyuebz' name="yuyuebz" value="{$where['yuyuebz']}"></li>
+            <li><input type="text" placeholder="媒体来源" id='source' name="source" value="{$where['source']}"></li>
+            <li><input type="text" placeholder="预约方式-渠道" id='channel' name="channel" value="{$where['channel']}"></li>
+        </ul>
+        <div class="btn" id="btn">
+            <input type="submit" class="search-btn" value="搜索" id="search" style="background: #438eb9;margin-left: 100px;text-align: center;">
+            <input type="button" class="search-btn" value="重置" id="chongzhi" style="background: #438eb9;margin-left: 100px;text-align: center;">
+        </div>
+    </form>
+    <table id="table1" >
+        <tr>
+            <th>话务员</th>
+            <th>患者编号</th>
+            <th>患者姓名</th>
+            <th>电话</th>
+            <th>到诊时间</th>
+            <th>预约专家</th>
+            <th>病种类型</th>
+            <th>到诊</th>
+            <th>到诊类型</th>
+            <th>消费</th>
+            <th>住院</th>
+            <th>初/复诊</th>
+            <th>提交时间</th>
+            <th>操作</th>
+        </tr>
+
+    </table>
+    <div class="page">
+        <ul>
+            <li>显示行数：</li>
+            <li>
+                <select id="pageSize" onchange="changePagesize()">
+                    <option value="10" <php>if($pageSize== 10){</php>selected<php>}</php> >10</option>
+                    <option value="20" <php>if($pageSize== 20){</php>selected<php>}</php>>20</option>
+                    <option value="30" <php>if($pageSize== 30){</php>selected<php>}</php>>30</option>
+                </select>
+            </li>
+            <li>
+                <span id="current_page">{$current_page}</span>/<span id="total_page">{$total_page}</span>
+            </li>
+            <li><a class="btn1" id="btn1"></a></li>
+            <li><input type="text" id="page_shu" value=""></li>
+            <li><span class="btn2" id="tiaozhuan">跳转</span></li>
+        </ul>
+    </div>
+</div>      
+<div class="searchPopup">
+    <div class="searchPopup-mask"></div>
+    <div class="searchPopup-con">
+        <span class="close"></span>
+        <form action="" method="post">
+            <dl class="searchText">
+                <dt><input type="text" class="t" name="" value=""></dt>
+                <dd><input type="submit" class="subBtn" value=""></dd>
+                <dd>
+                    <ul id="suggestions">  
+                    </ul>
+                </dd>
+            </dl>
+            <ul class="sPopup-list">
+            </ul>
+            <div class="btns">
+                <input type="button" value="确认" class="close-btn" onclick="GetGain()" id="button">
+                <input type="button" value="取消" class="close-btn">
+            </div>
+        </form>
+    </div>  
+</div> 
+<script>
+    /**
+     * 改变每页显示条数
+     * 默认改变后是第一页
+     */
+    function changePagesize() {
+        dataCombine();
+        data.current_page = 1;
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Admin/Make/control_show')}",
+            data: data,
+            success: function (obj) {
+                commonTable(obj.data);
+                $('#current_page').html(obj.current_page);
+                if (obj.total_page == 0) {
+                    obj.total_page = 1;
+                }
+                $('#total_page').html(obj.total_page);
+            }
+        });
+    }
+    /**
+     * ajax请求每页数据的时候进行封装数据
+     * @returns {boolean}
+     */
+    function dataCombine(){
+        var pageSize = $("#pageSize  option:selected").text();
+        var name = $('#name').val();
+        var phone = $('#phone').val();
+        var starttime = $('#starttime').val();
+        var endtime = $('#endtime').val();
+        var again = $('#again').val();
+        var yuyueks = $('#yuyueks').val();
+        var yuyuezj = $('#yuyuezj').val();
+        var yuyuebz = $('#yuyuebz').val();
+        var source = $('#source').val();
+        var channel = $('#channel').val();
+        var page_shu = $('#page_shu').val();
+        var current_page = $("#current_page").html();
+        var total_page = $("#total_page").html();
+        current_page++;
+        if (current_page > total_page) {
+            alert('已经是最后一页');
+            return false;
+        }
+        data = {};
+        data.pageSize = pageSize;
+        data.name = name;
+        data.phone = phone;
+        data.starttime = starttime;
+        data.endtime = endtime;
+        data.again = again;
+        data.yuyueks = yuyueks;
+        data.yuyuezj = yuyuezj;
+        data.yuyuebz = yuyuebz;
+        data.source = source;
+        data.channel = channel;
+        data.current_page = current_page;
+        data.total_page = total_page;
+        data.page_shu = page_shu;
+    }
+    $('#btn1').click(function () {
+        dataCombine();
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Admin/Make/control_show')}",
+            data: data,
+            success: function (obj) {
+                commonTable(obj.data);
+                $('#current_page').html(obj.current_page);
+                if (obj.total_page == 0) {
+                    obj.total_page = 1;
+                }
+                $('#total_page').html(obj.total_page);
+            }
+        });
+    });
+    /**
+     * 跳转到第几页
+     */
+    $('#tiaozhuan').click(function () {
+        dataCombine();
+        if (!data.page_shu) {
+            alert('必须填写跳转页');
+            return false;
+        }
+        if (parseInt(data.page_shu) > parseInt(data.total_page)) {
+            alert('不能超过最后一页');
+            return false;
+        }
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "{:U('Admin/Make/control_show')}",
+            data: data,
+            success: function (obj) {
+                commonTable(obj.data);
+                $('#current_page').html(obj.page_shu);
+                if (obj.total_page == 0) {
+                    obj.total_page = 1;
+                }
+                $('#total_page').html(obj.total_page);
+            }
+        });
+    });
+
+    $('.shijian').click(function () {
+        setTimeout(function () {
+            $('#form1').submit();
+        }, 1000)
+    });
+       function uniq(array) {
+        var temp = []; //一个新的临时数组
+        for (var i = 0; i < array.length; i++) {
+            if (temp.indexOf(array[i]) == -1) {
+                temp.push(array[i]);
+            }
+        }
+        return temp;
+    }
+      function GetGain() {
+        var again = new Array();
+        var yuyueks = new Array();
+        var yuyuezj = new Array();
+        var yuyuebz = new Array();  
+        var source = new Array();
+        var channel = new Array();
+        $(".quzhi").each(function () {
+            var name = $(this).attr("name");
+            if (name == 'ks') {
+                $("input[type=checkbox][checked]").each(function () { //由于复选框一般选中的是多个,所以可以循环输出
+                    yuyueks.push($(this).val());
+                });
+                yuyueks = uniq(yuyueks);
+                document.getElementById('yuyueks').value = yuyueks;
+            } else if (name == 'zj') {
+                $("input[type=checkbox][checked]").each(function () { //由于复选框一般选中的是多个,所以可以循环输出
+                    yuyuezj.push($(this).val());
+                });
+                yuyuezj = uniq(yuyuezj);
+                document.getElementById('yuyuezj').value = yuyuezj;
+            } else if (name == 'bz') {
+                $("input[type=checkbox][checked]").each(function () { //由于复选框一般选中的是多个,所以可以循环输出
+                    yuyuebz.push($(this).val());
+                    yuyuebz = uniq(yuyuebz);
+                    document.getElementById('yuyuebz').value = yuyuebz;
+                });
+            }  else if (name == 'ly') {
+                $("input[type=checkbox][checked]").each(function () { //由于复选框一般选中的是多个,所以可以循环输出
+                    channel.push($(this).val());
+                    channel = uniq(channel);
+                    document.getElementById('channel').value = channel;
+                });
+            } else if (name == 'cf') {
+                $("input[type=checkbox][checked]").each(function () { //由于复选框一般选中的是多个,所以可以循环输出
+                    again.push($(this).val());
+                    again = uniq(again);
+                    document.getElementById('again').value = again;
+                });
+            } else if (name == 'fs') {
+                $("input[type=checkbox][checked]").each(function () { //由于复选框一般选中的是多个,所以可以循环输出
+                    source.push($(this).val());
+                    source = uniq(source);
+                    document.getElementById('source').value = source;
+                });
+            } 
+        });
+    }
+</script> 
+</body>
+</html>

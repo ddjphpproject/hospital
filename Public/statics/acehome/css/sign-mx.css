@@ -1,0 +1,16 @@
+@charset "utf-8";
+
+.item{padding:0 0.25rem;}
+
+.f1Box{background-color:#efefef;padding-bottom:0.2rem;border-bottom:1px solid #e8e8e8;}
+.f1Box dl{overflow:hidden;padding:0.3rem 0.25rem;background-color:#fff;border-bottom:1px solid #e8e8e8;}
+.f1Box dl dt,.f1Box dl dt img{width:1.84rem;height:0.92rem;}
+.f1Box dl dt{float:left;}
+.f1Box dl dd{padding-left:2.1rem;font-size:0.28rem;color:#080808;height:0.92rem;line-height:0.92rem;}
+
+.f2Box{padding-top:0.2rem;}
+.f2Box table{width:100%;border-left:1px solid #f7f7f7;border-collapse:collapse;}
+.f2Box table tr{background-color:#fcfdff;}
+.f2Box table tr:first-child{background-color:#f7fcff;}
+.f2Box table tr:nth-child(2n){background-color:#fff;}
+.f2Box table td,.f2Box table th{border-right:1px solid #f7f7f7;border-bottom:1px solid #e1e1e1;text-align:center;font-size:0.26rem;color:#080808;line-height:0.8rem;}

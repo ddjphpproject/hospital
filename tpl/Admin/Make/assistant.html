@@ -1,0 +1,243 @@
+<!DOCTYPE html><html lang="en">
+
+<head>
+
+<meta charset="UTF-8"/>
+
+<title>预约系统</title>
+
+<bootstrapcss/>
+
+</head>
+
+<body>
+
+<div class="bjy-admin-nav"><a href="{:U('Admin/Index/welcome')}"><i class="fa fa-home"></i> 首页</a> &gt; 医助管理</div>
+
+<ul id="myTab" class="nav nav-tabs">
+
+<li class="active"> <a href="#home" data-toggle="tab">医助列表</a></li>
+
+<li> <a href="javascript:;" onclick="add()">添加医助</a>
+
+</li></ul>
+
+<form action="{:U('Admin/Entity/add_entity')}" method="post">
+
+<div id="myTabContent" class="tab-content">
+
+<div class="tab-pane fade in active" id="home">
+
+<table class="table table-striped table-bordered table-hover table-condensed">
+
+<tr>
+
+<th>医助</th>
+
+<th>负责专家</th>
+
+<th>操作</th>
+
+</tr>
+<foreach name="result" item="result">
+
+<tr>
+
+<td>{$result.username}</td>
+
+<td>{$result.expert}</td>
+
+<td> <!-- <a href="javascript:;" id="{$result['id']}" name="{$result['username']}" onclick="edit(this)">修改</a> | <a href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Make/assistant_delete',array('id'=>$result['id']))}'">删除</a> -->
+<a href="{:U('assistant_edit',array('id'=>$result['id']))}">修改</a> | <a href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Make/assistant_delete',array('id'=>$result['id']))}'">删除</a>
+</td>
+
+</tr>
+
+</foreach>
+
+</table>
+
+</div>
+
+</div>
+
+</form>
+
+<div class="modal fade" id="bjy-add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header"> 
+
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+
+<h4 class="modal-title" id="myModalLabel"> 添加医助</h4>
+
+</div>
+
+<div class="modal-body">
+
+<form id="bjy-form" class="form-inline" action="{:U('Admin/Make/assistant_add')}" method="post"> 
+
+<!-- <input type="hidden" name="time" value=""> -->
+
+<table class="table table-striped table-bordered table-hover table-condensed">
+
+<tr>
+
+<th width="15%">医助姓名：</th>
+
+<td> <input class="form-control" type="text" name="username"></td>
+
+</tr>
+<tr>
+
+<th width="15%">手机号：</th>
+
+<td> <input class="form-control" type="text" name="phone"></td>
+
+</tr>
+<tr>
+
+<th width="15%">邮箱：</th>
+
+<td> <input class="form-control" type="text" name="email"></td>
+
+</tr>
+<tr>
+
+<th width="15%">登录密码：</th>
+
+<td> <input class="form-control" type="text" name="password"></td>
+
+</tr>
+<tr>
+<tr>
+<th width="15%">负责专家：</th>
+
+<td> 
+<foreach name="expert" item="expert">
+  <input type="checkbox" name="expert[]" value="{$expert.zjname}"/>{$expert.zjname}&nbsp&nbsp&nbsp&nbsp
+</foreach>
+</td>
+
+</tr>
+
+<td> <input class="btn btn-success" type="submit" value="添加"></td>
+
+</tr>
+
+</table>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="modal fade" id="bjy-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+<div class="modal-dialog"><div class="modal-content">
+
+<div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+
+<h4 class="modal-title" id="myModalLabel"> 修改医助</h4>
+
+</div>
+
+<div class="modal-body">
+
+<form id="bjy-form" class="form-inline" action="{:U('Admin/Make/assistant_edit')}" method="post"> 
+
+<input type="hidden" name="id">
+
+<table class="table table-striped table-bordered table-hover table-condensed">
+
+<tr>
+
+<th width="15%">医助姓名：</th>
+
+<td> <input class="form-control" type="text" name="username"></td>
+
+</tr>
+<tr>
+<th width="15%">负责专家：</th>
+
+<td> 
+<foreach name="experts" item="experts">
+
+  <input type="checkbox" name="experts[]" value="{$experts.zjname}" <if condition="in_array($experts.zjname, $zj)">checked=checked</if>/>{$experts.zjname}&nbsp&nbsp&nbsp&nbsp
+</foreach>
+</td>
+
+</tr>
+
+<tr>
+
+<th></th>
+
+<td> 
+
+<input class="btn btn-success" type="submit" value="修改">
+
+</td>
+
+</tr>
+
+</table>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</div><bootstrapjs/><script>
+
+// 添加菜单
+
+function add(){
+
+  $("input[name='bzname']").val();
+
+  $("input[name='expert']").val();
+
+  $('#bjy-add').modal('show');
+
+}
+
+
+
+
+
+// 修改菜单
+
+function edit(obj){
+
+  var id=$(obj).attr('id');
+
+  var username=$(obj).attr('name');
+
+  // var ksid=$(obj).attr('ksid');
+
+  $("input[name='id']").val(id);
+
+  $("input[name='username']").val(username);
+
+  // $("select[name='ksid']").val(ksid);
+
+  $('#bjy-edit').modal('show');
+
+}
+
+
+
+</script></body></html>

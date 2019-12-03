@@ -1,0 +1,121 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>预约系统</title>
+<bootstrapcss/>
+</head>
+<body>
+<div class="bjy-admin-nav"><a href="{:U('Admin/Index/welcome')}"><i class="fa fa-home"></i> 首页</a> &gt; 病种管理</div>
+<ul id="myTab" class="nav nav-tabs">
+<li class="active"> <a href="#home" data-toggle="tab">病种列表</a></li>
+<li> <a href="javascript:;" onclick="add()">添加病种</a>
+</li></ul>
+<form action="{:U('Admin/Entity/add_entity')}" method="post">
+<div id="myTabContent" class="tab-content">
+<div class="tab-pane fade in active" id="home">
+<table class="table table-striped table-bordered table-hover table-condensed">
+<tr>
+<th>病种名</th>
+<th>科室</th>
+<th>操作</th>
+</tr><foreach name="entity" item="bz">
+<tr>
+<td>{$bz['bzname']}</td>
+<td>{$bz['ksname']}</td>
+<td> <a href="javascript:;" id="{$bz['id']}" name="{$bz['bzname']}" ksid="{$bz['ksid']}" onclick="edit(this)">修改</a> | <a href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Entity/delete_entity',array('id'=>$bz['id']))}'">删除</a>
+</td>
+</tr>
+</foreach>
+</table>
+</div>
+</div>
+</form>
+<div class="modal fade" id="bjy-add" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header"> 
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+<h4 class="modal-title" id="myModalLabel"> 添加病种</h4>
+</div>
+<div class="modal-body">
+<form id="bjy-form" class="form-inline" action="{:U('Admin/Entity/add_entity')}" method="post"> 
+<input type="hidden" name="time" value="">
+<table class="table table-striped table-bordered table-hover table-condensed">
+<tr>
+<th width="12%">病种名：</th>
+<td> <input class="form-control" type="text" name="bzname"></td>
+</tr>
+<tr>
+<th width="12%">科室：</th>
+<td> 
+  <select name="ksid">
+    <option value="">请选择...</option>
+    <foreach name="govern" item="ks">
+    <option value="{$ks['id']}">{$ks['ksname']}</option>
+    </foreach>
+  </select>
+</td>
+</tr>
+<td> <input class="btn btn-success" type="submit" value="添加"></td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+</div>
+</div>
+<div class="modal fade" id="bjy-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog"><div class="modal-content">
+<div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> &times;</button>
+<h4 class="modal-title" id="myModalLabel"> 修改病种</h4>
+</div>
+<div class="modal-body">
+<form id="bjy-form" class="form-inline" action="{:U('Admin/Entity/edit_entity')}" method="post"> 
+<input type="hidden" name="id">
+<table class="table table-striped table-bordered table-hover table-condensed">
+<tr>
+<th width="12%">病种名：</th>
+<td> <input class="form-control" type="text" name="bzname"></td>
+</tr>
+<th width="12%">科室：</th>
+<td> 
+  <select name="ksid">
+    <option value="">请选择...</option>
+    <foreach name="govern" item="ks">
+    <option value="{$ks['id']}">{$ks['ksname']}</option>
+    </foreach>
+  </select>
+</td>
+</tr>
+<tr>
+<th></th>
+<td> 
+<input class="btn btn-success" type="submit" value="修改">
+</td>
+</tr>
+</table>
+</form>
+</div>
+</div>
+</div>
+</div><bootstrapjs/><script>
+// 添加菜单
+function add(){
+  $("input[name='bzname']").val();
+  $("select[name='ksid']").val();
+  $('#bjy-add').modal('show');
+}
+
+
+// 修改菜单
+function edit(obj){
+  var id=$(obj).attr('id');
+  var bzname=$(obj).attr('name');
+  var ksid=$(obj).attr('ksid');
+  $("input[name='id']").val(id);
+  $("input[name='bzname']").val(bzname);
+  $("select[name='ksid']").val(ksid);
+  $('#bjy-edit').modal('show');
+}
+
+</script></body></html>
